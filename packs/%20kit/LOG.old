@@ -1,0 +1,8 @@
+2026/01/29-23:43:11.808 6030 Recovering log #24
+2026/01/29-23:43:11.891 6030 Delete type=0 #24
+2026/01/29-23:43:11.891 6030 Delete type=3 #22
+2026/01/30-00:02:13.010 510c Level-0 table #30: started
+2026/01/30-00:02:13.012 510c Level-0 table #30: 0 bytes OK
+2026/01/30-00:02:13.058 510c Delete type=0 #28
+2026/01/30-00:02:13.145 510c Manual compaction at level-0 from '!items!EMLfF1TSQwrwnwZ2' @ 72057594037927935 : 1 .. '!items!u8w67Me0N38QsB56' @ 0 : 0; will stop at (end)
+2026/01/30-00:02:13.145 510c Manual compaction at level-1 from '!items!EMLfF1TSQwrwnwZ2' @ 72057594037927935 : 1 .. '!items!u8w67Me0N38QsB56' @ 0 : 0; will stop at (end)

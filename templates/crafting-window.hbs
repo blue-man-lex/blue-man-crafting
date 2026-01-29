@@ -1,0 +1,846 @@
+<div class="bg3-craft-container">
+    <aside class="craft-sidebar">
+        <h3>Рецепты</h3>
+        
+        <!-- Окно изучения рецептов -->
+        <div class="recipe-discovery">
+            <div class="discovery-slot" data-tooltip="Бросьте сюда рецепт для изучения">
+                <i class="fas fa-book-open"></i>
+                <span>Изучить рецепт</span>
+            </div>
+            {{#if user.isGM}}
+            <div class="gm-controls">
+                <button class="gm-reset-btn" data-tooltip="Очистить все пользовательские рецепты (только для ГМ)">
+                    <i class="fas fa-trash"></i>
+                    <span>Очистить рецепты</span>
+                </button>
+            </div>
+            {{/if}}
+        </div>
+        
+        <div class="recipe-list">
+            <!-- Глобальные категории -->
+            <div class="recipe-group global-category" data-category="alchemy">
+                <div class="group-header global-header" data-group="alchemy">
+                    <div class="category-icon">
+                        <i class="fas fa-flask"></i>
+                    </div>
+                    <span class="category-name">Алхимия</span>
+                    <i class="fas {{#if expandedGroups.alchemy}}fa-chevron-down{{else}}fa-chevron-right{{/if}}"></i>
+                </div>
+                {{#if expandedGroups.alchemy}}
+                <div class="group-content">
+                    <div class="subcategories">
+                        <div class="subcategory-group" data-subcategory="potions">
+                            <div class="subcategory-header">
+                                <i class="fas fa-vial"></i>
+                                <span>Зелья</span>
+                                <i class="fas {{#if expandedSubcategories.potions}}fa-chevron-down{{else}}fa-chevron-right{{/if}}"></i>
+                            </div>
+                            {{#if expandedSubcategories.potions}}
+                            <div class="subcategory-content">
+                                {{#each recipeGroups}}
+                                {{#if (eq this.id "potions")}}
+                                {{#each this.recipes}}
+                                <div class="category-btn recipe-item {{#if (eq ../../selectedRecipe.name this.name)}}active{{/if}}" 
+                                     data-index="{{this.originalIndex}}">
+                                    <span style="flex: 1;">{{this.name}}</span>
+                                    {{#if this.isGM}}
+                                        {{#if this.canToggle}}
+                                            <i class="fas fa-eye knowledge-toggle {{#if this.isKnown}}known{{else}}unknown{{/if}}" 
+                                               data-id="{{this.id}}" 
+                                               title="{{#if this.isKnown}}Игрок знает рецепт{{else}}Игрок НЕ знает рецепт{{/if}}">
+                                            </i>
+                                        {{/if}}
+                                    {{/if}}
+                                </div>
+                                {{/each}}
+                                {{/if}}
+                                {{/each}}
+                            </div>
+                            {{/if}}
+                        </div>
+                        
+                        <div class="subcategory-group" data-subcategory="elixirs">
+                            <div class="subcategory-header">
+                                <i class="fas fa-magic"></i>
+                                <span>Эликсиры</span>
+                                <i class="fas {{#if expandedSubcategories.elixirs}}fa-chevron-down{{else}}fa-chevron-right{{/if}}"></i>
+                            </div>
+                            {{#if expandedSubcategories.elixirs}}
+                            <div class="subcategory-content">
+                                {{#each recipeGroups}}
+                                {{#if (eq this.id "elixirs")}}
+                                {{#each this.recipes}}
+                                <div class="category-btn recipe-item {{#if (eq ../../selectedRecipe.name this.name)}}active{{/if}}" 
+                                     data-index="{{this.originalIndex}}">
+                                    <span style="flex: 1;">{{this.name}}</span>
+                                    {{#if this.isGM}}
+                                        {{#if this.canToggle}}
+                                            <i class="fas fa-eye knowledge-toggle {{#if this.isKnown}}known{{else}}unknown{{/if}}" 
+                                               data-id="{{this.id}}" 
+                                               title="{{#if this.isKnown}}Игрок знает рецепт{{else}}Игрок НЕ знает рецепт{{/if}}">
+                                            </i>
+                                        {{/if}}
+                                    {{/if}}
+                                </div>
+                                {{/each}}
+                                {{/if}}
+                                {{/each}}
+                            </div>
+                            {{/if}}
+                        </div>
+                        
+                        <div class="subcategory-group" data-subcategory="grenades">
+                            <div class="subcategory-header">
+                                <i class="fas fa-bomb"></i>
+                                <span>Гранаты</span>
+                                <i class="fas {{#if expandedSubcategories.grenades}}fa-chevron-down{{else}}fa-chevron-right{{/if}}"></i>
+                            </div>
+                            {{#if expandedSubcategories.grenades}}
+                            <div class="subcategory-content">
+                                {{#each recipeGroups}}
+                                {{#if (eq this.id "grenades")}}
+                                {{#each this.recipes}}
+                                <div class="category-btn recipe-item {{#if (eq ../../selectedRecipe.name this.name)}}active{{/if}}" 
+                                     data-index="{{this.originalIndex}}">
+                                    <span style="flex: 1;">{{this.name}}</span>
+                                    {{#if this.isGM}}
+                                        {{#if this.canToggle}}
+                                            <i class="fas fa-eye knowledge-toggle {{#if this.isKnown}}known{{else}}unknown{{/if}}" 
+                                               data-id="{{this.id}}" 
+                                               title="{{#if this.isKnown}}Игрок знает рецепт{{else}}Игрок НЕ знает рецепт{{/if}}">
+                                            </i>
+                                        {{/if}}
+                                    {{/if}}
+                                </div>
+                                {{/each}}
+                                {{/if}}
+                                {{/each}}
+                            </div>
+                            {{/if}}
+                        </div>
+                        
+                        <div class="subcategory-group" data-subcategory="coatings">
+                            <div class="subcategory-header">
+                                <i class="fas fa-shield-virus"></i>
+                                <span>Масла и яды</span>
+                                <i class="fas {{#if expandedSubcategories.coatings}}fa-chevron-down{{else}}fa-chevron-right{{/if}}"></i>
+                            </div>
+                            {{#if expandedSubcategories.coatings}}
+                            <div class="subcategory-content">
+                                {{#each recipeGroups}}
+                                {{#if (eq this.id "coatings")}}
+                                {{#each this.recipes}}
+                                <div class="category-btn recipe-item {{#if (eq ../../selectedRecipe.name this.name)}}active{{/if}}" 
+                                     data-index="{{this.originalIndex}}">
+                                    <span style="flex: 1;">{{this.name}}</span>
+                                    {{#if this.isGM}}
+                                        {{#if this.canToggle}}
+                                            <i class="fas fa-eye knowledge-toggle {{#if this.isKnown}}known{{else}}unknown{{/if}}" 
+                                               data-id="{{this.id}}" 
+                                               title="{{#if this.isKnown}}Игрок знает рецепт{{else}}Игрок НЕ знает рецепт{{/if}}">
+                                            </i>
+                                        {{/if}}
+                                    {{/if}}
+                                </div>
+                                {{/each}}
+                                {{/if}}
+                                {{/each}}
+                            </div>
+                            {{/if}}
+                        </div>
+                    </div>
+                </div>
+                {{/if}}
+            </div>
+
+            <div class="recipe-group global-category" data-category="ingredients">
+                <div class="group-header global-header" data-group="ingredients">
+                    <div class="category-icon">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                    <span class="category-name">Ингредиенты</span>
+                    <i class="fas {{#if expandedGroups.ingredients}}fa-chevron-down{{else}}fa-chevron-right{{/if}}"></i>
+                </div>
+                {{#if expandedGroups.ingredients}}
+                <div class="group-content">
+                    <div class="subcategories">
+                        <div class="subcategory-group" data-subcategory="suspension">
+                            <div class="subcategory-header">
+                                <i class="fas fa-tint"></i>
+                                <span>Суспензии</span>
+                                <i class="fas {{#if expandedSubcategories.suspension}}fa-chevron-down{{else}}fa-chevron-right{{/if}}"></i>
+                            </div>
+                            {{#if expandedSubcategories.suspension}}
+                            <div class="subcategory-content">
+                                {{#each recipeGroups}}
+                                {{#if (eq this.id "suspension")}}
+                                {{#each this.recipes}}
+                                <div class="category-btn recipe-item {{#if (eq ../../selectedRecipe.name this.name)}}active{{/if}}" 
+                                     data-index="{{this.originalIndex}}">
+                                    <span style="flex: 1;">{{this.name}}</span>
+                                    {{#if this.isGM}}
+                                        {{#if this.canToggle}}
+                                            <i class="fas fa-eye knowledge-toggle {{#if this.isKnown}}known{{else}}unknown{{/if}}" 
+                                               data-id="{{this.id}}" 
+                                               title="{{#if this.isKnown}}Игрок знает рецепт{{else}}Игрок НЕ знает рецепт{{/if}}">
+                                            </i>
+                                        {{/if}}
+                                    {{/if}}
+                                </div>
+                                {{/each}}
+                                {{/if}}
+                                {{/each}}
+                            </div>
+                            {{/if}}
+                        </div>
+                        
+                        <div class="subcategory-group" data-subcategory="essence">
+                            <div class="subcategory-header">
+                                <i class="fas fa-gem"></i>
+                                <span>Эссенции</span>
+                                <i class="fas {{#if expandedSubcategories.essence}}fa-chevron-down{{else}}fa-chevron-right{{/if}}"></i>
+                            </div>
+                            {{#if expandedSubcategories.essence}}
+                            <div class="subcategory-content">
+                                {{#each recipeGroups}}
+                                {{#if (eq this.id "essence")}}
+                                {{#each this.recipes}}
+                                <div class="category-btn recipe-item {{#if (eq ../../selectedRecipe.name this.name)}}active{{/if}}" 
+                                     data-index="{{this.originalIndex}}">
+                                    <span style="flex: 1;">{{this.name}}</span>
+                                    {{#if this.isGM}}
+                                        {{#if this.canToggle}}
+                                            <i class="fas fa-eye knowledge-toggle {{#if this.isKnown}}known{{else}}unknown{{/if}}" 
+                                               data-id="{{this.id}}" 
+                                               title="{{#if this.isKnown}}Игрок знает рецепт{{else}}Игрок НЕ знает рецепт{{/if}}">
+                                            </i>
+                                        {{/if}}
+                                    {{/if}}
+                                </div>
+                                {{/each}}
+                                {{/if}}
+                                {{/each}}
+                            </div>
+                            {{/if}}
+                        </div>
+                        
+                        <div class="subcategory-group" data-subcategory="salt">
+                            <div class="subcategory-header">
+                                <i class="fas fa-cube"></i>
+                                <span>Соли</span>
+                                <i class="fas {{#if expandedSubcategories.salt}}fa-chevron-down{{else}}fa-chevron-right{{/if}}"></i>
+                            </div>
+                            {{#if expandedSubcategories.salt}}
+                            <div class="subcategory-content">
+                                {{#each recipeGroups}}
+                                {{#if (eq this.id "salt")}}
+                                {{#each this.recipes}}
+                                <div class="category-btn recipe-item {{#if (eq ../../selectedRecipe.name this.name)}}active{{/if}}" 
+                                     data-index="{{this.originalIndex}}">
+                                    <span style="flex: 1;">{{this.name}}</span>
+                                    {{#if this.isGM}}
+                                        {{#if this.canToggle}}
+                                            <i class="fas fa-eye knowledge-toggle {{#if this.isKnown}}known{{else}}unknown{{/if}}" 
+                                               data-id="{{this.id}}" 
+                                               title="{{#if this.isKnown}}Игрок знает рецепт{{else}}Игрок НЕ знает рецепт{{/if}}">
+                                            </i>
+                                        {{/if}}
+                                    {{/if}}
+                                </div>
+                                {{/each}}
+                                {{/if}}
+                                {{/each}}
+                            </div>
+                            {{/if}}
+                        </div>
+                        
+                        <div class="subcategory-group" data-subcategory="ash">
+                            <div class="subcategory-header">
+                                <i class="fas fa-fire"></i>
+                                <span>Золы</span>
+                                <i class="fas {{#if expandedSubcategories.ash}}fa-chevron-down{{else}}fa-chevron-right{{/if}}"></i>
+                            </div>
+                            {{#if expandedSubcategories.ash}}
+                            <div class="subcategory-content">
+                                {{#each recipeGroups}}
+                                {{#if (eq this.id "ash")}}
+                                {{#each this.recipes}}
+                                <div class="category-btn recipe-item {{#if (eq ../../selectedRecipe.name this.name)}}active{{/if}}" 
+                                     data-index="{{this.originalIndex}}">
+                                    <span style="flex: 1;">{{this.name}}</span>
+                                    {{#if this.isGM}}
+                                        {{#if this.canToggle}}
+                                            <i class="fas fa-eye knowledge-toggle {{#if this.isKnown}}known{{else}}unknown{{/if}}" 
+                                               data-id="{{this.id}}" 
+                                               title="{{#if this.isKnown}}Игрок знает рецепт{{else}}Игрок НЕ знает рецепт{{/if}}">
+                                            </i>
+                                        {{/if}}
+                                    {{/if}}
+                                </div>
+                                {{/each}}
+                                {{/if}}
+                                {{/each}}
+                            </div>
+                            {{/if}}
+                        </div>
+                        
+                        <div class="subcategory-group" data-subcategory="vitriol">
+                            <div class="subcategory-header">
+                                <i class="fas fa-vial"></i>
+                                <span>Купоросы</span>
+                                <i class="fas {{#if expandedSubcategories.vitriol}}fa-chevron-down{{else}}fa-chevron-right{{/if}}"></i>
+                            </div>
+                            {{#if expandedSubcategories.vitriol}}
+                            <div class="subcategory-content">
+                                {{#each recipeGroups}}
+                                {{#if (eq this.id "vitriol")}}
+                                {{#each this.recipes}}
+                                <div class="category-btn recipe-item {{#if (eq ../../selectedRecipe.name this.name)}}active{{/if}}" 
+                                     data-index="{{this.originalIndex}}">
+                                    <span style="flex: 1;">{{this.name}}</span>
+                                    {{#if this.isGM}}
+                                        {{#if this.canToggle}}
+                                            <i class="fas fa-eye knowledge-toggle {{#if this.isKnown}}known{{else}}unknown{{/if}}" 
+                                               data-id="{{this.id}}" 
+                                               title="{{#if this.isKnown}}Игрок знает рецепт{{else}}Игрок НЕ знает рецепт{{/if}}">
+                                            </i>
+                                        {{/if}}
+                                    {{/if}}
+                                </div>
+                                {{/each}}
+                                {{/if}}
+                                {{/each}}
+                            </div>
+                            {{/if}}
+                        </div>
+                        
+                        <div class="subcategory-group" data-subcategory="sublimate">
+                            <div class="subcategory-header">
+                                <i class="fas fa-cloud"></i>
+                                <span>Сублиматы</span>
+                                <i class="fas {{#if expandedSubcategories.sublimate}}fa-chevron-down{{else}}fa-chevron-right{{/if}}"></i>
+                            </div>
+                            {{#if expandedSubcategories.sublimate}}
+                            <div class="subcategory-content">
+                                {{#each recipeGroups}}
+                                {{#if (eq this.id "sublimate")}}
+                                {{#each this.recipes}}
+                                <div class="category-btn recipe-item {{#if (eq ../../selectedRecipe.name this.name)}}active{{/if}}" 
+                                     data-index="{{this.originalIndex}}">
+                                    <span style="flex: 1;">{{this.name}}</span>
+                                    {{#if this.isGM}}
+                                        {{#if this.canToggle}}
+                                            <i class="fas fa-eye knowledge-toggle {{#if this.isKnown}}known{{else}}unknown{{/if}}" 
+                                               data-id="{{this.id}}" 
+                                               title="{{#if this.isKnown}}Игрок знает рецепт{{else}}Игрок НЕ знает рецепт{{/if}}">
+                                            </i>
+                                        {{/if}}
+                                    {{/if}}
+                                </div>
+                                {{/each}}
+                                {{/if}}
+                                {{/each}}
+                            </div>
+                            {{/if}}
+                        </div>
+                    </div>
+                </div>
+                {{/if}}
+            </div>
+
+            <div class="recipe-group global-category" data-category="smithing">
+                <div class="group-header global-header" data-group="smithing">
+                    <div class="category-icon">
+                        <i class="fas fa-hammer"></i>
+                    </div>
+                    <span class="category-name">Кузнечное дело</span>
+                    <i class="fas {{#if expandedGroups.smithing}}fa-chevron-down{{else}}fa-chevron-right{{/if}}"></i>
+                </div>
+                {{#if expandedGroups.smithing}}
+                <div class="group-content">
+                    <div class="subcategories">
+                        <div class="subcategory-group" data-subcategory="weapons">
+                            <div class="subcategory-header">
+                                <i class="fas fa-sword"></i>
+                                <span>Оружие</span>
+                                <i class="fas {{#if expandedSubcategories.weapons}}fa-chevron-down{{else}}fa-chevron-right{{/if}}"></i>
+                            </div>
+                            {{#if expandedSubcategories.weapons}}
+                            <div class="subcategory-content">
+                                {{#each recipeGroups}}
+                                {{#if (eq this.id "weapons")}}
+                                {{#each this.recipes}}
+                                <div class="category-btn recipe-item {{#if (eq ../../selectedRecipe.name this.name)}}active{{/if}}" 
+                                     data-index="{{this.originalIndex}}">
+                                    <span style="flex: 1;">{{this.name}}</span>
+                                    {{#if this.isGM}}
+                                        {{#if this.canToggle}}
+                                            <i class="fas fa-eye knowledge-toggle {{#if this.isKnown}}known{{else}}unknown{{/if}}" 
+                                               data-id="{{this.id}}" 
+                                               title="{{#if this.isKnown}}Игрок знает рецепт{{else}}Игрок НЕ знает рецепт{{/if}}">
+                                            </i>
+                                        {{/if}}
+                                    {{/if}}
+                                </div>
+                                {{/each}}
+                                {{/if}}
+                                {{/each}}
+                            </div>
+                            {{/if}}
+                        </div>
+                        
+                        <div class="subcategory-group" data-subcategory="armor">
+                            <div class="subcategory-header">
+                                <i class="fas fa-shield-alt"></i>
+                                <span>Доспехи</span>
+                                <i class="fas {{#if expandedSubcategories.armor}}fa-chevron-down{{else}}fa-chevron-right{{/if}}"></i>
+                            </div>
+                            {{#if expandedSubcategories.armor}}
+                            <div class="subcategory-content">
+                                {{#each recipeGroups}}
+                                {{#if (eq this.id "armor")}}
+                                {{#each this.recipes}}
+                                <div class="category-btn recipe-item {{#if (eq ../../selectedRecipe.name this.name)}}active{{/if}}" 
+                                     data-index="{{this.originalIndex}}">
+                                    <span style="flex: 1;">{{this.name}}</span>
+                                    {{#if this.isGM}}
+                                        {{#if this.canToggle}}
+                                            <i class="fas fa-eye knowledge-toggle {{#if this.isKnown}}known{{else}}unknown{{/if}}" 
+                                               data-id="{{this.id}}" 
+                                               title="{{#if this.isKnown}}Игрок знает рецепт{{else}}Игрок НЕ знает рецепт{{/if}}">
+                                            </i>
+                                        {{/if}}
+                                    {{/if}}
+                                </div>
+                                {{/each}}
+                                {{/if}}
+                                {{/each}}
+                            </div>
+                            {{/if}}
+                        </div>
+                        
+                        <div class="subcategory-group" data-subcategory="tools">
+                            <div class="subcategory-header">
+                                <i class="fas fa-tools"></i>
+                                <span>Инструменты</span>
+                                <i class="fas {{#if expandedSubcategories.tools}}fa-chevron-down{{else}}fa-chevron-right{{/if}}"></i>
+                            </div>
+                            {{#if expandedSubcategories.tools}}
+                            <div class="subcategory-content">
+                                {{#each recipeGroups}}
+                                {{#if (eq this.id "tools")}}
+                                {{#each this.recipes}}
+                                <div class="category-btn recipe-item {{#if (eq ../../selectedRecipe.name this.name)}}active{{/if}}" 
+                                     data-index="{{this.originalIndex}}">
+                                    <span style="flex: 1;">{{this.name}}</span>
+                                    {{#if this.isGM}}
+                                        {{#if this.canToggle}}
+                                            <i class="fas fa-eye knowledge-toggle {{#if this.isKnown}}known{{else}}unknown{{/if}}" 
+                                               data-id="{{this.id}}" 
+                                               title="{{#if this.isKnown}}Игрок знает рецепт{{else}}Игрок НЕ знает рецепт{{/if}}">
+                                            </i>
+                                        {{/if}}
+                                    {{/if}}
+                                </div>
+                                {{/each}}
+                                {{/if}}
+                                {{/each}}
+                            </div>
+                            {{/if}}
+                        </div>
+                    </div>
+                </div>
+                {{/if}}
+            </div>
+
+            <!-- НОВЫЕ КАТЕГОРИИ РЕМЕСЕЛ -->
+            <div class="recipe-group global-category" data-category="jewelry">
+                <div class="group-header global-header" data-group="jewelry">
+                    <div class="category-icon" style="color: #9b59b6;">
+                        <i class="fas fa-gem"></i>
+                    </div>
+                    <span class="category-name">Ювелирное дело</span>
+                    <i class="fas {{#if expandedGroups.jewelry}}fa-chevron-down{{else}}fa-chevron-right{{/if}}"></i>
+                </div>
+                {{#if expandedGroups.jewelry}}
+                <div class="group-content">
+                    <div class="subcategories">
+                        <div class="subcategory-group" data-subcategory="gem-cutting">
+                            <div class="subcategory-header">
+                                <i class="fas fa-gem"></i>
+                                <span>Огранка камня</span>
+                                <i class="fas {{#if expandedSubcategories.gem-cutting}}fa-chevron-down{{else}}fa-chevron-right{{/if}}"></i>
+                            </div>
+                            {{#if expandedSubcategories.gem-cutting}}
+                            <div class="subcategory-content">
+                                {{#each recipeGroups}}
+                                {{#if (eq this.id "gem-cutting")}}
+                                {{#each this.recipes}}
+                                <div class="category-btn recipe-item {{#if (eq ../../selectedRecipe.name this.name)}}active{{/if}}" 
+                                     data-index="{{this.originalIndex}}">
+                                    <span style="flex: 1;">{{this.name}}</span>
+                                    {{#if this.isGM}}
+                                        {{#if this.canToggle}}
+                                            <i class="fas fa-eye knowledge-toggle {{#if this.isKnown}}known{{else}}unknown{{/if}}" 
+                                               data-id="{{this.id}}" 
+                                               title="{{#if this.isKnown}}Игрок знает рецепт{{else}}Игрок НЕ знает рецепт{{/if}}">
+                                            </i>
+                                        {{/if}}
+                                    {{/if}}
+                                </div>
+                                {{/each}}
+                                {{/if}}
+                                {{/each}}
+                            </div>
+                            {{/if}}
+                        </div>
+                        
+                        <div class="subcategory-group" data-subcategory="enchantment-dust">
+                            <div class="subcategory-header">
+                                <i class="fas fa-sparkles"></i>
+                                <span>Пыль для зачарования</span>
+                                <i class="fas {{#if expandedSubcategories.enchantment-dust}}fa-chevron-down{{else}}fa-chevron-right{{/if}}"></i>
+                            </div>
+                            {{#if expandedSubcategories.enchantment-dust}}
+                            <div class="subcategory-content">
+                                {{#each recipeGroups}}
+                                {{#if (eq this.id "enchantment-dust")}}
+                                {{#each this.recipes}}
+                                <div class="category-btn recipe-item {{#if (eq ../../selectedRecipe.name this.name)}}active{{/if}}" 
+                                     data-index="{{this.originalIndex}}">
+                                    <span style="flex: 1;">{{this.name}}</span>
+                                    {{#if this.isGM}}
+                                        {{#if this.canToggle}}
+                                            <i class="fas fa-eye knowledge-toggle {{#if this.isKnown}}known{{else}}unknown{{/if}}" 
+                                               data-id="{{this.id}}" 
+                                               title="{{#if this.isKnown}}Игрок знает рецепт{{else}}Игрок НЕ знает рецепт{{/if}}">
+                                            </i>
+                                        {{/if}}
+                                    {{/if}}
+                                </div>
+                                {{/each}}
+                                {{/if}}
+                                {{/each}}
+                            </div>
+                            {{/if}}
+                        </div>
+                    </div>
+                </div>
+                {{/if}}
+            </div>
+
+            <div class="recipe-group global-category" data-category="leatherworking">
+                <div class="group-header global-header" data-group="leatherworking">
+                    <div class="category-icon" style="color: #8b4513;">
+                        <i class="fas fa-cut"></i>
+                    </div>
+                    <span class="category-name">Кожевничество</span>
+                    <i class="fas {{#if expandedGroups.leatherworking}}fa-chevron-down{{else}}fa-chevron-right{{/if}}"></i>
+                </div>
+                {{#if expandedGroups.leatherworking}}
+                <div class="group-content">
+                    <div class="subcategories">
+                        <div class="subcategory-group" data-subcategory="leather-armor">
+                            <div class="subcategory-header">
+                                <i class="fas fa-shield-alt"></i>
+                                <span>Доспехи</span>
+                                <i class="fas {{#if expandedSubcategories.leather-armor}}fa-chevron-down{{else}}fa-chevron-right{{/if}}"></i>
+                            </div>
+                            {{#if expandedSubcategories.leather-armor}}
+                            <div class="subcategory-content">
+                                {{#each recipeGroups}}
+                                {{#if (eq this.id "leather-armor")}}
+                                {{#each this.recipes}}
+                                <div class="category-btn recipe-item {{#if (eq ../../selectedRecipe.name this.name)}}active{{/if}}" 
+                                     data-index="{{this.originalIndex}}">
+                                    <span style="flex: 1;">{{this.name}}</span>
+                                    {{#if this.isGM}}
+                                        {{#if this.canToggle}}
+                                            <i class="fas fa-eye knowledge-toggle {{#if this.isKnown}}known{{else}}unknown{{/if}}" 
+                                               data-id="{{this.id}}" 
+                                               title="{{#if this.isKnown}}Игрок знает рецепт{{else}}Игрок НЕ знает рецепт{{/if}}">
+                                            </i>
+                                        {{/if}}
+                                    {{/if}}
+                                </div>
+                                {{/each}}
+                                {{/if}}
+                                {{/each}}
+                            </div>
+                            {{/if}}
+                        </div>
+                        
+                        <div class="subcategory-group" data-subcategory="tanning">
+                            <div class="subcategory-header">
+                                <i class="fas fa-tint"></i>
+                                <span>Дубление</span>
+                                <i class="fas {{#if expandedSubcategories.tanning}}fa-chevron-down{{else}}fa-chevron-right{{/if}}"></i>
+                            </div>
+                            {{#if expandedSubcategories.tanning}}
+                            <div class="subcategory-content">
+                                {{#each recipeGroups}}
+                                {{#if (eq this.id "tanning")}}
+                                {{#each this.recipes}}
+                                <div class="category-btn recipe-item {{#if (eq ../../selectedRecipe.name this.name)}}active{{/if}}" 
+                                     data-index="{{this.originalIndex}}">
+                                    <span style="flex: 1;">{{this.name}}</span>
+                                    {{#if this.isGM}}
+                                        {{#if this.canToggle}}
+                                            <i class="fas fa-eye knowledge-toggle {{#if this.isKnown}}known{{else}}unknown{{/if}}" 
+                                               data-id="{{this.id}}" 
+                                               title="{{#if this.isKnown}}Игрок знает рецепт{{else}}Игрок НЕ знает рецепт{{/if}}">
+                                            </i>
+                                        {{/if}}
+                                    {{/if}}
+                                </div>
+                                {{/each}}
+                                {{/if}}
+                                {{/each}}
+                            </div>
+                            {{/if}}
+                        </div>
+                    </div>
+                </div>
+                {{/if}}
+            </div>
+
+            <div class="recipe-group global-category" data-category="cooking">
+                <div class="group-header global-header" data-group="cooking">
+                    <div class="category-icon" style="color: #ff6b35;">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <span class="category-name">Кулинария</span>
+                    <i class="fas {{#if expandedGroups.cooking}}fa-chevron-down{{else}}fa-chevron-right{{/if}}"></i>
+                </div>
+                {{#if expandedGroups.cooking}}
+                <div class="group-content">
+                    <div class="subcategories">
+                        <div class="subcategory-group" data-subcategory="rations">
+                            <div class="subcategory-header">
+                                <i class="fas fa-drumstick-bite"></i>
+                                <span>Рационы</span>
+                                <i class="fas {{#if expandedSubcategories.rations}}fa-chevron-down{{else}}fa-chevron-right{{/if}}"></i>
+                            </div>
+                            {{#if expandedSubcategories.rations}}
+                            <div class="subcategory-content">
+                                {{#each recipeGroups}}
+                                {{#if (eq this.id "rations")}}
+                                {{#each this.recipes}}
+                                <div class="category-btn recipe-item {{#if (eq ../../selectedRecipe.name this.name)}}active{{/if}}" 
+                                     data-index="{{this.originalIndex}}">
+                                    <span style="flex: 1;">{{this.name}}</span>
+                                    {{#if this.isGM}}
+                                        {{#if this.canToggle}}
+                                            <i class="fas fa-eye knowledge-toggle {{#if this.isKnown}}known{{else}}unknown{{/if}}" 
+                                               data-id="{{this.id}}" 
+                                               title="{{#if this.isKnown}}Игрок знает рецепт{{else}}Игрок НЕ знает рецепт{{/if}}">
+                                            </i>
+                                        {{/if}}
+                                    {{/if}}
+                                </div>
+                                {{/each}}
+                                {{/if}}
+                                {{/each}}
+                            </div>
+                            {{/if}}
+                        </div>
+                        
+                        <div class="subcategory-group" data-subcategory="feasts">
+                            <div class="subcategory-header">
+                                <i class="fas fa-wine-glass"></i>
+                                <span>Пиры</span>
+                                <i class="fas {{#if expandedSubcategories.feasts}}fa-chevron-down{{else}}fa-chevron-right{{/if}}"></i>
+                            </div>
+                            {{#if expandedSubcategories.feasts}}
+                            <div class="subcategory-content">
+                                {{#each recipeGroups}}
+                                {{#if (eq this.id "feasts")}}
+                                {{#each this.recipes}}
+                                <div class="category-btn recipe-item {{#if (eq ../../selectedRecipe.name this.name)}}active{{/if}}" 
+                                     data-index="{{this.originalIndex}}">
+                                    <span style="flex: 1;">{{this.name}}</span>
+                                    {{#if this.isGM}}
+                                        {{#if this.canToggle}}
+                                            <i class="fas fa-eye knowledge-toggle {{#if this.isKnown}}known{{else}}unknown{{/if}}" 
+                                               data-id="{{this.id}}" 
+                                               title="{{#if this.isKnown}}Игрок знает рецепт{{else}}Игрок НЕ знает рецепт{{/if}}">
+                                            </i>
+                                        {{/if}}
+                                    {{/if}}
+                                </div>
+                                {{/each}}
+                                {{/if}}
+                                {{/each}}
+                            </div>
+                            {{/if}}
+                        </div>
+                    </div>
+                </div>
+                {{/if}}
+            </div>
+
+            <div class="recipe-group global-category" data-category="tailoring">
+                <div class="group-header global-header" data-group="tailoring">
+                    <div class="category-icon" style="color: #3498db;">
+                        <i class="fas fa-tshirt"></i>
+                    </div>
+                    <span class="category-name">Ткачество</span>
+                    <i class="fas {{#if expandedGroups.tailoring}}fa-chevron-down{{else}}fa-chevron-right{{/if}}"></i>
+                </div>
+                {{#if expandedGroups.tailoring}}
+                <div class="group-content">
+                    <div class="subcategories">
+                        <div class="subcategory-group" data-subcategory="cloth-armor">
+                            <div class="subcategory-header">
+                                <i class="fas fa-shield-alt"></i>
+                                <span>Доспехи</span>
+                                <i class="fas {{#if expandedSubcategories.cloth-armor}}fa-chevron-down{{else}}fa-chevron-right{{/if}}"></i>
+                            </div>
+                            {{#if expandedSubcategories.cloth-armor}}
+                            <div class="subcategory-content">
+                                {{#each recipeGroups}}
+                                {{#if (eq this.id "cloth-armor")}}
+                                {{#each this.recipes}}
+                                <div class="category-btn recipe-item {{#if (eq ../../selectedRecipe.name this.name)}}active{{/if}}" 
+                                     data-index="{{this.originalIndex}}">
+                                    <span style="flex: 1;">{{this.name}}</span>
+                                    {{#if this.isGM}}
+                                        {{#if this.canToggle}}
+                                            <i class="fas fa-eye knowledge-toggle {{#if this.isKnown}}known{{else}}unknown{{/if}}" 
+                                               data-id="{{this.id}}" 
+                                               title="{{#if this.isKnown}}Игрок знает рецепт{{else}}Игрок НЕ знает рецепт{{/if}}">
+                                            </i>
+                                        {{/if}}
+                                    {{/if}}
+                                </div>
+                                {{/each}}
+                                {{/if}}
+                                {{/each}}
+                            </div>
+                            {{/if}}
+                        </div>
+                        
+                        <div class="subcategory-group" data-subcategory="embroidery">
+                            <div class="subcategory-header">
+                                <i class="fas fa-sun"></i>
+                                <span>Вышивка</span>
+                                <i class="fas {{#if expandedSubcategories.embroidery}}fa-chevron-down{{else}}fa-chevron-right{{/if}}"></i>
+                            </div>
+                            {{#if expandedSubcategories.embroidery}}
+                            <div class="subcategory-content">
+                                {{#each recipeGroups}}
+                                {{#if (eq this.id "embroidery")}}
+                                {{#each this.recipes}}
+                                <div class="category-btn recipe-item {{#if (eq ../../selectedRecipe.name this.name)}}active{{/if}}" 
+                                     data-index="{{this.originalIndex}}">
+                                    <span style="flex: 1;">{{this.name}}</span>
+                                    {{#if this.isGM}}
+                                        {{#if this.canToggle}}
+                                            <i class="fas fa-eye knowledge-toggle {{#if this.isKnown}}known{{else}}unknown{{/if}}" 
+                                               data-id="{{this.id}}" 
+                                               title="{{#if this.isKnown}}Игрок знает рецепт{{else}}Игрок НЕ знает рецепт{{/if}}">
+                                            </i>
+                                        {{/if}}
+                                    {{/if}}
+                                </div>
+                                {{/each}}
+                                {{/if}}
+                                {{/each}}
+                            </div>
+                            {{/if}}
+                        </div>
+                    </div>
+                </div>
+                {{/if}}
+            </div>
+
+        </div>
+    </aside>
+
+    <main class="craft-workspace">
+        <h3 class="section-title">
+            {{#if selectedRecipe}}{{selectedRecipe.name}}{{else}}Выберите рецепт{{/if}}
+        </h3>
+
+        <!-- Индикатор наличия наборов -->
+        {{#if craftingKits.hasAnyKit}}
+            {{#each craftingKits.kits}}
+                {{#if this.hasKit}}
+                    <div class="kit-status valid">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Есть набор *{{this.name}}*</span>
+                    </div>
+                {{/if}}
+            {{/each}}
+        {{else}}
+            <div class="kit-status invalid">
+                <i class="fas fa-times-circle"></i>
+                <span>Нет ни одного набора!</span>
+            </div>
+        {{/if}}
+
+        <div class="craft-stage">
+            <div class="components-area">
+                <div class="slot-container">
+                    <div class="item-slot {{#if slots.slot1.isValid}}valid{{else if slots.slot1}}invalid{{/if}}">
+                        {{#if slots.slot1}}
+                            <img src="{{slots.slot1.img}}" data-tooltip="{{slots.slot1.name}}" class="slot-image">
+                            <span class="slot-qty-text {{#if slots.slot1.isValid}}ok{{else}}bad{{/if}}">
+                                {{slots.slot1.currentQty}}/{{slots.slot1.requiredQty}}
+                            </span>
+                        {{/if}}
+                    </div>
+                    <span class="slot-label">Основа</span>
+                </div>
+                
+                <div class="slot-container" style="opacity: {{#if slots.slot2}}1{{else}}0.3{{/if}};">
+                    <div class="item-slot {{#if slots.slot2.isValid}}valid{{else if slots.slot2}}invalid{{/if}}">
+                         {{#if slots.slot2}}
+                            <img src="{{slots.slot2.img}}" data-tooltip="{{slots.slot2.name}}" class="slot-image">
+                            <span class="slot-qty-text {{#if slots.slot2.isValid}}ok{{else}}bad{{/if}}">
+                                {{slots.slot2.currentQty}}/{{slots.slot2.requiredQty}}
+                            </span>
+                        {{/if}}
+                    </div>
+                    <span class="slot-label">Доп.</span>
+                </div>
+
+                <div class="slot-container">
+                    <div class="item-slot {{#if slots.slot3.isValid}}valid{{else if slots.slot3}}invalid{{/if}}">
+                        {{#if slots.slot3}}
+                            <img src="{{slots.slot3.img}}" data-tooltip="{{slots.slot3.name}}" class="slot-image">
+                            <span class="slot-qty-text {{#if slots.slot3.isValid}}ok{{else}}bad{{/if}}">
+                                {{slots.slot3.currentQty}}/{{slots.slot3.requiredQty}}
+                            </span>
+                        {{/if}}
+                    </div>
+                    <span class="slot-label">Катализатор</span>
+                </div>
+            </div>
+
+            <div class="result-area">
+                {{#if resultItem}}
+                    <!-- Добавляем класс редкости динамически -->
+                    <div class="result-slot rarity-{{resultItem.rarity}}">
+                        <img src="{{resultItem.img}}" data-tooltip="{{resultItem.name}}" class="slot-image">
+                    </div>
+                    <!-- Добавляем класс редкости к тексту -->
+                    <span class="crafting-info rarity-{{resultItem.rarity}}" style="margin-top: 10px; font-size: 1.2em;">
+                        {{resultItem.name}}
+                    </span>
+                {{else}}
+                    <div class="result-slot" style="opacity: 0.3;"></div>
+                    <span class="crafting-info" style="margin-top: 10px; opacity: 0.5;">Результат</span>
+                {{/if}}
+            </div>
+
+            <div class="controls-area">
+                <button class="bg3-btn main-action" {{#unless canCraft}}disabled{{/unless}}>
+                    СОЗДАТЬ
+                </button>
+            </div>
+        </div>
+    </main>
+</div>
