@@ -1,11 +1,11 @@
 {
   "id": "blue-man-crafting",
   "title": "BG3 Crafting System",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "BG3 Crafting System - модуль крафта для Foundry VTT с расходуемыми инструментами. Поддерживает 6 категорий ремесел, систему зарядов (10 использований), автоудаление изношенных инструментов и проверку наличия нужного набора для крафта.",
   "url": "https://github.com/blue-man-lex/blue-man-crafting",
   "manifest": "https://github.com/blue-man-lex/blue-man-crafting/releases/latest/download/module.json",
-  "download": "https://github.com/blue-man-lex/blue-man-crafting/releases/download/v1.0.0/blue-man-crafting.zip",
+  "download": "https://github.com/blue-man-lex/blue-man-crafting/releases/download/v1.0.1/blue-man-crafting.zip",
   "compatibility": {
     "minimum": "13",
     "verified": "13"
@@ -28,8 +28,7 @@
   },
   "esmodules": [
     "scripts/main.js",
-    "scripts/craftingApp.js",
-    "scripts/recipeManager.js"
+    "scripts/craftingApp.js"
   ],
   "styles": [
     {
@@ -47,17 +46,6 @@
         "PLAYER": "OBSERVER",
         "ASSISTANT": "OWNER"
       }
-    },
-    {
-      "name": "kit",
-      "label": "наборы",
-      "path": "packs/%20kit",
-      "type": "Item",
-      "ownership": {
-        "PLAYER": "OBSERVER",
-        "ASSISTANT": "OWNER"
-      },
-      "system": "dnd5e"
     }
   ]
 }
