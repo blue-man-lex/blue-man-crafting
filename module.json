@@ -9,16 +9,43 @@
   "compatibility": {
     "minimum": "13",
     "verified": "13"
-@@ -28,8 +28,7 @@
+  },
+  "relationships": {
+    "requires": [
+      {
+        "id": "socketlib",
+        "type": "module",
+        "compatibility": {}
+      }
+    ],
+    "recommends": [
+      {
+        "id": "laaru-dnd5-hw",
+        "type": "module",
+        "compatibility": {}
+      }
+    ]
   },
   "esmodules": [
     "scripts/main.js",
     "scripts/craftingApp.js"
-
   ],
   "styles": [
     {
-@@ -47,17 +46,6 @@
+      "src": "styles/crafting.css"
+    }
+  ],
+  "packs": [
+    {
+      "name": "BG3",
+      "label": "blue-man-crafting",
+      "path": "packs/BG3",
+      "type": "Item",
+      "system": "dnd5e",
+      "ownership": {
         "PLAYER": "OBSERVER",
         "ASSISTANT": "OWNER"
       }
+    }
+  ]
+}
