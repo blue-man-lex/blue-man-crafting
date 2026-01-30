@@ -20,7 +20,7 @@ jobs:
           name: Release ${{ github.ref_name }}
           draft: false
           prerelease: false
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PAT }}
           artifacts: './module.json,./scripts/*,./styles/*,./packs/*,./lang/*,./templates/*'
           tag: ${{ github.ref_name }}
           
