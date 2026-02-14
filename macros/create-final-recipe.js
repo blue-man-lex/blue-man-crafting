@@ -72,7 +72,7 @@ class FinalRecipeCreator extends Application {
                         name: "Ювелирное дело",
                         subcategories: {
                             "gem-cutting": "Граненые камни",
-                            "enchantment-dust": "Чары для зачарования"
+                            "enchantment-dust": "Чародейская пыль"
                         }
                     },
                     "leatherworking": {
@@ -450,6 +450,9 @@ class FinalRecipeCreator extends Application {
         
         const rarity = $('#raritySelect').val();
         
+        console.log('Создание свитка с редкостью:', rarity);
+        console.log('Значение селекта:', $('#raritySelect').val());
+        
         // Рандомная иконка для свитка из папки icons/sundries/documents
         const scrollIcons = [
             "icons/sundries/documents/blueprint-magical.webp",
@@ -501,13 +504,14 @@ class FinalRecipeCreator extends Application {
                             </ul>
                             <p><em>Перетащите этот свиток в окно крафта для изучения рецепта.</em></p>`
                 },
-                rarity: this.result.rarity || "common", // Используем редкость результата!
+                rarity: $('#raritySelect').val() || "common", // Берем редкость из селекта!
                 consumableType: "scroll"
             },
             flags: {
                 "blue-man-crafting": {
                     recipe: {
                         name: this.result.name,
+                        rarity: rarity, // Добавляем редкость и в рецепт!
                         type: this.category === 'custom' ? 'custom' : this.subcategory, // Используем подкатегорию как type
                         categoryId: this.category === 'custom' ? 'custom.' + this.customCategoryName.toLowerCase().replace(/\s+/g, '_') : this.category,
                         subcategoryId: this.category === 'custom' ? 'custom.' + this.customCategoryName.toLowerCase().replace(/\s+/g, '_') + '.main' : this.subcategory,

@@ -1,0 +1,189 @@
+<div class="bmc-manager-container" style="display: flex; flex-direction: column; height: 100%; gap: 10px; padding: 10px; background: #222; color: #eee;">
+    
+    <h3>Управление базой данных</h3>
+    <p class="notes">
+        Здесь вы можете управлять рецептами и категориями.
+        <br>Текущее количество рецептов: <b>{{counts.recipes}}</b>
+        <br>Текущее количество категорий: <b>{{counts.categories}}</b>
+    </p>
+
+    <!-- Табы для переключения между режимами -->
+    <div class="bmc-tabs" style="display: flex; gap: 5px; border-bottom: 2px solid #555; margin-bottom: 10px;">
+        <button class="bmc-tab active" data-tab="recipes">
+            <i class="fas fa-scroll"></i> Рецепты
+        </button>
+        <button class="bmc-tab" data-tab="categories">
+            <i class="fas fa-folder"></i> Категории
+        </button>
+        <button class="bmc-tab" data-tab="json">
+            <i class="fas fa-code"></i> JSON
+        </button>
+    </div>
+
+    <!-- Контент табов -->
+    <div class="bmc-tab-content" style="flex: 1; overflow-y: auto;">
+        
+        <!-- Таб Рецепты -->
+        <div class="bmc-tab-pane active" id="recipes-tab">
+            <div class="bmc-section">
+                <div class="bmc-section-header">
+                    <h4>Пользовательские рецепты</h4>
+                    <button class="bmc-add-recipe" style="background: #5c4e38; color: #fff; padding: 5px 10px;">
+                        <i class="fas fa-plus"></i> Добавить рецепт
+                    </button>
+                </div>
+                <div class="bmc-recipes-list" style="max-height: 300px; overflow-y: auto;">
+                    {{#each customRecipes}}
+                    <div class="bmc-recipe-item" style="display: flex; justify-content: space-between; align-items: center; padding: 8px; background: #333; margin-bottom: 5px; border-radius: 4px;">
+                        <div>
+                            <strong>{{name}}</strong>
+                            <span style="color: #999; font-size: 0.9em;">({{type}})</span>
+                        </div>
+                        <div class="bmc-recipe-actions" style="display: flex; gap: 5px;">
+                            <button class="bmc-edit-recipe" data-index="{{@index}}" style="background: #4a5f4a; color: #fff; padding: 3px 8px; font-size: 0.8em;">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="bmc-delete-recipe" data-index="{{@index}}" style="background: #8b4513; color: #fff; padding: 3px 8px; font-size: 0.8em;">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    {{/each}}
+                    {{#unless customRecipes.length}}
+                    <p style="color: #999; text-align: center; padding: 20px;">Нет пользовательских рецептов</p>
+                    {{/unless}}
+                </div>
+            </div>
+        </div>
+
+        <!-- Таб Категории -->
+        <div class="bmc-tab-pane" id="categories-tab">
+            <div class="bmc-section">
+                <div class="bmc-section-header">
+                    <h4>Пользовательские категории</h4>
+                    <button class="bmc-add-category" style="background: #5c4e38; color: #fff; padding: 5px 10px;">
+                        <i class="fas fa-plus"></i> Добавить категорию
+                    </button>
+                </div>
+                <div class="bmc-categories-list" style="max-height: 300px; overflow-y: auto;">
+                    {{#each customCategories}}
+                    <div class="bmc-category-item" style="display: flex; justify-content: space-between; align-items: center; padding: 8px; background: #333; margin-bottom: 5px; border-radius: 4px;">
+                        <div>
+                            <strong>{{name}}</strong>
+                            <span style="color: #999; font-size: 0.9em;">({{id}})</span>
+                            {{#if subcategories}}
+                            <div style="color: #666; font-size: 0.8em; margin-top: 2px;">
+                                Подкатегории: {{#each subcategories}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}
+                            </div>
+                            {{/if}}
+                        </div>
+                        <div class="bmc-category-actions" style="display: flex; gap: 5px;">
+                            <button class="bmc-edit-category" data-id="{{id}}" style="background: #4a5f4a; color: #fff; padding: 3px 8px; font-size: 0.8em;">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="bmc-delete-category" data-id="{{id}}" style="background: #8b4513; color: #fff; padding: 3px 8px; font-size: 0.8em;">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    {{/each}}
+                    {{#unless customCategories.length}}
+                    <p style="color: #999; text-align: center; padding: 20px;">Нет пользовательских категорий</p>
+                    {{/unless}}
+                </div>
+            </div>
+        </div>
+
+        <!-- Таб JSON -->
+        <div class="bmc-tab-pane" id="json-tab">
+            <div class="json-area" style="height: 100%;">
+                <label for="bmc-json-input">JSON Данные:</label>
+                <textarea id="bmc-json-input" style="width: 100%; height: 400px; font-family: monospace; background: #111; color: #7f7; border: 1px solid #555;">{{jsonString}}</textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- Общие действия -->
+    <div class="bmc-actions" style="display: flex; gap: 10px; justify-content: flex-end; padding-top: 10px; border-top: 1px solid #555;">
+        <button type="button" id="bmc-copy-btn">
+            <i class="fas fa-copy"></i> Копировать JSON
+        </button>
+        <button type="button" id="bmc-import-btn" style="background: #5c4e38; color: #fff;">
+            <i class="fas fa-file-import"></i> Импортировать / Сохранить
+        </button>
+        <button type="button" id="bmc-reset-btn" style="background: #8b4513; color: #fff;">
+            <i class="fas fa-trash-alt"></i> Очистить всё
+        </button>
+    </div>
+</div>
+
+<style>
+.bmc-tabs {
+    border-bottom: 2px solid #555;
+    margin-bottom: 10px;
+}
+
+.bmc-tab {
+    background: #333;
+    color: #ccc;
+    border: 1px solid #555;
+    border-bottom: none;
+    padding: 8px 15px;
+    cursor: pointer;
+    border-radius: 4px 4px 0 0;
+    transition: all 0.2s;
+}
+
+.bmc-tab:hover {
+    background: #444;
+    color: #fff;
+}
+
+.bmc-tab.active {
+    background: #5c4e38;
+    color: #fff;
+    border-color: #5c4e38;
+}
+
+.bmc-tab-pane {
+    display: none;
+    height: 100%;
+}
+
+.bmc-tab-pane.active {
+    display: block;
+}
+
+.bmc-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #555;
+}
+
+.bmc-section-header h4 {
+    margin: 0;
+    color: #f0d890;
+}
+
+.bmc-recipe-item:hover,
+.bmc-category-item:hover {
+    background: #444 !important;
+}
+
+.bmc-recipe-actions button,
+.bmc-category-actions button {
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.bmc-recipe-actions button:hover,
+.bmc-category-actions button:hover {
+    opacity: 0.8;
+    transform: scale(1.05);
+}
+</style>

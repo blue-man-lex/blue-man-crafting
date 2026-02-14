@@ -173,7 +173,7 @@ export const RECIPE_CATEGORIES = {
                 items: []
             },
             "enchantment-dust": {
-                name: "Пыль для зачарования",
+                name: "Чародейская пыль",
                 items: []
             }
         }

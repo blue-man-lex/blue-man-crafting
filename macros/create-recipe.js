@@ -71,7 +71,7 @@ class RecipeCreator extends Application {
                         name: "Ювелирное дело",
                         subcategories: {
                             "gem-cutting": "Граненые камни",
-                            "enchantment-dust": "Чары для зачарования"
+                            "enchantment-dust": "Чародейская пыль"
                         }
                     },
                     "leatherworking": {
@@ -430,6 +430,9 @@ class RecipeCreator extends Application {
         
         const rarity = $('#raritySelect').val();
         
+        console.log('Создание свитка с редкостью:', rarity);
+        console.log('Значение селекта:', $('#raritySelect').val());
+        
         // Получаем названия для отображения
         const categoryName = this.categories[this.category]?.name || this.category;
         const subcategoryName = this.categories[this.category]?.subcategories?.[this.subcategory]?.name || this.subcategory;
@@ -490,14 +493,17 @@ class RecipeCreator extends Application {
                             </ul>
                             <p><em>Перетащите этот свиток в окно крафта для изучения рецепта.</em></p>`
                 },
-                rarity: this.result.rarity || "common", // Используем редкость результата!
+                rarity: $('#raritySelect').val() || "common", // Берем редкость из селекта!
                 consumableType: "scroll"
             },
             flags: {
                 "blue-man-crafting": {
                     recipe: {
                         name: this.result.name,
-                        type: this.category, // Используем category как type для попадания в правильную подкатегорию
+                        rarity: rarity, // Добавляем редкость и в рецепт!
+                        type: this.subcategory, // ✅ ПРАВИЛЬНО: Используем subcategory как type для попадания в правильную подкатегорию
+                        categoryId: this.category, // Основная категория
+                        subcategoryId: this.subcategory, // Подкатегория для globalCategories
                         input: {
                             slot1: this.ingredients.length > 0 ? {
                                 type: "item",
