@@ -26,9 +26,9 @@
       }
     ]
   },
+  "socket": true,
   "esmodules": [
-    "scripts/main.js",
-    "scripts/craftingApp.js"
+    "scripts/main.js"
   ],
   "styles": [
     {
@@ -46,6 +46,36 @@
         "PLAYER": "OBSERVER",
         "ASSISTANT": "OWNER"
       }
+    },
+    {
+      "name": "kit",
+      "label": "наборы",
+      "path": "packs/%20kit",
+      "type": "Item",
+      "system": "dnd5e",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "macros",
+      "label": "макросы",
+      "path": "packs/macros",
+      "type": "Macro",
+      "system": "dnd5e",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
     }
-  ]
+  ],
+  "authors": [
+    {
+      "name": "Art_lex",
+      "flags": {}
+    }
+  ],
+  "description": "<p>BG3 Crafting System v1.1.0 - модуль крафта для Foundry VTT с расходуемыми инструментами. Поддерживает 6 категорий ремесел, систему зарядов (10 использований), автоудаление изношенных инструментов и проверку наличия нужного набора для крафта. Исправлены критические ошибки и оптимизирован код.</p>",
+  "flags": {}
 }
