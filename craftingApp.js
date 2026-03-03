@@ -61,7 +61,7 @@ export class BG3CraftingApp extends Application {
             },
             selectedPlayerId: "all" // ID выбранного игрока или "all" для всех
         };
-        
+
         // Сохраняем ссылку на приложение для доступа из других диалогов
         game.bmc = game.bmc || {};
         game.bmc.craftingApp = this;
@@ -72,26 +72,26 @@ export class BG3CraftingApp extends Application {
             resolve: null
         };
     }
-    
+
     async _onDeleteRecipeClick(event) {
         event.stopPropagation(); // Предотвращаем выбор рецепта
         const originalIndex = parseInt(event.currentTarget.dataset.index);
-        
+
         if (confirm("Удалить этот кастомный рецепт?")) {
             try {
                 const data = RecipeManager.getData();
-                
+
                 // Находим рецепт по оригинальному индексу в общем массиве recipes
                 const allRecipes = data.recipes || [];
                 const targetRecipe = allRecipes[originalIndex];
-                
+
                 if (targetRecipe && targetRecipe.isCustom) {
                     // Ищем индекс этого рецепта в массиве customRecipes
-                    const customIndex = data.customRecipes.findIndex(r => 
-                        r.name === targetRecipe.name && 
+                    const customIndex = data.customRecipes.findIndex(r =>
+                        r.name === targetRecipe.name &&
                         r.result?.uuid === targetRecipe.result?.uuid
                     );
-                    
+
                     if (customIndex !== -1) {
                         const recipeName = data.customRecipes[customIndex].name;
                         data.customRecipes.splice(customIndex, 1);
@@ -106,7 +106,7 @@ export class BG3CraftingApp extends Application {
             }
         }
     }
-    
+
     async _onGMReset(event) {
         event.preventDefault();
         if (confirm("Очистить все пользовательские рецепты? Это действие нельзя отменить!")) {
@@ -129,9 +129,9 @@ export class BG3CraftingApp extends Application {
                 // Если this.element еще не существует, ищем в document
                 el = document.querySelector('.recipe-list');
             }
-            
+
             if (!el) return;
-            
+
             this._scrollPos = el.scrollTop || 0;
         } catch (e) {
             return;
@@ -259,7 +259,7 @@ export class BG3CraftingApp extends Application {
             el.addEventListener('click', this._onCategoryHeaderClick.bind(this));
         });
 
-        // Обработчики для аккордеона подкатегорий  
+        // Обработчики для аккордеона подкатегорий
         html[0].querySelectorAll('.subcategory-header').forEach(el => {
             el.addEventListener('click', this._onSubcategoryHeaderClick.bind(this));
         });
@@ -294,7 +294,7 @@ export class BG3CraftingApp extends Application {
         // Обработчики для выпадающего меню игроков
         const dropdownToggle = html[0].querySelector('.dropdown-toggle');
         const dropdownMenu = html[0].querySelector('.dropdown-menu');
-        
+
         if (dropdownToggle && dropdownMenu) {
             dropdownToggle.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -319,29 +319,29 @@ export class BG3CraftingApp extends Application {
     _onPlayerSelect(event) {
         event.preventDefault();
         event.stopPropagation();
-        
+
         const playerId = event.currentTarget.dataset.playerId;
         const playerName = event.currentTarget.textContent.trim();
-        
+
         // Обновляем состояние
         this.state.selectedPlayerId = playerId;
-        
+
         // Обновляем отображение
         const selectedNameElement = document.getElementById('selectedPlayerName');
         if (selectedNameElement) {
             selectedNameElement.textContent = playerName;
         }
-        
+
         // Обновляем активный класс в меню
         const dropdown = event.currentTarget.closest('.dropdown-menu');
         dropdown.querySelectorAll('.dropdown-item').forEach(item => {
             item.classList.remove('active');
         });
         event.currentTarget.classList.add('active');
-        
+
         // Закрываем меню
         dropdown.parentElement.classList.remove('show');
-        
+
         // Перерисовываем интерфейс с новым выбором
         this.render(true);
     }
@@ -349,13 +349,13 @@ export class BG3CraftingApp extends Application {
     _onCategoryHeaderClick(event) {
         event.preventDefault();
         event.stopPropagation();
-        
+
         // Сначала сохраняем скролл
         this._captureRecipeListScroll();
-        
+
         const categoryId = event.currentTarget.dataset.group;
         if (!categoryId) return;
-        
+
         const current = this.state.expandedGroups[categoryId];
         this.state.expandedGroups[categoryId] = current === undefined ? false : !current;
         this.render();
@@ -364,13 +364,13 @@ export class BG3CraftingApp extends Application {
     _onSubcategoryHeaderClick(event) {
         event.preventDefault();
         event.stopPropagation();
-        
+
         // Сначала сохраняем скролл
         this._captureRecipeListScroll();
-        
+
         const subcategoryId = event.currentTarget.parentElement?.dataset?.subcategory;
         if (!subcategoryId) return;
-        
+
         const current = this.state.expandedSubcategories[subcategoryId];
         this.state.expandedSubcategories[subcategoryId] = current === undefined ? false : !current;
         this.render();
@@ -384,7 +384,7 @@ export class BG3CraftingApp extends Application {
 
     async _onScrollsClick(event) {
         event.preventDefault();
-        
+
         // Открываем диалог свитков
         const scrollsDialog = new ScrollsDialog(this.actor);
         scrollsDialog.render(true);
@@ -393,13 +393,13 @@ export class BG3CraftingApp extends Application {
     async _onKnowledgeToggle(event) {
         event.preventDefault();
         event.stopPropagation(); // Чтобы не срабатывал выбор рецепта при клике на глаз
-        
+
         const recipeId = event.currentTarget.dataset.id;
         if (!recipeId) return;
-        
+
         // Сохраняем позицию скролла перед изменениями
         this._captureRecipeListScroll();
-        
+
         // Определяем для кого меняем видимость
         if (this.state.selectedPlayerId === "all") {
             // Для всех игроков - работаем с текущим актером (старая логика)
@@ -419,7 +419,7 @@ export class BG3CraftingApp extends Application {
                 ui.notifications.error("Не найден актер для выбранного игрока");
                 return;
             }
-            
+
             const playerActor = selectedUser.character;
             const knownRecipes = new Set(playerActor.getFlag(RecipeManager.ID, "knownRecipes") || []);
 
@@ -430,7 +430,7 @@ export class BG3CraftingApp extends Application {
             }
 
             await playerActor.setFlag(RecipeManager.ID, "knownRecipes", Array.from(knownRecipes));
-            
+
             // Отправляем обновление интерфейса игроку через socketlib
             if (socket) {
                 socket.executeAsUser("updateCraftingUI", this.state.selectedPlayerId, {
@@ -439,7 +439,7 @@ export class BG3CraftingApp extends Application {
                 });
             }
         }
-        
+
         // Перерисовываем окно
         this.render(true);
     }
@@ -460,12 +460,12 @@ export class BG3CraftingApp extends Application {
         const db = RecipeManager.getData();
         const rawRecipes = db.recipes || [];
         const isGM = game.user.isGM;
-        
+
         // ПРИНУДИТЕЛЬНОЕ ОБНОВЛЕНИЕ: исправляем название "Пыль для зачарования" -> "Чародейская пыль"
         if (db.categories?.jewelry?.subcategories?.['enchantment-dust']) {
             db.categories.jewelry.subcategories['enchantment-dust'].name = "Чародейская пыль";
         }
-        
+
         // Получаем список изученных рецептов из флагов актера (массив ID)
         let knownRecipes;
         if (isGM && this.state.selectedPlayerId !== "all") {
@@ -484,7 +484,7 @@ export class BG3CraftingApp extends Application {
 
 
         const categories = db.categories || {};
-        
+
         // Добавляем фоллбек категорию для неопределенных рецептов
         if (!categories.custom) {
             categories.custom = {
@@ -516,7 +516,7 @@ export class BG3CraftingApp extends Application {
                 subIndex.set(s.id, s);
             }
         }
-        
+
         for (const g of globalCategories) {
             for (const s of g.subcategories) {
                 s.recipes = s.recipes || []; // Инициализация массива рецептов
@@ -525,14 +525,14 @@ export class BG3CraftingApp extends Application {
 
         // Распределяем отфильтрованные рецепты по категориям меню
         const fallbackSubId = "uncategorized";
-        
+
         rawRecipes.forEach((recipe, index) => {
             const r = { ...recipe, originalIndex: index, id: `recipe_${index}`, isGM: isGM };
-            
+
             // Определяем категорию (Ингредиенты или нет)
             // Ингредиенты (suspension, salt, etc) всегда известны
             const isIngredient = ["suspension", "essence", "salt", "ash", "vitriol", "sublimate"].includes(r.type);
-            
+
             // ВСЕ подкатегории всегда известны для правильного отображения
             const knownTypes = [
                 "suspension", "essence", "salt", "ash", "vitriol", "sublimate", // Ингредиенты
@@ -549,32 +549,7 @@ export class BG3CraftingApp extends Application {
                 r.isKnown = isKnown;
                 r.canToggle = isGM && !isIngredient; // Только ГМ может переключать не-ингредиенты
 
-                // Определяем целевую подкатегорию для рецепта
-                let targetSubId = r.type || fallbackSubId;
-                
-                // Для пользовательских рецептов пробуем categoryId/subcategoryId сначала
-                if (r.isCustom) {
-                    if (r.subcategoryId) {
-                        targetSubId = r.subcategoryId;
-                    } else if (r.categoryId) {
-                        // Ищем подкатегорию по основной категории
-                        const categoryMapping = {
-                            "alchemy": ["potions", "elixirs", "grenades", "coatings"],
-                            "smithing": ["weapons", "armor", "tools"],
-                            "jewelry": ["gem-cutting", "enchantment-dust"],
-                            "leatherworking": ["leather-armor", "tanning"],
-                            "cooking": ["rations", "feasts"],
-                            "tailoring": ["cloth-armor", "embroidery"],
-                            "ingredients": ["suspension", "essence", "salt", "ash", "vitriol", "sublimate"]
-                        };
-                        
-                        const subcategories = categoryMapping[r.categoryId];
-                        if (subcategories && subcategories.length > 0) {
-                            targetSubId = subcategories[0]; // Берем первую подкатегорию
-                        }
-                    }
-                }
-                
+                const targetSubId = r.type || fallbackSubId;
                 const sub = subIndex.get(targetSubId);
                 if (sub) sub.recipes.push(r);
                 else {
@@ -590,27 +565,11 @@ export class BG3CraftingApp extends Application {
         // }
         // const filteredGlobals = globalCategories.filter(g => g.subcategories.length > 0);
         // const customGlobalCategories = filteredGlobals.filter(g => String(g.id).startsWith("custom."));
-        
+
         const filteredGlobals = globalCategories;
         const customGlobalCategories = globalCategories.filter(g => String(g.id).startsWith("custom."));
 
-        // Проверяем наличие набора для категории выбранного рецепта
-        let hasKit = true; // По умолчанию разрешаем, если рецепт не выбран
-        if (this.state.selectedRecipe) {
-            let recipeCategoryId = this.state.selectedRecipe.categoryId || this.state.selectedRecipe.type;
-            
-            // Для пользовательских рецептов пробуем определить по подкатегории
-            if (this.state.selectedRecipe.isCustom && !recipeCategoryId) {
-                const subcategoryId = this.state.selectedRecipe.subcategoryId;
-                if (subcategoryId) {
-                    recipeCategoryId = this._getMainCategoryForType(subcategoryId);
-                }
-            }
-            
-            if (recipeCategoryId) {
-                hasKit = this._hasKitForCategory(recipeCategoryId);
-            }
-        }
+        const hasKit = this._hasKitForCategory("alchemy");
         const craftingKits = this._getCraftingKits();
 
         // Получаем список игроков для ГМа
@@ -639,7 +598,7 @@ export class BG3CraftingApp extends Application {
                 slot3: this.state.inputs[2]
             }
         };
-        
+
         return result;
     }
 
@@ -696,7 +655,7 @@ export class BG3CraftingApp extends Application {
 
                 const tick = (t) => {
                     if (stopped) return;
-                    
+
                     const dt = Math.max(0, (t - (this._minigame._lastT || t)) / 1000);
                     this._minigame._lastT = t;
 
@@ -734,17 +693,17 @@ export class BG3CraftingApp extends Application {
                     if (stopped || resolved) return;
                     stopped = true;
                     resolved = true;
-                    
+
                     const success = pos >= zoneStart && pos <= zoneEnd;
                     console.log(`Нажато СТОП! Позиция: ${pos}%, зона: ${zoneStart}-${zoneEnd}, успех: ${success}`);
-                    
+
                     this._stopMinigameRaf();
                     this._minigame.running = false;
-                    
-                    try { 
-                        dlg.close(); 
+
+                    try {
+                        dlg.close();
                     } catch (e) {}
-                    
+
                     resolve(success);
                 };
 
@@ -771,7 +730,7 @@ export class BG3CraftingApp extends Application {
 
     async _onSelectRecipe(event) {
         this._captureRecipeListScroll();
-        const index = event.currentTarget.dataset.index; 
+        const index = event.currentTarget.dataset.index;
         const allRecipes = RecipeManager.getData().recipes;
         const recipe = allRecipes[index];
         if (!recipe) return;
@@ -781,6 +740,7 @@ export class BG3CraftingApp extends Application {
     }
 
     async _prepareRecipeView(recipe) {
+        console.log('Подготовка вида рецепта:', recipe.name);
         this.state.inputs = [null, null, null];
         this.state.resultItem = null;
         this.state.canCraft = false;
@@ -789,6 +749,8 @@ export class BG3CraftingApp extends Application {
             let allValid = true;
             const mapping = [0, 2, 1];
 
+            console.log('Ингредиенты рецепта:', recipe.ingredients);
+
             for (let i = 0; i < recipe.ingredients.length; i++) {
                 if (i >= 3) break;
                 const req = recipe.ingredients[i];
@@ -796,9 +758,16 @@ export class BG3CraftingApp extends Application {
                 const displayInfo = await RecipeManager.getItemDisplayInfo(req);
                 const ownedQty = this._countOwnedItems(req, displayInfo.name);
                 const reqQty = req.qty || 1;
-                
+
                 const isValid = ownedQty >= reqQty;
                 if (!isValid) allValid = false;
+
+                console.log(`Ингредиент ${i}:`, {
+                    name: displayInfo.name,
+                    required: reqQty,
+                    owned: ownedQty,
+                    isValid: isValid
+                });
 
                 this.state.inputs[slotIndex] = {
                     name: displayInfo.name,
@@ -811,19 +780,20 @@ export class BG3CraftingApp extends Application {
                 };
             }
             this.state.canCraft = allValid;
+            console.log('Можно ли крафтить:', this.state.canCraft);
         }
 
         if (recipe.result) {
-            const resultReq = { 
+            const resultReq = {
                 id: recipe.resultId || recipe.result.uuid,
                 uuid: recipe.result.uuid
             };
             const resultInfo = await RecipeManager.getItemDisplayInfo(resultReq);
-            
+
             this.state.resultItem = {
                 name: resultInfo.name,
                 img: resultInfo.img,
-                rarity: resultInfo.rarity || "common", 
+                rarity: resultInfo.rarity || "common",
                 qty: recipe.result.qty || 1
             };
         }
@@ -831,10 +801,10 @@ export class BG3CraftingApp extends Application {
 
     _countOwnedItems(req, targetName = null) {
         let count = 0;
-        
+
         for (const item of this.actor.items) {
             const itemData = { uuid: item.uuid, sourceId: item.flags?.core?.sourceId, name: item.name };
-            
+
             let matches = false;
             if (req.type === "category" || req.categoryId) {
                 const categoryId = req.categoryId || req.type;
@@ -860,19 +830,19 @@ export class BG3CraftingApp extends Application {
 
     /**
      * Переключает знание рецепта для актера
-     * @param {Event} event 
+     * @param {Event} event
      */
     async _onToggleKnowledge(event) {
         event.preventDefault();
         event.stopPropagation(); // Чтобы не срабатывал выбор рецепта при клике на глаз
-        
+
         const recipeId = event.currentTarget.dataset.id;
         if (!recipeId) return;
-        
+
         const knownRecipes = new Set(this.actor.getFlag(RecipeManager.ID, "knownRecipes") || []);
 
         if (knownRecipes.has(recipeId)) {
-            knownRecipes.delete(recipeId); 
+            knownRecipes.delete(recipeId);
         } else {
             knownRecipes.add(recipeId);
         }
@@ -932,18 +902,18 @@ export class BG3CraftingApp extends Application {
                 // Проверка по _stats.compendiumSource (самый надежный способ)
                 const compendiumSource = item._stats?.compendiumSource;
                 if (compendiumSource && compendiumSource.includes(kitShortId)) return true;
-                
+
                 // Резервный способ через flags.core.sourceId (deprecated)
                 const sourceId = item.flags?.core?.sourceId;
                 if (sourceId && sourceId.includes(kitShortId)) return true;
-                
+
                 // Проверка по имени (резервный метод)
                 const name = item.name.toLowerCase();
                 const kitName = kitInfo.name.toLowerCase();
-                
+
                 if (name === kitName) return true;
                 if (name.includes(kitName)) return true;
-                
+
                 return false;
             });
 
@@ -968,61 +938,61 @@ export class BG3CraftingApp extends Application {
      */
     _getKitForCategory(categoryId) {
         const kits = this._getCraftingKits();
-        
+
         // Находим основную категорию
         let mainCategory = categoryId;
         const categoryMapping = {
             // Алхимия (только готовые продукты)
             "potions": "alchemy", "elixirs": "alchemy", "grenades": "alchemy", "coatings": "alchemy",
-            
+
             // Ингредиенты (отдельная категория)
             "suspension": "ingredients", "essence": "ingredients", "salt": "ingredients", "ash": "ingredients",
             "vitriol": "ingredients", "sublimate": "ingredients",
-            
+
             // Кузнечное дело и подкатегории
             "weapons": "smithing", "armor": "smithing", "tools": "smithing",
-            
+
             // Ювелирное дело и подкатегории
             "gem-cutting": "jewelry", "enchantment-dust": "jewelry",
-            
+
             // Кожевничество и подкатегории
             "leather-armor": "leatherworking", "tanning": "leatherworking",
-            
+
             // Кулинария и подкатегории
             "rations": "cooking", "feasts": "cooking",
-            
+
             // Ткачество и подкатегории
             "cloth-armor": "tailoring", "embroidery": "tailoring"
         };
-        
+
         mainCategory = categoryMapping[categoryId] || categoryId;
-        
+
         // Получаем информацию о наборе
         const kitInfo = kits.kits[mainCategory];
         if (!kitInfo || !kitInfo.hasKit) return null;
-        
+
         // Находим сам предмет в инвентаре
         const kitItem = this.actor.items.find(item => {
             // Проверка по _stats.compendiumSource (самый надежный способ)
             const compendiumSource = item._stats?.compendiumSource;
             const kitShortId = kitInfo.uuid.split('.').pop();
-            
+
             if (compendiumSource && compendiumSource.includes(kitShortId)) return true;
-            
+
             // Резервный способ через flags.core.sourceId (deprecated)
             const sourceId = item.flags?.core?.sourceId;
             if (sourceId && sourceId.includes(kitShortId)) return true;
-            
+
             // Проверка по имени (резервный метод)
             const name = item.name.toLowerCase();
             const kitName = kitInfo.name.toLowerCase();
-            
+
             if (name === kitName) return true;
             if (name.includes(kitName)) return true;
-            
+
             return false;
         });
-        
+
         return {
             ...kitInfo,
             item: kitItem
@@ -1037,7 +1007,7 @@ export class BG3CraftingApp extends Application {
     _getCategoryName(categoryId) {
         const categoryNames = {
             "alchemy": "Алхимия",
-            "ingredients": "Ингредиенты", 
+            "ingredients": "Ингредиенты",
             "smithing": "Кузнечное дело",
             "jewelry": "Ювелирное дело",
             "leatherworking": "Кожевничество",
@@ -1066,7 +1036,7 @@ export class BG3CraftingApp extends Application {
             "cloth-armor": "Доспехи из ткани",
             "embroidery": "Вышивка"
         };
-        
+
         return categoryNames[categoryId] || categoryId;
     }
 
@@ -1077,20 +1047,20 @@ export class BG3CraftingApp extends Application {
      */
     _hasKitForCategory(categoryId) {
         const kits = this._getCraftingKits();
-        
+
         // Прямое соответствие категории и набора
         if (kits.kits[categoryId]) {
             return kits.kits[categoryId].hasKit;
         }
-        
+
         // Соответствие подкатегорий и основных категорий
         const categoryMapping = {
             // Алхимия (только готовые продукты)
             "potions": "alchemy",
-            "elixirs": "alchemy", 
+            "elixirs": "alchemy",
             "grenades": "alchemy",
             "coatings": "alchemy",
-            
+
             // Ингредиенты (отдельная категория)
             "suspension": "ingredients",
             "essence": "ingredients",
@@ -1098,54 +1068,48 @@ export class BG3CraftingApp extends Application {
             "ash": "ingredients",
             "vitriol": "ingredients",
             "sublimate": "ingredients",
-            
+
             // Кузнечное дело и подкатегории
             "weapons": "smithing",
             "armor": "smithing",
             "tools": "smithing",
-            
+
             // Ювелирное дело и подкатегории
             "gem-cutting": "jewelry",
             "enchantment-dust": "jewelry",
-            
+
             // Кожевничество и подкатегории
             "leather-armor": "leatherworking",
             "tanning": "leatherworking",
-            
+
             // Кулинария и подкатегории
             "rations": "cooking",
             "feasts": "cooking",
-            
+
             // Ткачество и подкатегории
             "cloth-armor": "tailoring",
             "embroidery": "tailoring"
         };
-        
+
         const mainCategory = categoryMapping[categoryId];
         if (mainCategory) {
             return kits.kits[mainCategory]?.hasKit || false;
         }
-        
-        // Для пользовательских категорий (custom.*) или неизвестных категорий
-        // Проверяем наличие ЛЮБОГО набора ремесел
-        if (categoryId?.startsWith("custom.") || !categoryId) {
-            return kits.hasAnyKit;
-        }
-        
+
         return false;
     }
 
-    
+
     async _onDrop(event) {
         event.preventDefault();
-        
+
         // Проверяем, был ли drop в discovery-slot
         const discoverySlot = event.target.closest('.discovery-slot');
         if (discoverySlot) {
             await this._onRecipeDiscovery(event);
             return;
         }
-        
+
         // Стандартная обработка для craft-workspace
         if (!this.state.selectedRecipe) return;
         let data;
@@ -1159,9 +1123,9 @@ export class BG3CraftingApp extends Application {
     async _onRecipeDiscovery(event) {
         event.preventDefault();
         let data;
-        try { data = JSON.parse(event.dataTransfer.getData('text/plain')); } catch (e) { 
+        try { data = JSON.parse(event.dataTransfer.getData('text/plain')); } catch (e) {
             ui.notifications.error("Неверный формат данных");
-            return; 
+            return;
         }
 
         // Поддержка 2 вариантов:
@@ -1192,15 +1156,15 @@ export class BG3CraftingApp extends Application {
             try {
                 // Регистрируем socketlib если еще не зарегистрирован
                 const socket = socketlib.registerModule("blue-man-crafting");
-                
+
                 await socket.executeAsGM("learnRecipeFromScroll", {
                     actorId: this.actor.id,
                     recipeData: recipeData,
                     scrollData: data
                 });
-                
+
                 ui.notifications.info("Запрос на изучение рецепта отправлен ГМу");
-                
+
             } catch (error) {
                 console.error("Ошибка при изучении рецепта:", error);
                 ui.notifications.error("Не удалось изучить рецепт: " + error.message);
@@ -1239,9 +1203,9 @@ export class BG3CraftingApp extends Application {
             }
 
             // Сохраняем обновленные категории
-            await RecipeManager.saveData({ 
-                categories: newCategories, 
-                recipes: customData.recipes || [] 
+            await RecipeManager.saveData({
+                categories: newCategories,
+                recipes: customData.recipes || []
             });
 
             // Добавляем рецепт
@@ -1281,27 +1245,13 @@ export class BG3CraftingApp extends Application {
                             };
                         }
                     }
-                } else {
-                    // Если категорию определить не удалось, но есть ingredients с type
-                    // Пробуем определить по первому ингредиенту
-                    if (recipeData.ingredients && recipeData.ingredients.length > 0) {
-                        const firstIngredient = recipeData.ingredients[0];
-                        if (firstIngredient.type && firstIngredient.type !== "category") {
-                            // Если ингредиент имеет конкретный тип (не категория), используем его
-                            newRecipe.type = firstIngredient.type;
-                            newRecipe.categoryId = this._getMainCategoryForType(firstIngredient.type);
-                        } else if (firstIngredient.categoryId) {
-                            // Если ингредиент из категории, используем основную категорию
-                            newRecipe.categoryId = this._getMainCategoryForType(firstIngredient.categoryId);
-                        }
-                    }
                 }
             }
 
             const updatedRecipes = [...(customData.recipes || []), newRecipe];
-            await RecipeManager.saveData({ 
-                categories: newCategories, 
-                recipes: updatedRecipes 
+            await RecipeManager.saveData({
+                categories: newCategories,
+                recipes: updatedRecipes
             });
 
             ui.notifications.info(`Изучен рецепт: ${recipeData.name}`);
@@ -1326,55 +1276,13 @@ export class BG3CraftingApp extends Application {
                     // ignore item consumption errors
                 }
             }
-            
+
             // Обновляем интерфейс
             this.render(true);
-            
+
         } catch (err) {
             ui.notifications.error("Ошибка изучения рецепта: " + err.message);
         }
-    }
-
-    _getMainCategoryForType(type) {
-        // Маппинг типов ингредиентов к основным категориям
-        const typeToCategory = {
-            // Алхимия
-            "potions": "alchemy",
-            "elixirs": "alchemy", 
-            "grenades": "alchemy",
-            "coatings": "alchemy",
-            
-            // Ингредиенты
-            "suspension": "ingredients",
-            "essence": "ingredients",
-            "salt": "ingredients",
-            "ash": "ingredients",
-            "vitriol": "ingredients",
-            "sublimate": "ingredients",
-            
-            // Кузнечное дело
-            "weapons": "smithing",
-            "armor": "smithing",
-            "tools": "smithing",
-            
-            // Ювелирное дело
-            "gem-cutting": "jewelry",
-            "enchantment-dust": "jewelry",
-            
-            // Кожевничество
-            "leather-armor": "leatherworking",
-            "tanning": "leatherworking",
-            
-            // Кулинария
-            "rations": "cooking",
-            "feasts": "cooking",
-            
-            // Ткачество
-            "cloth-armor": "tailoring",
-            "embroidery": "tailoring"
-        };
-        
-        return typeToCategory[type] || null;
     }
 
     _generateCategoryName(categoryId) {
@@ -1396,7 +1304,7 @@ export class BG3CraftingApp extends Application {
             "enchanting": "Зачарование",
             "cooking": "Кулинария"
         };
-        
+
         return names[categoryId] || categoryId.charAt(0).toUpperCase() + categoryId.slice(1);
     }
 
@@ -1407,24 +1315,10 @@ export class BG3CraftingApp extends Application {
         // ПРОВЕРКА НАЛИЧИЯ НАБОРА РЕМЕСЛА ДЛЯ КАТЕГОРИИ РЕЦЕПТА
         const recipe = this.state.selectedRecipe;
         const categoryId = recipe.categoryId || recipe.type;
-        
+
         if (categoryId && !this._hasKitForCategory(categoryId)) {
             ui.notifications.error(`Для создания "${recipe.name}" необходим набор для категории "${this._getCategoryName(categoryId)}"!`);
             return;
-        }
-
-        // ПРОВЕРКА ЗАРЯДОВ ИНСТРУМЕНТОВ
-        const kitInfo = this._getKitForCategory(categoryId);
-        if (kitInfo && kitInfo.hasKit) {
-            const charges = kitInfo.item.system.uses.value;
-            if (charges <= 0) {
-                ui.notifications.error(`Инструменты "${kitInfo.item.name}" изношены! Нужно новые инструменты для крафта.`);
-                return;
-            }
-            
-            // Показываем количество оставшихся зарядов
-            const remainingCharges = charges - 1;
-            ui.notifications.info(`Инструменты "${kitInfo.item.name}": ${remainingCharges}/10 зарядов останется после крафта.`);
         }
 
         if (game.settings.get(RecipeManager.ID, "enableMinigame")) {
@@ -1437,17 +1331,17 @@ export class BG3CraftingApp extends Application {
 
     async _executeCraft(minigameSuccess = true) {
         const recipe = this.state.selectedRecipe;
-        
+
         // ВЫЧИТАНИЕ ЗАРЯДА ИНСТРУМЕНТА ПРИ УСПЕШНОМ КРАФТЕ
         if (minigameSuccess) {
             const categoryId = recipe.categoryId || recipe.type;
             const kitInfo = this._getKitForCategory(categoryId);
-            
+
             if (kitInfo && kitInfo.item) {
                 const currentCharges = kitInfo.item.system.uses.value;
                 if (currentCharges > 0) {
-                    const newCharges = currentCharges - 1;
-                    
+                    const newCharges = currentCharges - 0;
+
                     await kitInfo.item.update({
                         "system.uses": {
                             value: newCharges,
@@ -1455,7 +1349,7 @@ export class BG3CraftingApp extends Application {
                             spent: kitInfo.item.system.uses.max - newCharges
                         }
                     });
-                    
+
                     if (newCharges <= 0) {
                         ui.notifications.warn(`Инструменты "${kitInfo.item.name}" полностью изношены и удалены!`);
                         // Автоматически удаляем инструмент при 0 зарядов
@@ -1463,7 +1357,7 @@ export class BG3CraftingApp extends Application {
                     } else {
                         ui.notifications.info(`Инструменты "${kitInfo.item.name}": ${newCharges}/10 зарядов осталось.`);
                     }
-                    
+
                     // Принудительно обновляем UI через небольшую задержку
                     setTimeout(() => {
                         if (this.actor.sheet) this.actor.sheet.render();
@@ -1472,7 +1366,7 @@ export class BG3CraftingApp extends Application {
                 }
             }
         }
-        
+
         for (const input of this.state.inputs) {
             if (!input) continue;
             let qtyToConsume = input.requiredQty;
@@ -1484,7 +1378,7 @@ export class BG3CraftingApp extends Application {
                 let matches = false;
                 if (input.originalReq.type) matches = RecipeManager.isItemInCategory(itemData, input.originalReq.type);
                 else if (input.originalReq.id) matches = RecipeManager._compareUuids(input.originalReq.id, itemData);
-                
+
                 if (!matches && input.targetName) {
                      const name = item.name.toLowerCase();
                      const target = input.targetName.toLowerCase();
@@ -1520,12 +1414,28 @@ export class BG3CraftingApp extends Application {
                 itemData = { name: recipe.name, type: "consumable", img: this.state.resultItem?.img };
             }
             itemData = foundry.utils.deepClone(itemData);
-            itemData.system = itemData.system || {};
-            itemData.system.quantity = 1;
+            const qtyToAdd = recipe.result?.qty || 1; // Берем количество из рецепта
 
-            await this.actor.createEmbeddedDocuments("Item", [itemData]);
-            ui.notifications.info(`Создано: ${recipe.name}`);
-            
+            // 1. Пытаемся найти существующий предмет в инвентаре
+            // Ищем по имени ИЛИ по исходному ID (sourceId), если он есть
+            const existingItem = this.actor.items.find(i =>
+                i.name === itemData.name &&
+                i.type === itemData.type
+            );
+
+            if (existingItem) {
+                // 2. Если предмет найден, увеличиваем его количество
+                const newQty = (existingItem.system.quantity || 1) + qtyToAdd;
+                await existingItem.update({"system.quantity": newQty});
+                ui.notifications.info(`Обновлено количество: ${existingItem.name} (+${qtyToAdd})`);
+            } else {
+                // 3. Если предмета нет, создаем новый с правильным количеством
+                itemData.system = itemData.system || {};
+                itemData.system.quantity = qtyToAdd;
+                await this.actor.createEmbeddedDocuments("Item", [itemData]);
+                ui.notifications.info(`Создано: ${recipe.name}`);
+            }
+
             await this._prepareRecipeView(this.state.selectedRecipe);
             this.render(true);
         } catch (err) { ui.notifications.error(err.message); }
