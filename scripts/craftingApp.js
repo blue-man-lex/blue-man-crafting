@@ -9,12 +9,24 @@ export function setSocket(s) {
 
 export class BG3CraftingApp extends Application {
     constructor(actor) {
+        // Адаптивная высота: считаем инструменты в инвентаре перед отрисовкой
+        let kitCount = 0;
+        if (actor && actor.items) {
+            const kitKeywords = ["алхимик", "кожевник", "кузнец", "повар", "ткач", "ювелир"];
+            kitCount = actor.items.filter(i => 
+                kitKeywords.some(kw => i.name.toLowerCase().includes(kw))
+            ).length;
+        }
+        
+        // Базовая высота 650 + 48px на каждый инструмент, но не больше высоты экрана браузера (чтобы окно не ушло за монитор)
+        const dynamicHeight = Math.min(650 + (kitCount * 48), window.innerHeight - 60);
+
         super({
             id: "bg3-crafting-app",
             title: "Алхимия и Крафт",
             template: "modules/blue-man-crafting/templates/crafting-window.hbs",
             width: 950,
-            height: 700,
+            height: dynamicHeight,
             resizable: true,
             classes: ["bg3-crafting-app"],
             icon: "fas fa-flask"
@@ -641,7 +653,8 @@ export class BG3CraftingApp extends Application {
                 }
             }, {
                 classes: ["bmc-minigame-dialog"],
-                width: 420
+                width: 420,
+                zIndex: 99999 // Гарантирует, что окно будет поверх основного приложения
             });
 
             dlg.render(true);
@@ -1321,7 +1334,7 @@ export class BG3CraftingApp extends Application {
             return;
         }
 
-        if (game.settings.get(RecipeManager.ID, "enableMinigame")) {
+        if (game.settings.get(RecipeManager.ID, "craftingMinigame")) {
             const ok = await this._runCraftMinigame();
             return this._executeCraft(ok);
         }
@@ -1340,7 +1353,7 @@ export class BG3CraftingApp extends Application {
             if (kitInfo && kitInfo.item) {
                 const currentCharges = kitInfo.item.system.uses.value;
                 if (currentCharges > 0) {
-                    const newCharges = currentCharges - 0;
+                    const newCharges = currentCharges - 1;
 
                     await kitInfo.item.update({
                         "system.uses": {
@@ -1376,9 +1389,18 @@ export class BG3CraftingApp extends Application {
             const candidates = this.actor.items.filter(item => {
                 const itemData = { uuid: item.uuid, sourceId: item.flags?.core?.sourceId, name: item.name };
                 let matches = false;
-                if (input.originalReq.type) matches = RecipeManager.isItemInCategory(itemData, input.originalReq.type);
-                else if (input.originalReq.id) matches = RecipeManager._compareUuids(input.originalReq.id, itemData);
+                
+                // Проверяем категорию (исправлено на проверку categoryId)
+                if (input.originalReq.type === "category" || input.originalReq.categoryId) {
+                    const categoryId = input.originalReq.categoryId || input.originalReq.type;
+                    matches = RecipeManager.isItemInCategory(itemData, categoryId);
+                } 
+                // Проверяем точный предмет (исправлено на поддержку uuid)
+                else if (input.originalReq.id || input.originalReq.uuid) {
+                    matches = RecipeManager._compareUuids(input.originalReq.id || input.originalReq.uuid, itemData);
+                }
 
+                // Фолбэк по имени
                 if (!matches && input.targetName) {
                      const name = item.name.toLowerCase();
                      const target = input.targetName.toLowerCase();

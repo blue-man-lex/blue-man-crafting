@@ -5,13 +5,14 @@ export class RecipeManager {
     static SETTING = "recipes";
 
     static async initialize() {
-        game.settings.register(this.ID, "enableMinigame", {
+        game.settings.register(this.ID, "craftingMinigame", {
             name: "Мини-игра при крафте",
             hint: "Если включено, перед крафтом появляется мини-игра на тайминг. При провале крафт не происходит.",
-            scope: "client",
+            scope: "world",
             config: true,
             type: Boolean,
-            default: false
+            default: false,
+            requiresReload: false
         });
 
         game.settings.register(this.ID, "customRecipes", {
