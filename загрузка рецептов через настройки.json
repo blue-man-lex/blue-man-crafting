@@ -65,12 +65,11 @@
   "recipes": [
     {
       "name": "Латы Паладина",
-      "categoryId": "smithing",
-      "subcategoryId": "armor",
+      "type": "armor", 
       "input": {
         "slot1": { "type": "item", "uuid": "UUID_СЛИТКА_СТАЛИ", "qty": 5 },
         "slot2": { "type": "item", "uuid": "UUID_КОЖИ", "qty": 2 },
-        "slot3": { "type": "category", "categoryId": "essence", "qty": 1 }
+        "slot3": { "type": "item", "uuid": "UUID_СВЯТОЙ_ВОДЫ", "qty": 1 }
       },
       "result": { "uuid": "UUID_ГОТОВЫХ_ЛАТ", "qty": 1 }
     }
@@ -78,21 +77,7 @@
 }
 ```
 
-> **Обратите внимание:** Здесь мы не пишем блок `categories`, потому что категория `smithing` (Кузнечное дело) уже встроена в модуль. Мы указываем `categoryId` и `subcategoryId` для точного размещения.
-
----
-
-### 📋 СПРАВОЧНИК: Существующие категории и подкатегории
-
-| Категория | ID | Подкатегории | ID подкатегории |
-|-----------|----|--------------|-----------------|
-| **Алхимия** | `alchemy` | Зелья, Эликсиры, Гранаты, Масла и яды | `potions`, `elixirs`, `grenades`, `coatings` |
-| **Ингредиенты** | `ingredients` | Суспензия, Соль, Зола, Купоросы, Эссенции, Сублиматы | `suspension`, `salt`, `ash`, `vitriol`, `essence`, `sublimate` |
-| **Кузнечное дело** | `smithing` | Оружие, Доспехи, Инструменты | `weapons`, `armor`, `tools` |
-| **Ювелирное дело** | `jewelry` | Огранка камня, Пыль для зачарования | `gem-cutting`, `enchantment-dust` |
-| **Кожевничество** | `leatherworking` | Доспехи, Дубление | `leather-armor`, `tanning` |
-| **Кулинария** | `cooking` | Рационы, Пиры | `rations`, `feasts` |
-| **Ткачество** | `tailoring` | Доспехи, Вышивка | `cloth-armor`, `embroidery` |
+> **Обратите внимание:** Здесь мы не пишем блок `categories`, потому что категория `smithing` (Кузнечное дело) уже встроена в модуль. Мы просто указываем `type: "armor"`, и модуль сам поймет, куда положить рецепт.
 
 ### Пояснение полей JSON:
 *   **`slot1`**: Основной компонент (слева).
