@@ -414,16 +414,35 @@ export class BG3CraftingApp extends Application {
 
         // Определяем для кого меняем видимость
         if (this.state.selectedPlayerId === "all") {
-            // Для всех игроков - работаем с текущим актером (старая логика)
-            const knownRecipes = new Set(this.actor.getFlag(RecipeManager.ID, "knownRecipes") || []);
+            // Получаем текущее состояние (вкл/выкл) на основе текущего актера ГМа
+            const currentActorRecipes = new Set(this.actor.getFlag(RecipeManager.ID, "knownRecipes") || []);
+            const isKnowing = !currentActorRecipes.has(recipeId); // Если не было - добавим, если было - удалим
 
-            if (knownRecipes.has(recipeId)) {
-                knownRecipes.delete(recipeId);
-            } else {
-                knownRecipes.add(recipeId);
+            // 1. Обновляем текущего актера (чтобы интерфейс ГМа обновился корректно)
+            if (isKnowing) currentActorRecipes.add(recipeId);
+            else currentActorRecipes.delete(recipeId);
+            await this.actor.setFlag(RecipeManager.ID, "knownRecipes", Array.from(currentActorRecipes));
+
+            // 2. Находим всех игроков с назначенными персонажами и обновляем их
+            const players = game.users.filter(u => !u.isGM && u.character);
+            for (const player of players) {
+                const playerActor = player.character;
+                if (playerActor.id === this.actor.id) continue; // Пропускаем, так как уже обновили выше
+
+                const playerRecipes = new Set(playerActor.getFlag(RecipeManager.ID, "knownRecipes") || []);
+                if (isKnowing) playerRecipes.add(recipeId);
+                else playerRecipes.delete(recipeId);
+                
+                await playerActor.setFlag(RecipeManager.ID, "knownRecipes", Array.from(playerRecipes));
             }
 
-            await this.actor.setFlag(RecipeManager.ID, "knownRecipes", Array.from(knownRecipes));
+            // 3. Отправляем сигнал всем подключенным клиентам обновить интерфейс
+            if (socket) {
+                socket.executeForEveryone("updateCraftingUI", {
+                    recipeId: recipeId,
+                    isKnown: isKnowing
+                });
+            }
         } else {
             // Для конкретного игрока - работаем с его актером
             const selectedUser = game.users.get(this.state.selectedPlayerId);
@@ -581,7 +600,11 @@ export class BG3CraftingApp extends Application {
         const filteredGlobals = globalCategories;
         const customGlobalCategories = globalCategories.filter(g => String(g.id).startsWith("custom."));
 
-        const hasKit = this._hasKitForCategory("alchemy");
+        let hasKit = false;
+        if (this.state.selectedRecipe) {
+            const recipeCategory = this.state.selectedRecipe.categoryId || this.state.selectedRecipe.type;
+            hasKit = this._hasKitForCategory(recipeCategory);
+        }
         const craftingKits = this._getCraftingKits();
 
         // Получаем список игроков для ГМа
@@ -950,6 +973,9 @@ export class BG3CraftingApp extends Application {
      * @returns {Object|null} Информация об инструменте или null
      */
     _getKitForCategory(categoryId) {
+        // У кастомных категорий нет инструментов для износа
+        if (categoryId && String(categoryId).startsWith("custom.")) return null;
+        
         const kits = this._getCraftingKits();
 
         // Находим основную категорию
@@ -958,9 +984,9 @@ export class BG3CraftingApp extends Application {
             // Алхимия (только готовые продукты)
             "potions": "alchemy", "elixirs": "alchemy", "grenades": "alchemy", "coatings": "alchemy",
 
-            // Ингредиенты (отдельная категория)
-            "suspension": "ingredients", "essence": "ingredients", "salt": "ingredients", "ash": "ingredients",
-            "vitriol": "ingredients", "sublimate": "ingredients",
+            // Ингредиенты (отдельная категория, требует алхимию)
+            "suspension": "alchemy", "essence": "alchemy", "salt": "alchemy", "ash": "alchemy",
+            "vitriol": "alchemy", "sublimate": "alchemy",
 
             // Кузнечное дело и подкатегории
             "weapons": "smithing", "armor": "smithing", "tools": "smithing",
@@ -1059,6 +1085,9 @@ export class BG3CraftingApp extends Application {
      * @returns {boolean} true, если набор для категории доступен
      */
     _hasKitForCategory(categoryId) {
+        // Кастомные категории не требуют инструментов
+        if (categoryId && String(categoryId).startsWith("custom.")) return true;
+        
         const kits = this._getCraftingKits();
 
         // Прямое соответствие категории и набора
@@ -1074,13 +1103,13 @@ export class BG3CraftingApp extends Application {
             "grenades": "alchemy",
             "coatings": "alchemy",
 
-            // Ингредиенты (отдельная категория)
-            "suspension": "ingredients",
-            "essence": "ingredients",
-            "salt": "ingredients",
-            "ash": "ingredients",
-            "vitriol": "ingredients",
-            "sublimate": "ingredients",
+            // Ингредиенты (отдельная категория, требует алхимию)
+            "suspension": "alchemy",
+            "essence": "alchemy",
+            "salt": "alchemy",
+            "ash": "alchemy",
+            "vitriol": "alchemy",
+            "sublimate": "alchemy",
 
             // Кузнечное дело и подкатегории
             "weapons": "smithing",
@@ -1345,38 +1374,33 @@ export class BG3CraftingApp extends Application {
     async _executeCraft(minigameSuccess = true) {
         const recipe = this.state.selectedRecipe;
 
-        // ВЫЧИТАНИЕ ЗАРЯДА ИНСТРУМЕНТА ПРИ УСПЕШНОМ КРАФТЕ
-        if (minigameSuccess) {
-            const categoryId = recipe.categoryId || recipe.type;
-            const kitInfo = this._getKitForCategory(categoryId);
+        // ВЫЧИТАНИЕ ЗАРЯДА ИНСТРУМЕНТА ПРИ ПОПЫТКЕ КРАФТА (ДАЖЕ ПРИ ПРОВАЛЕ)
+        const categoryId = recipe.categoryId || recipe.type;
+        const kitInfo = this._getKitForCategory(categoryId);
 
-            if (kitInfo && kitInfo.item) {
-                const currentCharges = kitInfo.item.system.uses.value;
-                if (currentCharges > 0) {
-                    const newCharges = currentCharges - 1;
+        if (kitInfo && kitInfo.item) {
+            const currentCharges = kitInfo.item.system.uses.value;
+            if (currentCharges > 0) {
+                const newCharges = currentCharges - 1;
 
-                    await kitInfo.item.update({
-                        "system.uses": {
-                            value: newCharges,
-                            max: kitInfo.item.system.uses.max,
-                            spent: kitInfo.item.system.uses.max - newCharges
-                        }
-                    });
-
-                    if (newCharges <= 0) {
-                        ui.notifications.warn(`Инструменты "${kitInfo.item.name}" полностью изношены и удалены!`);
-                        // Автоматически удаляем инструмент при 0 зарядов
-                        await this.actor.deleteEmbeddedDocuments("Item", [kitInfo.item.id]);
-                    } else {
-                        ui.notifications.info(`Инструменты "${kitInfo.item.name}": ${newCharges}/10 зарядов осталось.`);
+                await kitInfo.item.update({
+                    "system.uses": {
+                        value: newCharges,
+                        max: kitInfo.item.system.uses.max,
+                        spent: kitInfo.item.system.uses.max - newCharges
                     }
+                });
 
-                    // Принудительно обновляем UI через небольшую задержку
-                    setTimeout(() => {
-                        if (this.actor.sheet) this.actor.sheet.render();
-                        this.render();
-                    }, 100);
+                if (newCharges <= 0) {
+                    ui.notifications.warn(`Инструменты "${kitInfo.item.name}" полностью изношены и удалены!`);
+                    await this.actor.deleteEmbeddedDocuments("Item", [kitInfo.item.id]);
+                } else {
+                    ui.notifications.info(`Инструменты "${kitInfo.item.name}": ${newCharges}/10 зарядов осталось.`);
                 }
+
+                setTimeout(() => {
+                    if (this.actor.sheet) this.actor.sheet.render();
+                }, 100);
             }
         }
 
@@ -1426,7 +1450,10 @@ export class BG3CraftingApp extends Application {
 
         try {
             if (!minigameSuccess) {
-                ui.notifications.warn("Крафт не удался (мини-игра провалена), ингредиенты потрачены");
+                ui.notifications.warn("Крафт не удался (мини-игра провалена), ингредиенты и заряд инструмента потрачены");
+                // Обязательно обновляем UI, чтобы игрок увидел новые цифры
+                await this._prepareRecipeView(this.state.selectedRecipe);
+                this.render(true);
                 return;
             }
 

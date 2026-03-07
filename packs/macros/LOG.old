@@ -1,3 +1,8 @@
-2026/02/14-20:33:44.565 3c44 Recovering log #239
-2026/02/14-20:33:44.658 3c44 Delete type=0 #239
-2026/02/14-20:33:44.658 3c44 Delete type=3 #237
+2026/03/06-19:22:29.524 97f8 Recovering log #273
+2026/03/06-19:22:29.559 97f8 Delete type=0 #273
+2026/03/06-19:22:29.559 97f8 Delete type=3 #271
+2026/03/06-19:34:24.024 8bec Level-0 table #278: started
+2026/03/06-19:34:24.024 8bec Level-0 table #278: 0 bytes OK
+2026/03/06-19:34:24.040 8bec Delete type=0 #276
+2026/03/06-19:34:24.040 8bec Manual compaction at level-0 from '!macros!LTYJ8oG3NJz3vkRl' @ 72057594037927935 : 1 .. '!macros!jUBiAiYHQgmIimWV' @ 0 : 0; will stop at (end)
+2026/03/06-19:34:24.040 8bec Manual compaction at level-1 from '!macros!LTYJ8oG3NJz3vkRl' @ 72057594037927935 : 1 .. '!macros!jUBiAiYHQgmIimWV' @ 0 : 0; will stop at (end)
