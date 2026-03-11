@@ -1,11 +1,11 @@
 {
   "id": "blue-man-crafting",
   "title": "BG3 Crafting System",
-  "version": "1.2.1",
-  "description": "BG3 Crafting System - модуль крафта для Foundry VTT с расходуемыми инструментами. Поддерживает 6 категорий ремесел, систему зарядов (10 использований), автоудаление изношенных инструментов и проверку наличия нужного набора для крафта.",
+  "version": "1.2.2",
+  "description": "<p>BG3 Crafting System v1.2.2 - модуль крафта для Foundry VTT с расходуемыми инструментами. Поддерживает 6 категорий ремесел, систему зарядов (10 использований), автоудаление изношенных инструментов и проверку наличия нужного набора для крафта. Исправлены критические ошибки и оптимизирован код.</p>",
   "url": "https://github.com/blue-man-lex/blue-man-crafting",
   "manifest": "https://raw.githubusercontent.com/blue-man-lex/blue-man-crafting/main/module.json",
-  "download": "https://github.com/blue-man-lex/blue-man-crafting/releases/download/1.2.1/blue-man-crafting.zip",
+  "download": "https://github.com/blue-man-lex/blue-man-crafting/releases/download/1.1/blue-man-crafting.zip",
   "compatibility": {
     "minimum": "13",
     "verified": "13"
@@ -38,7 +38,8 @@
   "packs": [
     {
       "name": "BG3",
-      "label": "blue-man-crafting",
+      "label": "товары",
+      "banner": "modules/blue-man-crafting/assets/banners/1.webp",
       "path": "packs/BG3",
       "type": "Item",
       "system": "dnd5e",
@@ -50,6 +51,7 @@
     {
       "name": "kit",
       "label": "наборы",
+      "banner": "modules/blue-man-crafting/assets/banners/2.webp",
       "path": "packs/%20kit",
       "type": "Item",
       "system": "dnd5e",
@@ -61,8 +63,21 @@
     {
       "name": "macros",
       "label": "макросы",
+      "banner": "modules/blue-man-crafting/assets/banners/3.webp",
       "path": "packs/macros",
       "type": "Macro",
+      "system": "dnd5e",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "spell-scrolls",
+      "label": "свитки заклинаний",
+      "banner": "modules/blue-man-crafting/assets/banners/4.webp",
+      "path": "packs/spell-scrolls",
+      "type": "Item",
       "system": "dnd5e",
       "ownership": {
         "PLAYER": "OBSERVER",
@@ -76,6 +91,5 @@
       "flags": {}
     }
   ],
-  "description": "<p>BG3 Crafting System v1.1.0 - модуль крафта для Foundry VTT с расходуемыми инструментами. Поддерживает 6 категорий ремесел, систему зарядов (10 использований), автоудаление изношенных инструментов и проверку наличия нужного набора для крафта. Исправлены критические ошибки и оптимизирован код.</p>",
   "flags": {}
 }

@@ -2332,3 +2332,71 @@ border: 1px solid transparent;
     opacity: 0.5;
 
 }
+
+/* ==========================================
+   ПОДСКАЗКИ ДЛЯ ОКНА КРАФТА
+   ========================================= */
+.bmc-craft-tooltip {
+    position: absolute;
+    z-index: 10000;
+    max-width: 350px;
+    min-width: 200px;
+    background: linear-gradient(135deg, #1a1814 0%, #2a251f 100%);
+    border: 1px solid rgba(220, 177, 116, 0.4);
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.8);
+    padding: 10px;
+    font-family: "Signika", "Modesto Condensed", sans-serif;
+    font-size: 13px;
+    line-height: 1.3;
+    color: #e8dcc0;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(-5px);
+    transition: opacity 0.1s ease-out;
+}
+.bmc-craft-tooltip.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+.bmc-craft-tooltip .tooltip-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(220, 177, 116, 0.2);
+}
+.bmc-craft-tooltip .tooltip-image {
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    border: 1px solid rgba(220, 177, 116, 0.3);
+    border-radius: 4px;
+    flex-shrink: 0;
+    background: #000;
+}
+.bmc-craft-tooltip .item-name {
+    font-weight: bold;
+    font-size: 14px;
+    color: #f0d8a7;
+    margin: 0 0 2px 0;
+}
+.bmc-craft-tooltip .item-type {
+    font-size: 11px;
+    color: #b8a88a;
+    font-style: italic;
+}
+.bmc-craft-tooltip .item-description {
+    color: #d4c8a8;
+    font-size: 12px;
+    line-height: 1.4;
+}
+.bmc-craft-tooltip .foundry-enriched p { margin: 0 0 6px 0; }
+.bmc-craft-tooltip .foundry-enriched strong { color: #f0d8a7; font-weight: 600; }
+.bmc-craft-tooltip.rarity-common { border-color: #a0a0a0; }
+.bmc-craft-tooltip.rarity-uncommon { border-color: #45e64a; }
+.bmc-craft-tooltip.rarity-rare { border-color: #00b0f0; }
+.bmc-craft-tooltip.rarity-veryrare { border-color: #d02090; }
+.bmc-craft-tooltip.rarity-legendary { border-color: #ffbf00; }
+.bmc-craft-tooltip.rarity-artifact { border-color: #ff4500; }

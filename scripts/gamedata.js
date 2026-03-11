@@ -225,6 +225,22 @@ export const RECIPE_CATEGORIES = {
                 items: []
             }
         }
+    },
+    
+    // 8. НАЧЕРТАНИЕ (магические свитки и чернила)
+    "scribing": {
+        name: "Начертание",
+        global: true,
+        subcategories: {
+            "scrolls": {
+                name: "Свитки",
+                items: [] // Будут добавлены через рецепты
+            },
+            "inks": {
+                name: "Чернила",
+                items: [] // Будут добавлены через рецепты
+            }
+        }
     }
 };
 
@@ -1337,7 +1353,7 @@ export const RECIPES = [
         type: "coatings",
         input: {
             slot1: { type: "item", uuid: "Compendium.blue-man-crafting.BG3.Item.QQ2qCGHUX8yJXJGi", qty: 3 }, // Дар Карабасана (Ингредиент)
-            slot3: { type: "category", categoryId: "salt", qty: 1 } // Предполагаю Соль, в журнале не указан тип ингредиента, но обычно редкие яды - соль или купорос. Поставил Соль.
+            slot3: { type: "category", categoryId: "salt", qty: 1 } 
         },
         result: { uuid: "Compendium.blue-man-crafting.BG3.Item.pC9Ym4kEnVbzaOYd", qty: 1 }
     },
@@ -1349,5 +1365,124 @@ export const RECIPES = [
             slot3: { type: "category", categoryId: "suspension", qty: 1 }
         },
         result: { uuid: "Compendium.blue-man-crafting.BG3.Item.KeLQD70jq7RavzAd", qty: 1 }
-    }
+    },
+
+    // === РЕЦЕПТЫ НАЧЕРТАНИЯ (ЧЕРНИЛА) ===
+    
+    {
+        name: "Чернила Каракатицы",
+        type: "inks",
+        input: {
+            slot1: { type: "item", uuid: "Compendium.blue-man-crafting.BG3.Item.lK6rcoSMWFEjCn9n", qty: 3 }
+        },
+        result: { uuid: "Compendium.blue-man-crafting.BG3.Item.H6MO9IsbBfbNMAM8", qty: 1 }
+    },
+    {
+        name: "Чернила из вытяжки глаза Нотика",
+        type: "inks",
+        input: {
+            slot1: { type: "item", uuid: "Compendium.blue-man-crafting.BG3.Item.2CznniYDk2T4oom9", qty: 3 }
+        },
+        result: { uuid: "Compendium.blue-man-crafting.BG3.Item.DHfAyN2ASp1DlFZS", qty: 1 }
+    },
+    {
+        name: "Нашаарские чернила",
+        type: "inks",
+        input: {
+            slot1: { type: "item", uuid: "Compendium.blue-man-crafting.BG3.Item.733PHCUB2aMcdNmP", qty: 3 }
+        },
+        result: { uuid: "Compendium.blue-man-crafting.BG3.Item.31BdxaEe76Ta1hkS", qty: 1 }
+    },
+    {
+        name: "Чернила Окулуса",
+        type: "inks",
+        input: {
+            slot1: { type: "item", uuid: "Compendium.blue-man-crafting.BG3.Item.b8uYVsj2jfty9ADb", qty: 3 }
+        },
+        result: { uuid: "Compendium.blue-man-crafting.BG3.Item.1EsvwJrOLAfR1jbN", qty: 1 }
+    },
+    {
+        name: "Чернила пустоты",
+        type: "inks",
+        input: {
+            slot1: { type: "item", uuid: "Compendium.blue-man-crafting.BG3.Item.RvM9WZ8KdtSafvd0", qty: 3 }
+        },
+        result: { uuid: "Compendium.blue-man-crafting.BG3.Item.2V8wV2XenWyV0pVh", qty: 1 }
+    },
+    // === РЕЦЕПТЫ СВИТКОВ ===
+    
+    {
+        name: "Мощь стихий+1",
+        type: "scrolls",
+        input: {
+            slot1: { type: "item", uuid: "Compendium.blue-man-crafting.BG3.Item.ArmT6lKsqHu6rgg0", qty: 1 },
+            slot2: { type: "item", uuid: "Compendium.blue-man-crafting.BG3.Item.DHfAyN2ASp1DlFZS", qty: 3 }
+        },
+        result: { uuid: "Compendium.blue-man-crafting.BG3.Item.wbLbykJONzznylCl", qty: 1 }
+    },
+    {
+        name: "Мощь стихий+2",
+        type: "scrolls",
+        input: {
+            slot1: { type: "item", uuid: "Compendium.blue-man-crafting.BG3.Item.ArmT6lKsqHu6rgg0", qty: 1 },
+            slot2: { type: "item", uuid: "Compendium.blue-man-crafting.BG3.Item.1EsvwJrOLAfR1jbN", qty: 3 }
+        },
+        result: { uuid: "Compendium.blue-man-crafting.BG3.Item.DZyiw4tz4qe6xvc1", qty: 1 }
+    },
+    {
+        name: "Мощь стихий+3",
+        type: "scrolls",
+        input: {
+            slot1: { type: "item", uuid: "Compendium.blue-man-crafting.BG3.Item.ArmT6lKsqHu6rgg0", qty: 1 },
+            slot2: { type: "item", uuid: "Compendium.blue-man-crafting.BG3.Item.2V8wV2XenWyV0pVh", qty: 3 }
+        },
+        result: { uuid: "Compendium.blue-man-crafting.BG3.Item.Jyaw9LZWLmchrq5Y", qty: 1 }
+    },
+    {
+        name: "Мощь стихий+4",
+        type: "scrolls",
+        input: {
+            slot1: { type: "item", uuid: "Compendium.blue-man-crafting.BG3.Item.ArmT6lKsqHu6rgg0", qty: 1 },
+            slot2: { type: "item", uuid: "Compendium.blue-man-crafting.BG3.Item.31BdxaEe76Ta1hkS", qty: 3 }
+        },
+        result: { uuid: "Compendium.blue-man-crafting.BG3.Item.HiZ1pIzx5VmANYZb", qty: 1 }
+    },
+    {
+        name: "Свиток опознания",
+        type: "scrolls",
+        input: {
+            slot1: { type: "item", uuid: "Compendium.blue-man-crafting.BG3.Item.ArmT6lKsqHu6rgg0", qty: 1 },
+            slot2: { type: "item", uuid: "Compendium.blue-man-crafting.BG3.Item.H6MO9IsbBfbNMAM8", qty: 3 }
+        },
+        result: { uuid: "Compendium.blue-man-crafting.BG3.Item.0Exm7ziMybCfPSTi", qty: 1 }
+    },
+    {
+        name: "Свиток начертания заклинания",
+        type: "scrolls",
+        input: {
+            slot1: { type: "item", uuid: "Compendium.blue-man-crafting.BG3.Item.ArmT6lKsqHu6rgg0", qty: 1 },
+            slot3: { type: "item", uuid: "Compendium.blue-man-crafting.BG3.Item.H6MO9IsbBfbNMAM8", qty: 3 },
+            slot2: { type: "item", uuid: "Compendium.blue-man-crafting.BG3.Item.BUpFA9fRivIU2fEB", qty: 1 }
+        },
+        result: { uuid: "Compendium.blue-man-crafting.BG3.Item.PXv5j5cq6RjFwhYy", qty: 1 }
+    },
+    {
+        name: "Свиток очищения",
+        type: "scrolls",
+        input: {
+            slot1: { type: "item", uuid: "Compendium.blue-man-crafting.BG3.Item.ArmT6lKsqHu6rgg0", qty: 1 },
+            slot2: { type: "item", uuid: "Compendium.blue-man-crafting.BG3.Item.ZgL6QzfTlOFDAzyZ", qty: 1 },
+            slot3: { type: "category", categoryId: "ash", qty: 1 }
+        },
+        result: { uuid: "Compendium.blue-man-crafting.BG3.Item.GZs1ycJpqltImmjW", qty: 1 }
+    },
+    {   name: "Свиток состояний",
+        type: "scrolls",
+        input: {
+            slot1: { type: "item", uuid: "Compendium.blue-man-crafting.BG3.Item.ArmT6lKsqHu6rgg0", qty: 1 },
+            slot2: { type: "item", uuid: "Compendium.blue-man-crafting.BG3.Item.2V8wV2XenWyV0pVh", qty: 1 },
+            slot3: { type: "item", uuid: "Compendium.blue-man-crafting.BG3.Item.RrgfI1yH4N4DmW28", qty: 1 }
+            },
+        result: { uuid: "Compendium.blue-man-crafting.BG3.Item.OoU7mg9Sd5nGycd5", qty: 1 }
+    },
 ];

@@ -1,5 +1,6 @@
 import { RecipeManager } from "./recipeManager.js";
 import { ScrollsDialog } from "./scrollsDialog.js";
+import { CraftingTooltips } from "./craftingTooltips.js";
 
 // Импортируем socket из main.js
 let socket;
@@ -257,6 +258,10 @@ export class BG3CraftingApp extends Application {
 
     activateListeners(html) {
         super.activateListeners(html);
+
+        // Initialize tooltips
+        this.tooltips = new CraftingTooltips(this);
+        this.tooltips.activateListeners(html);
 
         // Восстанавливаем позицию скролла после рендера
         if (this._scrollPos > 0) {
@@ -812,7 +817,9 @@ export class BG3CraftingApp extends Application {
                     requiredQty: reqQty,
                     isValid: isValid,
                     originalReq: req,
-                    targetName: displayInfo.name
+                    targetName: displayInfo.name,
+                    uuid: req.uuid || req.id,
+                    categoryId: req.type === "category" ? req.categoryId : null
                 };
             }
             this.state.canCraft = allValid;
@@ -830,7 +837,8 @@ export class BG3CraftingApp extends Application {
                 name: resultInfo.name,
                 img: resultInfo.img,
                 rarity: resultInfo.rarity || "common",
-                qty: recipe.result.qty || 1
+                qty: recipe.result.qty || 1,
+                uuid: resultReq.uuid
             };
         }
     }
@@ -923,6 +931,11 @@ export class BG3CraftingApp extends Application {
                 name: "Инструменты ювелира",
                 uuid: "Compendium.blue-man-crafting.kit.Item.WRQjHph0kNHxWLa0",
                 categoryId: "jewelry"
+            },
+            scribing: {
+                name: "Инструменты каллиграфа",
+                uuid: "Compendium.blue-man-crafting.kit.Item.zfIN2pIHxZ2aTTJd",
+                categoryId: "scribing"
             }
         };
 
