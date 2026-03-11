@@ -82,8 +82,9 @@ export class BG3CraftingApp extends Application {
         this._minigame = {
             running: false,
             rafId: null,
-            resolve: null
+            _lastT: null
         };
+        this._recipeStatusCache = null;
     }
 
     async _onDeleteRecipeClick(event) {
@@ -110,6 +111,7 @@ export class BG3CraftingApp extends Application {
                         data.customRecipes.splice(customIndex, 1);
                         await RecipeManager.saveData({ recipes: data.customRecipes });
                         ui.notifications.info(`Рецепт "${recipeName}" удален`);
+                        this._recipeStatusCache = null;
                         this.render(true); // Перерисовываем интерфейс
                     }
                 }
@@ -126,6 +128,7 @@ export class BG3CraftingApp extends Application {
             try {
                 await RecipeManager.saveData({ recipes: [] });
                 ui.notifications.info("Все пользовательские рецепты удалены");
+                this._recipeStatusCache = null;
                 this.render(true);
             } catch (error) {
                 console.error('Ошибка при очистке рецептов:', error);
@@ -263,6 +266,9 @@ export class BG3CraftingApp extends Application {
         this.tooltips = new CraftingTooltips(this);
         this.tooltips.activateListeners(html);
 
+        // Запускаем фоновую асинхронную подгрузку статусов рецептов
+        this._applyRecipeStatusesAsync(html);
+
         // Восстанавливаем позицию скролла после рендера
         if (this._scrollPos > 0) {
             const recipeList = html[0].querySelector('.recipe-list');
@@ -360,6 +366,7 @@ export class BG3CraftingApp extends Application {
         dropdown.parentElement.classList.remove('show');
 
         // Перерисовываем интерфейс с новым выбором
+        this._recipeStatusCache = null;
         this.render(true);
     }
 
@@ -477,6 +484,7 @@ export class BG3CraftingApp extends Application {
         }
 
         // Перерисовываем окно
+        this._recipeStatusCache = null;
         this.render(true);
     }
 
@@ -565,25 +573,15 @@ export class BG3CraftingApp extends Application {
         rawRecipes.forEach((recipe, index) => {
             const r = { ...recipe, originalIndex: index, id: `recipe_${index}`, isGM: isGM };
 
-            // Определяем категорию (Ингредиенты или нет)
-            // Ингредиенты (suspension, salt, etc) всегда известны
             const isIngredient = ["suspension", "essence", "salt", "ash", "vitriol", "sublimate"].includes(r.type);
-
-            // ВСЕ подкатегории всегда известны для правильного отображения
-            const knownTypes = [
-                "suspension", "essence", "salt", "ash", "vitriol", "sublimate", // Ингредиенты
-                "potions", "elixirs", "grenades", "coatings", // Алхимия
-                "weapons", "armor", "tools", // Кузнечное дело
-                "gem-cutting", "enchantment-dust", // Ювелирное дело
-                "leather-armor", "tanning", // Кожевничество
-                "rations", "feasts", // Кулинария
-                "cloth-armor", "embroidery" // Ткачество
-            ];
             const isKnown = knownRecipes.includes(r.id) || isIngredient;
 
             if (isGM || isKnown) {
                 r.isKnown = isKnown;
                 r.canToggle = isGM && !isIngredient; // Только ГМ может переключать не-ингредиенты
+
+                // Берем статус из кэша (если он уже просчитан в фоне), иначе пусто
+                r.craftStatus = (this._recipeStatusCache && this._recipeStatusCache[r.id]) ? this._recipeStatusCache[r.id] : "";
 
                 const targetSubId = r.type || fallbackSubId;
                 const sub = subIndex.get(targetSubId);
@@ -847,14 +845,18 @@ export class BG3CraftingApp extends Application {
         let count = 0;
 
         for (const item of this.actor.items) {
-            const itemData = { uuid: item.uuid, sourceId: item.flags?.core?.sourceId, name: item.name };
+            const itemData = { 
+                uuid: item.uuid, 
+                sourceId: item._stats?.compendiumSource || item.flags?.core?.sourceId, 
+                name: item.name 
+            };
 
             let matches = false;
             if (req.type === "category" || req.categoryId) {
                 const categoryId = req.categoryId || req.type;
                 matches = RecipeManager.isItemInCategory(itemData, categoryId);
-            } else if (req.id) {
-                matches = RecipeManager._compareUuids(req.id, itemData);
+            } else if (req.id || req.uuid) {
+                matches = RecipeManager._compareUuids(req.id || req.uuid, itemData);
             }
 
             if (!matches && targetName) {
@@ -870,6 +872,66 @@ export class BG3CraftingApp extends Application {
             }
         }
         return count;
+    }
+
+    // АСИНХРОННАЯ ФУНКЦИЯ: Точная проверка наличия ингредиентов для списка (как в правой панели)
+    async _checkRecipeAvailability(recipe) {
+        if (!recipe.ingredients || recipe.ingredients.length === 0) return "";
+
+        let hasAny = false;
+        let hasAll = true;
+
+        for (const req of recipe.ingredients) {
+            const reqQty = req.qty || 1;
+            
+            // Асинхронно получаем имя предмета для фоллбэк-проверки
+            const displayInfo = await RecipeManager.getItemDisplayInfo(req);
+            
+            // Передаем имя, чтобы проверка на 100% совпадала с логикой окна крафта
+            const owned = this._countOwnedItems(req, displayInfo.name);
+
+            if (owned >= reqQty) {
+                hasAny = true;
+            } else if (owned > 0) {
+                hasAny = true;
+                hasAll = false; // Есть хоть сколько-то, но недостаточно
+            } else {
+                hasAll = false; // Нет вообще
+            }
+        }
+
+        if (hasAll) return "status-ready";
+        if (hasAny) return "status-partial";
+        return "";
+    }
+
+    // ФОНОВАЯ ЗАГРУЗКА: Проверяет наличие предметов и подкрашивает DOM не подвешивая игру
+    async _applyRecipeStatusesAsync(html) {
+        if (!this._recipeStatusCache) this._recipeStatusCache = {};
+        
+        const rawRecipes = RecipeManager.getData().recipes || [];
+        const domElement = html[0] || html;
+        
+        // Выполняем проверки последовательно в фоне, чтобы не спамить базу данных запросами
+        for (let index = 0; index < rawRecipes.length; index++) {
+            const recipe = rawRecipes[index];
+            const rId = `recipe_${index}`;
+            
+            // Вычисляем только если еще нет в кэше
+            if (this._recipeStatusCache[rId] === undefined) {
+                this._recipeStatusCache[rId] = await this._checkRecipeAvailability(recipe);
+            }
+            
+            // Как только узнали статус - красим плашку в интерфейсе
+            const status = this._recipeStatusCache[rId];
+            if (status) {
+                const element = domElement.querySelector(`.recipe-item[data-index="${index}"]`);
+                if (element) {
+                    element.classList.remove('status-ready', 'status-partial'); // сброс старых
+                    element.classList.add(status);
+                }
+            }
+        }
     }
 
     /**
@@ -892,6 +954,7 @@ export class BG3CraftingApp extends Application {
         }
 
         await this.actor.setFlag(RecipeManager.ID, "knownRecipes", Array.from(knownRecipes));
+        this._recipeStatusCache = null;
         this.render(true); // Перерисовываем окно
     }
 
@@ -1333,6 +1396,7 @@ export class BG3CraftingApp extends Application {
             }
 
             // Обновляем интерфейс
+            this._recipeStatusCache = null;
             this.render(true);
 
         } catch (err) {
@@ -1424,7 +1488,11 @@ export class BG3CraftingApp extends Application {
             const itemsToUpdate = [];
 
             const candidates = this.actor.items.filter(item => {
-                const itemData = { uuid: item.uuid, sourceId: item.flags?.core?.sourceId, name: item.name };
+                const itemData = { 
+                    uuid: item.uuid, 
+                    sourceId: item.flags?.core?.sourceId || item._stats?.compendiumSource, 
+                    name: item.name 
+                };
                 let matches = false;
                 
                 // Проверяем категорию (исправлено на проверку categoryId)
@@ -1465,6 +1533,7 @@ export class BG3CraftingApp extends Application {
             if (!minigameSuccess) {
                 ui.notifications.warn("Крафт не удался (мини-игра провалена), ингредиенты и заряд инструмента потрачены");
                 // Обязательно обновляем UI, чтобы игрок увидел новые цифры
+                this._recipeStatusCache = null;
                 await this._prepareRecipeView(this.state.selectedRecipe);
                 this.render(true);
                 return;

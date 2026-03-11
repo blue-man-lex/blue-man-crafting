@@ -1438,284 +1438,205 @@
 
 
 
-/* Иконки для категорий */
+/* ========================================== */
 
-[data-category="alchemy"] .category-icon::before {
+/* ИКОНКИ КАТЕГОРИЙ И ПОДКАТЕГОРИЙ (FontAwesome) */
 
-    content: "⚗️"; /* Алхимия - колба */
+/* ========================================== */
 
+/* Базовый стиль для всех иконок (эффект медной чеканки) СТРОГО ВНУТРИ ОКНА КРАФТА */
+
+.bg3-crafting-app .category-icon::before,
+.bg3-crafting-app .subcategory-header::before {
+    font-family: "Font Awesome 6 Pro", "Font Awesome 6 Free", sans-serif !important;
+    font-weight: 900 !important;
+    font-style: normal !important;
+    line-height: 1;
+    color: #b58d5c; /* Медно-золотой цвет */
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+    font-size: 14px;
+    display: inline-block;
+    width: 20px;
+    text-align: center;
 }
 
+.bg3-crafting-app .subcategory-header::before {
 
+    margin-right: 6px;
 
-[data-category="ingredients"] .category-icon::before {
+    font-size: 13px;
 
-    content: "🌿"; /* Ингредиенты - лист */
-
-}
-
-
-
-[data-category="smithing"] .category-icon::before {
-
-    content: "🔨"; /* Кузнечное дело - молот */
-
-}
-
-
-
-[data-category="jewelry"] .category-icon::before {
-
-    content: "💎"; /* Ювелирное дело - бриллиант */
-
-}
-
-
-
-[data-category="leatherworking"] .category-icon::before {
-
-    content: "🧥"; /* Кожевничество - перчатки */
-
-}
-
-
-
-[data-category="cooking"] .category-icon::before {
-
-    content: "🍳"; /* Кулинария - сковорода */
-
-}
-
-
-
-[data-category="tailoring"] .category-icon::before {
-
-    content: "🧵"; /* Ткачество - нитки */
+    opacity: 0.85;
 
 }
 
 
 
 .subcategory-header {
+
     padding: 8px 10px;
+
     cursor: pointer;
+
     background: rgba(255, 255, 255, 0.03);
+
     border-bottom: 1px solid rgba(92, 78, 56, 0.5);
+
     color: rgba(240, 216, 167, 0.78);
+
     font-weight: 600;
+
     display: flex;
+
     align-items: center;
+
     justify-content: center;
+
     gap: 8px;
+
     transition: all 0.2s;
+
     font-size: 15px;
+
     position: relative;
+
 }
 
 .subcategory-header > i.fas:last-child {
+
     margin-left: auto;
+
     opacity: 0.75;
+
     transition: transform 180ms ease;
+
 }
 
 .subcategory-header:hover > i.fas:last-child {
+
     transform: translateX(1px);
+
 }
 
 .subcategory-header:hover {
+
     background: rgba(220, 177, 116, 0.08);
+
     color: #dcb174;
+
 }
 
 .subcategory-header i {
+
     font-size: 11px;
+
     opacity: 0.8;
+
 }
 
 .subcategory-recipe-count {
+
     position: absolute;
+
     right: 8px;
+
     top: 50%;
+
     transform: translateY(-50%);
+
     background: rgba(220, 177, 116, 0.15);
+
     border: 1px solid rgba(220, 177, 116, 0.25);
+
     border-radius: 10px;
+
     padding: 2px 6px;
+
     font-size: 11px;
+
     color: #dcb174;
+
     font-weight: 600;
+
     min-width: 18px;
+
     text-align: center;
+
     box-shadow: inset 0 0 0 1px rgba(0,0,0,0.3);
-}
-
-/* Иконки для подкатегорий */
-
-[data-subcategory="potions"] .subcategory-header::before {
-
-    content: "🧪"; /* Зелья */
 
 }
 
 
 
-[data-subcategory="elixirs"] .subcategory-header::before {
+/* === ГЛОБАЛЬНЫЕ КАТЕГОРИИ === */
 
-    content: "✨"; /* Эликсиры */
+.bg3-crafting-app [data-category="alchemy"] .category-icon::before { content: "\f0c3"; } /* fa-flask */
 
-}
+.bg3-crafting-app [data-category="ingredients"] .category-icon::before { content: "\f4d8"; } /* fa-leaf */
 
+.bg3-crafting-app [data-category="smithing"] .category-icon::before { content: "\f6de"; } /* fa-hammer */
 
+.bg3-crafting-app [data-category="jewelry"] .category-icon::before { content: "\f3a5"; } /* fa-gem */
 
-[data-subcategory="grenades"] .subcategory-header::before {
+.bg3-crafting-app [data-category="leatherworking"] .category-icon::before { content: "\f553"; } /* fa-tshirt */
 
-    content: "💣"; /* Гранаты */
+.bg3-crafting-app [data-category="cooking"] .category-icon::before { content: "\f2e7"; } /* fa-utensils */
 
-}
+.bg3-crafting-app [data-category="tailoring"] .category-icon::before { content: "\f1fc"; } /* fa-paint-brush */
 
 
 
-[data-subcategory="coatings"] .subcategory-header::before {
+/* === ПОДКАТЕГОРИИ АЛХИМИИ === */
 
-    content: "🗡️"; /* Масла и яды */
+.bg3-crafting-app [data-subcategory="potions"] .subcategory-header::before { content: "\f0c3"; } /* fa-flask */
 
-}
+.bg3-crafting-app [data-subcategory="elixirs"] .subcategory-header::before { content: "\f0d0"; } /* fa-magic */
 
+.bg3-crafting-app [data-subcategory="grenades"] .subcategory-header::before { content: "\f1e2"; } /* fa-bomb */
 
+.bg3-crafting-app [data-subcategory="coatings"] .subcategory-header::before { content: "\f043"; } /* fa-tint */
 
-[data-subcategory="suspension"] .subcategory-header::before {
 
-    content: "💧"; /* Суспензии */
 
-}
+/* === ПОДКАТЕГОРИИ ИНГРЕДИЕНТОВ === */
 
+.bg3-crafting-app [data-subcategory="suspension"] .subcategory-header::before { content: "\f043"; } /* fa-tint */
 
+.bg3-crafting-app [data-subcategory="essence"] .subcategory-header::before { content: "\f0d0"; } /* fa-magic */
 
-[data-subcategory="essence"] .subcategory-header::before {
+.bg3-crafting-app [data-subcategory="salt"] .subcategory-header::before { content: "\f5cb"; } /* fa-mortar-pestle */
 
-    content: "✨"; /* Эссенции */
+.bg3-crafting-app [data-subcategory="ash"] .subcategory-header::before { content: "\f06d"; } /* fa-fire */
 
-}
+.bg3-crafting-app [data-subcategory="vitriol"] .subcategory-header::before { content: "\f714"; } /* fa-skull */
 
+.bg3-crafting-app [data-subcategory="sublimate"] .subcategory-header::before { content: "\f0c2"; } /* fa-cloud */
 
 
-[data-subcategory="salt"] .subcategory-header::before {
 
-    content: "🧂"; /* Соли */
+/* === ОСТАЛЬНЫЕ ПОДКАТЕГОРИИ === */
 
-}
+.bg3-crafting-app [data-subcategory="weapons"] .subcategory-header::before { content: "\f132"; } /* fa-shield-alt */
 
+.bg3-crafting-app [data-subcategory="armor"] .subcategory-header::before { content: "\f132"; } /* fa-shield-alt */
 
+.bg3-crafting-app [data-subcategory="tools"] .subcategory-header::before { content: "\f0ad"; } /* fa-wrench */
 
-[data-subcategory="ash"] .subcategory-header::before {
+.bg3-crafting-app [data-subcategory="gem-cutting"] .subcategory-header::before { content: "\f3a5"; } /* fa-gem */
 
-    content: "🔥"; /* Золы */
+.bg3-crafting-app [data-subcategory="enchantment-dust"] .subcategory-header::before { content: "\f0d0"; } /* fa-magic */
 
-}
+.bg3-crafting-app [data-subcategory="leather-armor"] .subcategory-header::before { content: "\f132"; } /* fa-shield-alt */
 
+.bg3-crafting-app [data-subcategory="tanning"] .subcategory-header::before { content: "\f6cc"; } /* fa-paw */
 
+.bg3-crafting-app [data-subcategory="rations"] .subcategory-header::before { content: "\f2e7"; } /* fa-utensils */
 
-[data-subcategory="vitriol"] .subcategory-header::before {
+.bg3-crafting-app [data-subcategory="feasts"] .subcategory-header::before { content: "\f0fc"; } /* fa-beer */
 
-    content: "☠️"; /* Купоросы */
+.bg3-crafting-app [data-subcategory="cloth-armor"] .subcategory-header::before { content: "\f553"; } /* fa-tshirt */
 
-}
-
-
-
-[data-subcategory="sublimate"] .subcategory-header::before {
-
-    content: "☁️"; /* Сублиматы */
-
-}
-
-
-
-[data-subcategory="weapons"] .subcategory-header::before {
-
-    content: "⚔️"; /* Оружие */
-
-}
-
-
-
-[data-subcategory="armor"] .subcategory-header::before {
-
-    content: "🛡️"; /* Доспехи */
-
-}
-
-
-
-[data-subcategory="tools"] .subcategory-header::before {
-
-    content: "🔧"; /* Инструменты */
-
-}
-
-
-
-[data-subcategory="gem-cutting"] .subcategory-header::before {
-
-    content: "💎"; /* Огранка камня */
-
-}
-
-
-
-[data-subcategory="enchantment-dust"] .subcategory-header::before {
-
-    content: "✨"; /* Чародейская пыль */
-
-}
-
-
-
-[data-subcategory="leather-armor"] .subcategory-header::before {
-
-    content: "🧥"; /* Доспехи из кожи */
-
-}
-
-
-
-[data-subcategory="tanning"] .subcategory-header::before {
-
-    content: "🦌"; /* Дубление */
-
-}
-
-
-
-[data-subcategory="rations"] .subcategory-header::before {
-
-    content: "🍖"; /* Рационы */
-
-}
-
-
-
-[data-subcategory="feasts"] .subcategory-header::before {
-
-    content: "🍽️"; /* Пиры */
-
-}
-
-
-
-[data-subcategory="cloth-armor"] .subcategory-header::before {
-
-    content: "👔"; /* Доспехи из ткани */
-
-}
-
-
-
-[data-subcategory="embroidery"] .subcategory-header::before {
-
-    content: "🧵"; /* Вышивка */
-
-}
+.bg3-crafting-app [data-subcategory="embroidery"] .subcategory-header::before { content: "\f1fc"; } /* fa-paint-brush */
 
 
 
@@ -2400,3 +2321,23 @@ border: 1px solid transparent;
 .bmc-craft-tooltip.rarity-veryrare { border-color: #d02090; }
 .bmc-craft-tooltip.rarity-legendary { border-color: #ffbf00; }
 .bmc-craft-tooltip.rarity-artifact { border-color: #ff4500; }
+
+/* ПОДСВЕТКА НАЛИЧИЯ ИНГРЕДИЕНТОВ В СПИСКЕ */
+
+/* Желтый: есть хотя бы один ингредиент */
+.recipe-item.status-partial {
+    border-left: 3px solid rgba(243, 156, 18, 0.8);
+    background: linear-gradient(90deg, rgba(243, 156, 18, 0.12), transparent 80%);
+}
+.recipe-item.status-partial:hover {
+    background: linear-gradient(90deg, rgba(243, 156, 18, 0.2), transparent 80%);
+}
+
+/* Зеленый: есть ВСЕ необходимые ингредиенты (можно крафтить) */
+.recipe-item.status-ready {
+    border-left: 3px solid rgba(76, 209, 55, 0.8);
+    background: linear-gradient(90deg, rgba(76, 209, 55, 0.15), transparent 80%);
+}
+.recipe-item.status-ready:hover {
+    background: linear-gradient(90deg, rgba(76, 209, 55, 0.25), transparent 80%);
+}
