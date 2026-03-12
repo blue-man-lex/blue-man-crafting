@@ -16,93 +16,33 @@ class FinalRecipeCreator extends Application {
         this.result = null;
         this.category = null;
         this.subcategory = null;
-        this.customCategoryName = null;
         
-        // Получаем категории из модуля
-        // Используем прямой доступ к данным модуля через настройки
-        let categories = {};
+        // 1. Базовые (вшитые) категории
+        const baseCategories = {
+            "ingredients": { name: "Ингредиенты", subcategories: { "suspension": "Суспензии", "essence": "Эссенции", "salt": "Соли", "ash": "Золы", "vitriol": "Купоросы", "sublimate": "Сублиматы" } },
+            "alchemy": { name: "Алхимия", subcategories: { "potions": "Зелья", "elixirs": "Эликсиры", "grenades": "Гранаты", "coatings": "Масла и яды" } },
+            "smithing": { name: "Кузнечное дело", subcategories: { "weapons": "Оружие", "armor": "Доспехи", "tools": "Инструменты" } },
+            "jewelry": { name: "Ювелирное дело", subcategories: { "gem-cutting": "Огранка камня", "enchantment-dust": "Чародейская пыль" } },
+            "leatherworking": { name: "Кожевничество", subcategories: { "leather-armor": "Кожаные доспехи", "tanning": "Дубление кожи" } },
+            "cooking": { name: "Кулинария", subcategories: { "rations": "Рационы", "feasts": "Пиры" } },
+            "tailoring": { name: "Ткачество", subcategories: { "cloth-armor": "Тканевые доспехи", "embroidery": "Вышивка" } },
+            "scribing": { name: "Начертание", subcategories: { "scrolls": "Свитки", "inks": "Чернила" } },
+            "custom": { name: "Пользовательские", subcategories: { "uncategorized": "Без категории" } }
+        };
+
+        // 2. Читаем кастомные категории ГМа напрямую из настроек Foundry
+        let customCategories = {};
         try {
-            // Получаем все данные модуля через RecipeManager
-            // RecipeManager доступен глобально после инициализации модуля
-            if (window.RecipeManager) {
-                categories = window.RecipeManager.getData().categories;
-            } else {
-                // Пробуем получить через game.modules
-                const moduleData = game.modules.get('blue-man-crafting');
-                if (moduleData?.scripts) {
-                    // Ищем RecipeManager в загруженных скриптах
-                    console.log('BMC: Пробуем получить категории через модуль...');
-                }
-            }
-            
-            // Если все еще не получили, пробуем эмулировать загрузку
-            if (!categories || Object.keys(categories).length === 0) {
-                console.log('BMC: Используем резервный метод получения категорий');
-                // Загружаем базовые категории напрямую
-                categories = {
-                    "ingredients": {
-                        name: "Ингредиенты",
-                        subcategories: {
-                            "salt": "Соли",
-                            "suspension": "Суспензии",
-                            "ash": "Золы",
-                            "vitriol": "Купоросы",
-                            "sublimate": "Сублиматы",
-                            "essence": "Эссенции"
-                        }
-                    },
-                    "alchemy": {
-                        name: "Алхимия",
-                        subcategories: {
-                            "potions": "Зелья",
-                            "elixirs": "Эликсиры",
-                            "grenades": "Гранаты",
-                            "coatings": "Масла и яды"
-                        }
-                    },
-                    "smithing": {
-                        name: "Кузнечное дело",
-                        subcategories: {
-                            "weapons": "Оружие",
-                            "armor": "Доспехи",
-                            "tools": "Инструменты"
-                        }
-                    },
-                    "jewelry": {
-                        name: "Ювелирное дело",
-                        subcategories: {
-                            "gem-cutting": "Граненые камни",
-                            "enchantment-dust": "Чародейская пыль"
-                        }
-                    },
-                    "leatherworking": {
-                        name: "Кожевничество",
-                        subcategories: {
-                            "leather-armor": "Кожаные доспехи",
-                            "tanning": "Дубление кожи"
-                        }
-                    },
-                    "cooking": {
-                        name: "Кулинария",
-                        subcategories: {
-                            "rations": "Пайки",
-                            "feasts": "Пиршества"
-                        }
-                    },
-                    "tailoring": {
-                        name: "Ткачество",
-                        subcategories: {
-                            "cloth-armor": "Тканевые доспехи",
-                            "embroidery": "Вышивка"
-                        }
-                    }
-                };
+            const customData = game.settings.get('blue-man-crafting', 'customRecipes');
+            if (customData && customData.categories) {
+                customCategories = customData.categories;
             }
         } catch (e) {
-            console.error('BMC: Ошибка получения категорий:', e);
+            console.warn("BMC Macro: Не удалось прочитать кастомные категории", e);
         }
-        
-        this.categories = categories;
+
+        //3. Склеиваем базу и кастом
+        this.categories = { ...baseCategories, ...customCategories };
     }
     
     getData() {
@@ -112,7 +52,6 @@ class FinalRecipeCreator extends Application {
             result: this.result,
             category: this.category,
             subcategory: this.subcategory,
-            customCategoryName: this.customCategoryName,
             categories: this.categories
         };
     }
@@ -136,8 +75,7 @@ class FinalRecipeCreator extends Application {
         // Отладка - проверяем наличие селектов
         console.log('BMC: Найдены селекты:', {
             category: html.find('#categorySelect').length,
-            subcategory: html.find('#subcategorySelect').length,
-            customCategory: html.find('#customCategoryName').length
+            subcategory: html.find('#subcategorySelect').length
         });
         
         // Заполняем категории через JS
@@ -183,7 +121,6 @@ class FinalRecipeCreator extends Application {
         console.log('BMC: Селект категорий найден:', categorySelect.length);
         categorySelect.empty();
         categorySelect.append('<option value="">Выберите категорию...</option>');
-        categorySelect.append('<option value="custom">+ Создать новую категорию</option>');
         
         for (const [id, category] of Object.entries(this.categories)) {
             const option = `<option value="${id}">${category.name}</option>`;
@@ -202,19 +139,8 @@ class FinalRecipeCreator extends Application {
             
             console.log('BMC: Выбрана категория:', categoryId);
             
-            // Показываем/скрываем поле для кастомной категории
-            const customCategoryDiv = html.find('#customCategoryDiv');
-            const subcategoryDiv = html.find('#subcategoryDiv');
-            
-            if (categoryId === 'custom') {
-                customCategoryDiv.removeClass('hidden');
-                subcategoryDiv.addClass('hidden');
-            } else {
-                customCategoryDiv.addClass('hidden');
-                subcategoryDiv.removeClass('hidden');
-                // Обновляем список подкатегорий
-                this.updateSubcategories(categoryId);
-            }
+            // Обновляем список подкатегорий
+            this.updateSubcategories(categoryId);
         });
     }
     
@@ -427,25 +353,13 @@ class FinalRecipeCreator extends Application {
             return;
         }
         
-        // Проверяем категорию
         if (!this.category) {
             ui.notifications.error('Выберите категорию');
             return;
         }
-        
-        // Если выбрана кастомная категория, проверяем название
-        if (this.category === 'custom') {
-            this.customCategoryName = $('#customCategoryName').val();
-            if (!this.customCategoryName) {
-                ui.notifications.error('Введите название новой категории');
-                return;
-            }
-        } else {
-            // Для существующих категорий нужна подкатегория
-            if (!this.subcategory) {
-                ui.notifications.error('Выберите подкатегорию');
-                return;
-            }
+        if (!this.subcategory) {
+            ui.notifications.error('Выберите подкатегорию');
+            return;
         }
         
         const rarity = $('#raritySelect').val();
@@ -479,15 +393,8 @@ class FinalRecipeCreator extends Application {
         const randomScrollIcon = scrollIcons[Math.floor(Math.random() * scrollIcons.length)];
         
         // Получаем названия для отображения
-        let categoryName, subcategoryName;
-        
-        if (this.category === 'custom') {
-            categoryName = this.customCategoryName;
-            subcategoryName = 'Основные';
-        } else {
-            categoryName = this.categories[this.category]?.name || this.category;
-            subcategoryName = this.categories[this.category]?.subcategories?.[this.subcategory]?.name || this.subcategory;
-        }
+        const categoryName = this.categories[this.category]?.name || this.category;
+        const subcategoryName = this.categories[this.category]?.subcategories?.[this.subcategory]?.name || this.subcategory;
         
         // Создание данных рецепта
         const recipeData = {
@@ -512,9 +419,9 @@ class FinalRecipeCreator extends Application {
                     recipe: {
                         name: this.result.name,
                         rarity: rarity, // Добавляем редкость и в рецепт!
-                        type: this.category === 'custom' ? 'custom' : this.subcategory, // Используем подкатегорию как type
-                        categoryId: this.category === 'custom' ? 'custom.' + this.customCategoryName.toLowerCase().replace(/\s+/g, '_') : this.category,
-                        subcategoryId: this.category === 'custom' ? 'custom.' + this.customCategoryName.toLowerCase().replace(/\s+/g, '_') + '.main' : this.subcategory,
+                        type: this.subcategory, // Используем подкатегорию как type
+                        categoryId: this.category, // Основная категория
+                        subcategoryId: this.subcategory, // Подкатегория для globalCategories
                         input: {
                             slot1: this.ingredients.find(i => i.slot === 1) ? {
                                 type: "item",
@@ -563,7 +470,6 @@ class FinalRecipeCreator extends Application {
         this.result = null;
         this.category = null;
         this.subcategory = null;
-        this.customCategoryName = null;
         this.updateIngredientsList();
         this.updateResultDisplay();
         
@@ -572,17 +478,12 @@ class FinalRecipeCreator extends Application {
         $('#subcategorySelect').val('');
         $('#subcategorySelect').empty();
         $('#subcategorySelect').append('<option value="">Выберите подкатегорию...</option>');
-        $('#customCategoryName').val('');
         
         // Показываем все drop-зоны
         this.showDropZone('ingredient1');
         this.showDropZone('ingredient2');
         this.showDropZone('ingredient3');
         this.showDropZone('result');
-        
-        // Скрываем/показываем нужные поля
-        $('#customCategoryDiv').addClass('hidden');
-        $('#subcategoryDiv').removeClass('hidden');
         
         $('#raritySelect').val('common');
     }

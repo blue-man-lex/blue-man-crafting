@@ -17,91 +17,32 @@ class RecipeCreator extends Application {
         this.category = null;
         this.subcategory = null;
         
-        // Получаем категории из модуля
-        // Используем прямой доступ к данным модуля через настройки
-        let categories = {};
+        // 1. Базовые (вшитые) категории
+        const baseCategories = {
+            "ingredients": { name: "Ингредиенты", subcategories: { "suspension": "Суспензии", "essence": "Эссенции", "salt": "Соли", "ash": "Золы", "vitriol": "Купоросы", "sublimate": "Сублиматы" } },
+            "alchemy": { name: "Алхимия", subcategories: { "potions": "Зелья", "elixirs": "Эликсиры", "grenades": "Гранаты", "coatings": "Масла и яды" } },
+            "smithing": { name: "Кузнечное дело", subcategories: { "weapons": "Оружие", "armor": "Доспехи", "tools": "Инструменты" } },
+            "jewelry": { name: "Ювелирное дело", subcategories: { "gem-cutting": "Огранка камня", "enchantment-dust": "Чародейская пыль" } },
+            "leatherworking": { name: "Кожевничество", subcategories: { "leather-armor": "Кожаные доспехи", "tanning": "Дубление кожи" } },
+            "cooking": { name: "Кулинария", subcategories: { "rations": "Рационы", "feasts": "Пиры" } },
+            "tailoring": { name: "Ткачество", subcategories: { "cloth-armor": "Тканевые доспехи", "embroidery": "Вышивка" } },
+            "scribing": { name: "Начертание", subcategories: { "scrolls": "Свитки", "inks": "Чернила" } },
+            "custom": { name: "Пользовательские", subcategories: { "uncategorized": "Без категории" } }
+        };
+
+        // 2. Читаем кастомные категории ГМа напрямую из настроек Foundry
+        let customCategories = {};
         try {
-            // Получаем все данные модуля через RecipeManager
-            // RecipeManager доступен глобально после инициализации модуля
-            if (window.RecipeManager) {
-                categories = window.RecipeManager.getData().categories;
-            } else {
-                // Пробуем получить через game.modules
-                const moduleData = game.modules.get('blue-man-crafting');
-                if (moduleData?.scripts) {
-                    // Ищем RecipeManager в загруженных скриптах
-                    console.log('BMC: Пробуем получить категории через модуль...');
-                }
-            }
-            
-            // Если все еще не получили, пробуем эмулировать загрузку
-            if (!categories || Object.keys(categories).length === 0) {
-                console.log('BMC: Используем резервный метод получения категорий');
-                // Загружаем базовые категории напрямую
-                categories = {
-                    "ingredients": {
-                        name: "Ингредиенты",
-                        subcategories: {
-                            "salt": "Соли",
-                            "suspension": "Суспензии",
-                            "ash": "Золы",
-                            "vitriol": "Купоросы",
-                            "sublimate": "Сублиматы",
-                            "essence": "Эссенции"
-                        }
-                    },
-                    "alchemy": {
-                        name: "Алхимия",
-                        subcategories: {
-                            "potions": "Зелья",
-                            "elixirs": "Эликсиры",
-                            "grenades": "Гранаты",
-                            "coatings": "Масла и яды"
-                        }
-                    },
-                    "smithing": {
-                        name: "Кузнечное дело",
-                        subcategories: {
-                            "weapons": "Оружие",
-                            "armor": "Доспехи",
-                            "tools": "Инструменты"
-                        }
-                    },
-                    "jewelry": {
-                        name: "Ювелирное дело",
-                        subcategories: {
-                            "gem-cutting": "Граненые камни",
-                            "enchantment-dust": "Чародейская пыль"
-                        }
-                    },
-                    "leatherworking": {
-                        name: "Кожевничество",
-                        subcategories: {
-                            "leather-armor": "Кожаные доспехи",
-                            "tanning": "Дубление кожи"
-                        }
-                    },
-                    "cooking": {
-                        name: "Кулинария",
-                        subcategories: {
-                            "rations": "Пайки",
-                            "feasts": "Пиршества"
-                        }
-                    },
-                    "tailoring": {
-                        name: "Ткачество",
-                        subcategories: {
-                            "cloth-armor": "Тканевые доспехи",
-                            "embroidery": "Вышивка"
-                        }
-                    }
-                };
+            const customData = game.settings.get('blue-man-crafting', 'customRecipes');
+            if (customData && customData.categories) {
+                customCategories = customData.categories;
             }
         } catch (e) {
-            console.error('BMC: Ошибка получения категорий:', e);
+            console.warn("BMC Macro: Не удалось прочитать кастомные категории", e);
         }
-        
-        this.categories = categories;
+
+        //3. Склеиваем базу и кастом
+        this.categories = { ...baseCategories, ...customCategories };
     }
     
     getData() {
