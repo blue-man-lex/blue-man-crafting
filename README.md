@@ -125,6 +125,7 @@
 | Инструменты кожевника | `Compendium.blue-man-crafting.kit.Item.MgSUJJl15aYF7cxh` | Кожевничество |
 | Инструменты повара | `Compendium.blue-man-crafting.kit.Item.u8w67Me0N38QsB56` | Кулинария |
 | Инструменты ткача | `Compendium.blue-man-crafting.kit.Item.HQ5I0PuakA00M9uf` | Ткачество |
+| Инструменты начертателя | `Compendium.blue-man-crafting.kit.Item.7N8kP9qR2sT3vW4x` | Начертание |
 
 ### 💡 Как работает система зарядов
 
