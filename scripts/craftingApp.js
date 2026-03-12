@@ -9,11 +9,23 @@ export function setSocket(s) {
 }
 
 export class BG3CraftingApp extends Application {
+    // Единая карта соответствия подкатегорий их главным категориям
+    static SUBCATEGORY_MAP = {
+        "potions": "alchemy", "elixirs": "alchemy", "grenades": "alchemy", "coatings": "alchemy",
+        "suspension": "ingredients", "essence": "ingredients", "salt": "ingredients", "ash": "ingredients", "vitriol": "ingredients", "sublimate": "ingredients",
+        "weapons": "smithing", "armor": "smithing", "tools": "smithing",
+        "gem-cutting": "jewelry", "enchantment-dust": "jewelry",
+        "leather-armor": "leatherworking", "tanning": "leatherworking",
+        "rations": "cooking", "feasts": "cooking",
+        "cloth-armor": "tailoring", "embroidery": "tailoring",
+        "scrolls": "scribing", "inks": "scribing"
+    };
+
     constructor(actor) {
         // Адаптивная высота: считаем инструменты в инвентаре перед отрисовкой
         let kitCount = 0;
         if (actor && actor.items) {
-            const kitKeywords = ["алхимик", "кожевник", "кузнец", "повар", "ткач", "ювелир"];
+            const kitKeywords = ["алхимик", "кожевник", "кузнец", "повар", "ткач", "ювелир", "начертатель"];
             kitCount = actor.items.filter(i => 
                 kitKeywords.some(kw => i.name.toLowerCase().includes(kw))
             ).length;
@@ -178,32 +190,55 @@ export class BG3CraftingApp extends Application {
         const path = (folderPathNames || []).join("/").toLowerCase();
         if (!path) return null;
 
-        // Кузнечное дело
-        if (path.includes("кузнеч")) {
-            if (path.includes("доспех")) return "armor";
-            if (path.includes("оруж")) return "weapons";
-            if (path.includes("инструмент")) return "tools";
-            return null;
-        }
+        // Ингредиенты
+        if (path.includes("суспенз")) return "suspension";
+        if (path.includes("эссенц")) return "essence";
+        if (path.includes("соль") || path.includes("соли")) return "salt";
+        if (path.includes("зол")) return "ash";
+        if (path.includes("купорос") || path.includes("витриол")) return "vitriol";
+        if (path.includes("сублимат")) return "sublimate";
 
         // Алхимия
-        if (path.includes("алхим")) {
-            if (path.includes("зель")) return "potions";
-            if (path.includes("эликс")) return "elixirs";
-            if (path.includes("гранат")) return "grenades";
-            if (path.includes("масл") || path.includes("яд")) return "coatings";
-            return null;
+        if (path.includes("зель")) return "potions";
+        if (path.includes("эликс")) return "elixirs";
+        if (path.includes("гранат") || path.includes("бомб")) return "grenades";
+        if (path.includes("масл") || path.includes("яд") || path.includes("токсин")) return "coatings";
+
+        // Кузнечное дело
+        if (path.includes("кузнеч") || path.includes("оруж") || path.includes("доспех")) {
+            if (path.includes("доспех")) return "armor";
+            if (path.includes("инструмент")) return "tools";
+            return "weapons"; // fallback
         }
 
-        // Ингредиенты
-        if (path.includes("ингредиент")) {
-            if (path.includes("суспенз")) return "suspension";
-            if (path.includes("эссенц")) return "essence";
-            if (path.includes("соль")) return "salt";
-            if (path.includes("зол")) return "ash";
-            if (path.includes("купорос") || path.includes("витриол")) return "vitriol";
-            if (path.includes("сублимат")) return "sublimate";
-            return null;
+        // Ювелирное
+        if (path.includes("ювелир") || path.includes("камн") || path.includes("пыль")) {
+            if (path.includes("пыль")) return "enchantment-dust";
+            return "gem-cutting";
+        }
+
+        // Кожевничество
+        if (path.includes("кож") || path.includes("дублен")) {
+            if (path.includes("дублен")) return "tanning";
+            return "leather-armor";
+        }
+
+        // Кулинария
+        if (path.includes("кулинар") || path.includes("повар") || path.includes("пир") || path.includes("рацион")) {
+            if (path.includes("пир")) return "feasts";
+            return "rations";
+        }
+
+        // Ткачество
+        if (path.includes("ткач") || path.includes("вышив") || path.includes("ткан")) {
+            if (path.includes("вышив")) return "embroidery";
+            return "cloth-armor";
+        }
+
+        // Начертание
+        if (path.includes("начертан") || path.includes("свит") || path.includes("чернил")) {
+            if (path.includes("чернил")) return "inks";
+            return "scrolls";
         }
 
         return null;
@@ -213,22 +248,16 @@ export class BG3CraftingApp extends Application {
         const parts = (folderPathNames || []).map(p => String(p || "").trim()).filter(Boolean);
         if (parts.length < 1) return null;
 
-        // 1) Стандартные папки (существующие категории модуля)
+        // 1) Стандартные папки через глобальный маппер
         const knownType = this._inferTypeFromFolderPath(parts);
         if (knownType) {
-            if (["potions", "elixirs", "grenades", "coatings"].includes(knownType)) {
-                return { categoryId: "alchemy", subcategoryId: knownType };
-            }
-            if (["suspension", "essence", "salt", "ash", "vitriol", "sublimate"].includes(knownType)) {
-                return { categoryId: "ingredients", subcategoryId: knownType };
-            }
-            if (["weapons", "armor", "tools"].includes(knownType)) {
-                return { categoryId: "smithing", subcategoryId: knownType };
+            const mainCategory = BG3CraftingApp.SUBCATEGORY_MAP[knownType];
+            if (mainCategory) {
+                return { categoryId: mainCategory, subcategoryId: knownType };
             }
         }
 
-        // 2) Кастомные категории по правилу: Крафт/<Категория>/<Подкатегория>
-        // Пример: "Крафт/Волшебные палочки/Боевые"
+        // 2) Кастомные категории
         const idx = parts.findIndex(p => p && p.toLowerCase && p.toLowerCase() === "крафт");
         if (idx >= 0 && parts[idx + 1] && parts[idx + 2]) {
             const globalName = parts[idx + 1];
@@ -573,7 +602,7 @@ export class BG3CraftingApp extends Application {
         rawRecipes.forEach((recipe, index) => {
             const r = { ...recipe, originalIndex: index, id: `recipe_${index}`, isGM: isGM };
 
-            const isIngredient = ["suspension", "essence", "salt", "ash", "vitriol", "sublimate"].includes(r.type);
+            const isIngredient = BG3CraftingApp.SUBCATEGORY_MAP[r.type] === "ingredients";
             const isKnown = knownRecipes.includes(r.id) || isIngredient;
 
             if (isGM || isKnown) {
@@ -583,7 +612,8 @@ export class BG3CraftingApp extends Application {
                 // Берем статус из кэша (если он уже просчитан в фоне), иначе пусто
                 r.craftStatus = (this._recipeStatusCache && this._recipeStatusCache[r.id]) ? this._recipeStatusCache[r.id] : "";
 
-                const targetSubId = r.type || fallbackSubId;
+                // В приоритете берем subcategoryId (для кастомных), затем type (для базовых)
+                const targetSubId = r.subcategoryId || r.type || fallbackSubId;
                 const sub = subIndex.get(targetSubId);
                 if (sub) sub.recipes.push(r);
                 else {
@@ -1056,31 +1086,7 @@ export class BG3CraftingApp extends Application {
 
         // Находим основную категорию
         let mainCategory = categoryId;
-        const categoryMapping = {
-            // Алхимия (только готовые продукты)
-            "potions": "alchemy", "elixirs": "alchemy", "grenades": "alchemy", "coatings": "alchemy",
-
-            // Ингредиенты (отдельная категория, требует алхимию)
-            "suspension": "alchemy", "essence": "alchemy", "salt": "alchemy", "ash": "alchemy",
-            "vitriol": "alchemy", "sublimate": "alchemy",
-
-            // Кузнечное дело и подкатегории
-            "weapons": "smithing", "armor": "smithing", "tools": "smithing",
-
-            // Ювелирное дело и подкатегории
-            "gem-cutting": "jewelry", "enchantment-dust": "jewelry",
-
-            // Кожевничество и подкатегории
-            "leather-armor": "leatherworking", "tanning": "leatherworking",
-
-            // Кулинария и подкатегории
-            "rations": "cooking", "feasts": "cooking",
-
-            // Ткачество и подкатегории
-            "cloth-armor": "tailoring", "embroidery": "tailoring"
-        };
-
-        mainCategory = categoryMapping[categoryId] || categoryId;
+        mainCategory = BG3CraftingApp.SUBCATEGORY_MAP[categoryId] || categoryId;
 
         // Получаем информацию о наборе
         const kitInfo = kits.kits[mainCategory];
@@ -1171,45 +1177,7 @@ export class BG3CraftingApp extends Application {
             return kits.kits[categoryId].hasKit;
         }
 
-        // Соответствие подкатегорий и основных категорий
-        const categoryMapping = {
-            // Алхимия (только готовые продукты)
-            "potions": "alchemy",
-            "elixirs": "alchemy",
-            "grenades": "alchemy",
-            "coatings": "alchemy",
-
-            // Ингредиенты (отдельная категория, требует алхимию)
-            "suspension": "alchemy",
-            "essence": "alchemy",
-            "salt": "alchemy",
-            "ash": "alchemy",
-            "vitriol": "alchemy",
-            "sublimate": "alchemy",
-
-            // Кузнечное дело и подкатегории
-            "weapons": "smithing",
-            "armor": "smithing",
-            "tools": "smithing",
-
-            // Ювелирное дело и подкатегории
-            "gem-cutting": "jewelry",
-            "enchantment-dust": "jewelry",
-
-            // Кожевничество и подкатегории
-            "leather-armor": "leatherworking",
-            "tanning": "leatherworking",
-
-            // Кулинария и подкатегории
-            "rations": "cooking",
-            "feasts": "cooking",
-
-            // Ткачество и подкатегории
-            "cloth-armor": "tailoring",
-            "embroidery": "tailoring"
-        };
-
-        const mainCategory = categoryMapping[categoryId];
+        const mainCategory = BG3CraftingApp.SUBCATEGORY_MAP[categoryId];
         if (mainCategory) {
             return kits.kits[mainCategory]?.hasKit || false;
         }
@@ -1326,17 +1294,40 @@ export class BG3CraftingApp extends Application {
                 recipes: customData.recipes || []
             });
 
-            // Добавляем рецепт
+            // Добавляем рецепт, сохраняя ВСЕ поля из макроса
             const newRecipe = {
                 name: recipeData.name,
                 type: recipeData.type || "misc",
+                categoryId: recipeData.categoryId || null,
+                subcategoryId: recipeData.subcategoryId || null,
                 ingredients: recipeData.ingredients,
                 result: recipeData.result,
                 isCustom: true
             };
 
-            // Если type не указан, пытаемся определить цель по папке World Item результата
-            if (newRecipe.type === "misc" && newRecipe.result?.uuid) {
+            // Если макрос передал кастомную категорию, которой еще нет в настройках мира, создаем её
+            if (newRecipe.categoryId && newRecipe.categoryId.startsWith('custom.')) {
+                if (!newCategories[newRecipe.categoryId]) {
+                    // Генерируем красивое имя из ID (custom.nekromantiya -> Nekromantiya)
+                    const rawName = newRecipe.categoryId.split('.')[1] || "Custom";
+                    const formattedName = rawName.charAt(0).toUpperCase() + rawName.slice(1).replace(/_/g, ' ');
+                    
+                    newCategories[newRecipe.categoryId] = {
+                        name: formattedName,
+                        global: true,
+                        subcategories: {}
+                    };
+                }
+                if (newRecipe.subcategoryId && !newCategories[newRecipe.categoryId].subcategories[newRecipe.subcategoryId]) {
+                    newCategories[newRecipe.categoryId].subcategories[newRecipe.subcategoryId] = {
+                        name: "Основные",
+                        items: []
+                    };
+                }
+            }
+
+            // Если type не указан и нет кастомной категории, пытаемся определить цель по папке World Item результата
+            if (newRecipe.type === "misc" && !newRecipe.categoryId && newRecipe.result?.uuid) {
                 const inferred = await this._inferRecipeTargetFromResultUuid(newRecipe.result.uuid);
                 if (inferred?.subcategoryId) {
                     newRecipe.subcategoryId = inferred.subcategoryId;

@@ -1474,7 +1474,7 @@ export const RECIPES = [
             slot2: { type: "item", uuid: "Compendium.blue-man-crafting.BG3.Item.ZgL6QzfTlOFDAzyZ", qty: 1 },
             slot3: { type: "category", categoryId: "ash", qty: 1 }
         },
-        result: { uuid: "Compendium.blue-man-crafting.BG3.Item.GZs1ycJpqltImmjW", qty: 1 }
+        result: { uuid: "Compendium.blue-man-crafting.BG3.Item.UmKwJX7tdSjSYQYY", qty: 1 }
     },
     {   name: "Свиток состояний",
         type: "scrolls",
