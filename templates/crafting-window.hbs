@@ -72,7 +72,7 @@
                             {{#if (lookup ../../expandedSubcategories this.id)}}
                             <div class="subcategory-content">
                                 {{#each this.recipes}}
-                                <div class="category-btn recipe-item {{#if (eq ../../../selectedRecipe.name this.name)}}active{{/if}}" 
+                                <div class="category-btn recipe-item {{this.craftStatus}} {{#if (eq ../../../selectedRecipe.name this.name)}}active{{/if}}" 
                                      data-index="{{this.originalIndex}}">
                                     <span style="flex: 1;">{{this.name}}</span>
                                     {{#if this.isGM}}
@@ -128,9 +128,9 @@
         <div class="craft-stage">
             <div class="components-area">
                 <div class="slot-container">
-                    <div class="item-slot {{#if slots.slot1.isValid}}valid{{else if slots.slot1}}invalid{{/if}}">
+                    <div class="item-slot {{#if slots.slot1.isValid}}valid{{else if slots.slot1}}invalid{{/if}}" data-uuid="{{slots.slot1.uuid}}" data-category-id="{{slots.slot1.categoryId}}" data-name="{{slots.slot1.name}}">
                         {{#if slots.slot1}}
-                            <img src="{{slots.slot1.img}}" data-tooltip="{{slots.slot1.name}}" class="slot-image">
+                            <img src="{{slots.slot1.img}}" class="slot-image">
                             <span class="slot-qty-text {{#if slots.slot1.isValid}}ok{{else}}bad{{/if}}">
                                 {{slots.slot1.currentQty}}/{{slots.slot1.requiredQty}}
                             </span>
@@ -140,9 +140,9 @@
                 </div>
                 
                 <div class="slot-container" style="opacity: {{#if slots.slot2}}1{{else}}0.3{{/if}};">
-                    <div class="item-slot {{#if slots.slot2.isValid}}valid{{else if slots.slot2}}invalid{{/if}}">
+                    <div class="item-slot {{#if slots.slot2.isValid}}valid{{else if slots.slot2}}invalid{{/if}}" data-uuid="{{slots.slot2.uuid}}" data-category-id="{{slots.slot2.categoryId}}" data-name="{{slots.slot2.name}}">
                          {{#if slots.slot2}}
-                            <img src="{{slots.slot2.img}}" data-tooltip="{{slots.slot2.name}}" class="slot-image">
+                            <img src="{{slots.slot2.img}}" class="slot-image">
                             <span class="slot-qty-text {{#if slots.slot2.isValid}}ok{{else}}bad{{/if}}">
                                 {{slots.slot2.currentQty}}/{{slots.slot2.requiredQty}}
                             </span>
@@ -152,9 +152,9 @@
                 </div>
 
                 <div class="slot-container">
-                    <div class="item-slot {{#if slots.slot3.isValid}}valid{{else if slots.slot3}}invalid{{/if}}">
+                    <div class="item-slot {{#if slots.slot3.isValid}}valid{{else if slots.slot3}}invalid{{/if}}" data-uuid="{{slots.slot3.uuid}}" data-category-id="{{slots.slot3.categoryId}}" data-name="{{slots.slot3.name}}">
                         {{#if slots.slot3}}
-                            <img src="{{slots.slot3.img}}" data-tooltip="{{slots.slot3.name}}" class="slot-image">
+                            <img src="{{slots.slot3.img}}" class="slot-image">
                             <span class="slot-qty-text {{#if slots.slot3.isValid}}ok{{else}}bad{{/if}}">
                                 {{slots.slot3.currentQty}}/{{slots.slot3.requiredQty}}
                             </span>
@@ -167,8 +167,8 @@
             <div class="result-area">
                 {{#if resultItem}}
                     <!-- Добавляем класс редкости динамически -->
-                    <div class="result-slot rarity-{{resultItem.rarity}}">
-                        <img src="{{resultItem.img}}" data-tooltip="{{resultItem.name}}" class="slot-image">
+                    <div class="result-slot rarity-{{resultItem.rarity}}" data-uuid="{{resultItem.uuid}}" data-category-id="{{resultItem.categoryId}}" data-name="{{resultItem.name}}">
+                        <img src="{{resultItem.img}}" class="slot-image">
                     </div>
                 {{else}}
                     <div class="result-slot" style="opacity: 0.3;">

@@ -1563,82 +1563,47 @@
     text-align: center;
 
     box-shadow: inset 0 0 0 1px rgba(0,0,0,0.3);
-
 }
 
-
-
 /* === ГЛОБАЛЬНЫЕ КАТЕГОРИИ === */
-
 .bg3-crafting-app [data-category="alchemy"] .category-icon::before { content: "\f0c3"; } /* fa-flask */
-
 .bg3-crafting-app [data-category="ingredients"] .category-icon::before { content: "\f4d8"; } /* fa-leaf */
-
 .bg3-crafting-app [data-category="smithing"] .category-icon::before { content: "\f6de"; } /* fa-hammer */
-
 .bg3-crafting-app [data-category="jewelry"] .category-icon::before { content: "\f3a5"; } /* fa-gem */
-
 .bg3-crafting-app [data-category="leatherworking"] .category-icon::before { content: "\f553"; } /* fa-tshirt */
-
 .bg3-crafting-app [data-category="cooking"] .category-icon::before { content: "\f2e7"; } /* fa-utensils */
-
-.bg3-crafting-app [data-category="tailoring"] .category-icon::before { content: "\f1fc"; } /* fa-paint-brush */
-
-
+.bg3-crafting-app [data-category="tailoring"] .category-icon::before { content: "\f553"; } /* fa-tshirt */
+.bg3-crafting-app [data-category="scribing"] .category-icon::before { content: "\f304"; } /* fa-pen-fancy */
+.bg3-crafting-app [data-category="custom"] .category-icon::before { content: "\f07b"; } /* fa-folder */
 
 /* === ПОДКАТЕГОРИИ АЛХИМИИ === */
-
 .bg3-crafting-app [data-subcategory="potions"] .subcategory-header::before { content: "\f0c3"; } /* fa-flask */
-
 .bg3-crafting-app [data-subcategory="elixirs"] .subcategory-header::before { content: "\f0d0"; } /* fa-magic */
-
 .bg3-crafting-app [data-subcategory="grenades"] .subcategory-header::before { content: "\f1e2"; } /* fa-bomb */
-
 .bg3-crafting-app [data-subcategory="coatings"] .subcategory-header::before { content: "\f043"; } /* fa-tint */
 
-
-
 /* === ПОДКАТЕГОРИИ ИНГРЕДИЕНТОВ === */
-
 .bg3-crafting-app [data-subcategory="suspension"] .subcategory-header::before { content: "\f043"; } /* fa-tint */
-
 .bg3-crafting-app [data-subcategory="essence"] .subcategory-header::before { content: "\f0d0"; } /* fa-magic */
-
 .bg3-crafting-app [data-subcategory="salt"] .subcategory-header::before { content: "\f5cb"; } /* fa-mortar-pestle */
-
 .bg3-crafting-app [data-subcategory="ash"] .subcategory-header::before { content: "\f06d"; } /* fa-fire */
-
 .bg3-crafting-app [data-subcategory="vitriol"] .subcategory-header::before { content: "\f714"; } /* fa-skull */
-
 .bg3-crafting-app [data-subcategory="sublimate"] .subcategory-header::before { content: "\f0c2"; } /* fa-cloud */
 
-
-
 /* === ОСТАЛЬНЫЕ ПОДКАТЕГОРИИ === */
-
 .bg3-crafting-app [data-subcategory="weapons"] .subcategory-header::before { content: "\f132"; } /* fa-shield-alt */
-
 .bg3-crafting-app [data-subcategory="armor"] .subcategory-header::before { content: "\f132"; } /* fa-shield-alt */
-
 .bg3-crafting-app [data-subcategory="tools"] .subcategory-header::before { content: "\f0ad"; } /* fa-wrench */
-
 .bg3-crafting-app [data-subcategory="gem-cutting"] .subcategory-header::before { content: "\f3a5"; } /* fa-gem */
-
 .bg3-crafting-app [data-subcategory="enchantment-dust"] .subcategory-header::before { content: "\f0d0"; } /* fa-magic */
-
 .bg3-crafting-app [data-subcategory="leather-armor"] .subcategory-header::before { content: "\f132"; } /* fa-shield-alt */
-
-.bg3-crafting-app [data-subcategory="tanning"] .subcategory-header::before { content: "\f6cc"; } /* fa-paw */
-
+.bg3-crafting-app [data-subcategory="tanning"] .subcategory-header::before { content: "\f0c4"; } /* fa-cut/scissors */
 .bg3-crafting-app [data-subcategory="rations"] .subcategory-header::before { content: "\f2e7"; } /* fa-utensils */
-
 .bg3-crafting-app [data-subcategory="feasts"] .subcategory-header::before { content: "\f0fc"; } /* fa-beer */
-
 .bg3-crafting-app [data-subcategory="cloth-armor"] .subcategory-header::before { content: "\f553"; } /* fa-tshirt */
-
 .bg3-crafting-app [data-subcategory="embroidery"] .subcategory-header::before { content: "\f1fc"; } /* fa-paint-brush */
-
-
+.bg3-crafting-app [data-subcategory="scrolls"] .subcategory-header::before { content: "\f56c"; } /* fa-scroll */
+.bg3-crafting-app [data-subcategory="inks"] .subcategory-header::before { content: "\f043"; } /* fa-tint */
 
 /* Группы рецептов (Аккордеон) */
 

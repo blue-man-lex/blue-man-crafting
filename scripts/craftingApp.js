@@ -889,10 +889,12 @@ export class BG3CraftingApp extends Application {
                 matches = RecipeManager._compareUuids(req.id || req.uuid, itemData);
             }
 
+            // Строгая проверка имени (без эффекта "матрешки")
             if (!matches && targetName) {
-                const name = item.name.toLowerCase();
-                const target = targetName.toLowerCase();
-                if (name.includes(target) || target.includes(name)) {
+                const name = item.name.toLowerCase().trim();
+                const target = targetName.toLowerCase().trim();
+                // Требуем точного совпадения названий, чтобы "Кинжал" не съел "Кинжальник"
+                if (name === target) {
                     matches = true;
                 }
             }
@@ -1496,11 +1498,13 @@ export class BG3CraftingApp extends Application {
                     matches = RecipeManager._compareUuids(input.originalReq.id || input.originalReq.uuid, itemData);
                 }
 
-                // Фолбэк по имени
+                // Строгая фоллбэк проверка по имени
                 if (!matches && input.targetName) {
-                     const name = item.name.toLowerCase();
-                     const target = input.targetName.toLowerCase();
-                     if (name.includes(target) || target.includes(name)) matches = true;
+                     const name = item.name.toLowerCase().trim();
+                     const target = input.targetName.toLowerCase().trim();
+                     if (name === target) {
+                         matches = true;
+                     }
                 }
                 return matches;
             });
