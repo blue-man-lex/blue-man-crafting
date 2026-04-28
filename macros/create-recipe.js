@@ -11,12 +11,12 @@ class RecipeCreator extends Application {
             resizable: false,
             minimizable: false
         });
-        
+
         this.ingredients = [];
         this.result = null;
         this.category = null;
         this.subcategory = null;
-        
+
         // 1. Базовые (вшитые) категории
         const baseCategories = {
             "ingredients": { name: "Ингредиенты", subcategories: { "suspension": "Суспензии", "essence": "Эссенции", "salt": "Соли", "ash": "Золы", "vitriol": "Купоросы", "sublimate": "Сублиматы" } },
@@ -44,7 +44,7 @@ class RecipeCreator extends Application {
         //3. Склеиваем базу и кастом
         this.categories = { ...baseCategories, ...customCategories };
     }
-    
+
     getData() {
         console.log('BMC: getData вызван, категории:', this.categories);
         return {
@@ -55,32 +55,32 @@ class RecipeCreator extends Application {
             categories: this.categories
         };
     }
-    
+
     activateListeners(html) {
         super.activateListeners(html);
-        
+
         // Обработка drag&drop
         html.find('#ingredientsZone').on('drop', this.handleIngredientDrop.bind(this));
         html.find('#resultZone').on('drop', this.handleResultDrop.bind(this));
         html.find('.drop-zone').on('dragover', (e) => e.preventDefault());
-        
+
         // Кнопки показа скрытых зон
         html.find('#showIngredientsZone').on('click', () => this.showDropZone('ingredients'));
         html.find('#showResultZone').on('click', () => this.showDropZone('result'));
-        
+
         // Отладка - проверяем наличие селектов
         console.log('BMC: Найдены селекты:', {
             category: html.find('#categorySelect').length,
             subcategory: html.find('#subcategorySelect').length
         });
-        
+
         // Заполняем категории через JS
         this.populateCategories(html);
-        
+
         // Привязываем обработчики ПОСЛЕ заполнения категорий
         html.find('#categorySelect').on('change', this.handleCategoryChange.bind(this));
         html.find('#subcategorySelect').on('change', this.handleSubcategoryChange.bind(this));
-        
+
         // Устанавливаем текущие значения
         if (this.category) {
             html.find('#categorySelect').val(this.category);
@@ -89,84 +89,84 @@ class RecipeCreator extends Application {
                 html.find('#subcategorySelect').val(this.subcategory);
             }
         }
-        
+
         // Кнопки
         html.find('#createRecipeBtn').on('click', this.createRecipe.bind(this));
         html.find('#clearBtn').on('click', this.clearAll.bind(this));
     }
-    
+
     showDropZone(type) {
         const zone = $(`#${type}Zone`);
         const showButton = $(`#show${type.charAt(0).toUpperCase() + type.slice(1)}Zone`);
-        
+
         zone.removeClass('hidden');
         showButton.hide();
     }
-    
+
     hideDropZone(type) {
         const zone = $(`#${type}Zone`);
         const showButton = $(`#show${type.charAt(0).toUpperCase() + type.slice(1)}Zone`);
-        
+
         zone.addClass('hidden');
         showButton.show();
     }
-    
+
     populateCategories(html) {
         console.log('BMC: Заполнение категорий, данные:', this.categories);
         const categorySelect = html.find('#categorySelect');
         console.log('BMC: Селект категорий найден:', categorySelect.length);
         categorySelect.empty();
         categorySelect.append('<option value="">Выберите категорию...</option>');
-        
+
         for (const [id, category] of Object.entries(this.categories)) {
             const option = `<option value="${id}">${category.name}</option>`;
             categorySelect.append(option);
             console.log(`BMC: Добавлена категория: ${id} -> ${category.name}`);
         }
-        
+
         console.log('BMC: Категории заполнены, всего опций:', categorySelect.find('option').length);
-        
+
         // Добавляем обработчик напрямую здесь
         categorySelect.off('change').on('change', (e) => {
             console.log('BMC: Сработал обработчик выбора категории!');
             const categoryId = e.target.value;
             this.category = categoryId;
             this.subcategory = null; // Сбрасываем подкатегорию
-            
+
             console.log('BMC: Выбрана категория:', categoryId);
-            
+
             // Обновляем список подкатегорий
             this.updateSubcategories(categoryId);
         });
     }
-    
+
     handleCategoryChange(event) {
         const categoryId = event.target.value;
         this.category = categoryId;
         this.subcategory = null; // Сбрасываем подкатегорию
-        
+
         console.log('BMC: Выбрана категория:', categoryId);
-        
+
         // Обновляем список подкатегорий
         this.updateSubcategories(categoryId);
-        
+
         // НЕ перерисовываем весь интерфейс - это сбрасывает обработчики
         // this.render(false); 
     }
-    
+
     handleSubcategoryChange(event) {
         const subcategoryId = event.target.value;
         this.subcategory = subcategoryId;
     }
-    
+
     updateSubcategories(categoryId) {
         console.log('BMC: Обновление подкатегорий для категории:', categoryId);
         console.log('BMC: Доступные категории:', this.categories);
-        
+
         const subcategorySelect = $('#subcategorySelect');
         subcategorySelect.empty();
         subcategorySelect.append('<option value="">Выберите подкатегорию</option>');
-        
+
         if (categoryId && this.categories[categoryId]?.subcategories) {
             const subcategories = this.categories[categoryId].subcategories;
             console.log('BMC: Найденные подкатегории:', subcategories);
@@ -179,12 +179,12 @@ class RecipeCreator extends Application {
             console.log('BMC: Подкатегории не найдены для категории:', categoryId);
         }
     }
-    
+
     handleIngredientDrop(event) {
         event.preventDefault();
         try {
             const data = JSON.parse(event.originalEvent.dataTransfer.getData('text/plain'));
-            
+
             if (data.type === 'Item') {
                 this.addIngredient(data);
             }
@@ -193,12 +193,12 @@ class RecipeCreator extends Application {
             ui.notifications.error('Не удалось обработать перетаскиваемый элемент');
         }
     }
-    
+
     handleResultDrop(event) {
         event.preventDefault();
         try {
             const data = JSON.parse(event.originalEvent.dataTransfer.getData('text/plain'));
-            
+
             if (data.type === 'Item') {
                 this.setResult(data);
             }
@@ -207,19 +207,19 @@ class RecipeCreator extends Application {
             ui.notifications.error('Не удалось обработать перетаскиваемый элемент');
         }
     }
-    
+
     async addIngredient(itemData) {
         // Получаем полный предмет по UUID
         const item = await fromUuid(itemData.uuid);
-        
+
         if (!item) {
             console.error('Не удалось найти предмет по UUID:', itemData.uuid);
             ui.notifications.error('Не удалось найти предмет');
             return;
         }
-        
+
         console.log('Полученный предмет:', item);
-        
+
         const existing = this.ingredients.find(i => i.uuid === itemData.uuid);
         if (existing) {
             existing.qty++;
@@ -232,43 +232,43 @@ class RecipeCreator extends Application {
             });
         }
         this.updateIngredientsList();
-        
+
         // Скрываем drop-зону после добавления первого ингредиента
         if (this.ingredients.length === 1) {
             this.hideDropZone('ingredients');
         }
     }
-    
+
     async setResult(itemData) {
         // Получаем полный предмет по UUID
         const item = await fromUuid(itemData.uuid);
-        
+
         if (!item) {
             console.error('Не удалось найти предмет по UUID:', itemData.uuid);
             ui.notifications.error('Не удалось найти предмет');
             return;
         }
-        
+
         console.log('Полученный предмет (результат):', item);
-        
+
         // Получаем редкость из системы dnd5e
         const rarity = item.system?.rarity || "common";
-        
+
         this.result = {
             uuid: item.uuid,
             name: item.name,
             img: item.img,
             rarity: rarity // Добавляем редкость!
         };
-        
+
         this.updateResultDisplay();
         this.hideDropZone('result');
     }
-    
+
     updateIngredientsList() {
         const list = $('#ingredientsList');
         list.empty();
-        
+
         this.ingredients.forEach((ingredient, index) => {
             const item = $(`
                 <div class="ingredient-item">
@@ -284,19 +284,19 @@ class RecipeCreator extends Application {
                     </button>
                 </div>
             `);
-            
+
             item.find('.qty-minus').on('click', () => this.changeQty(index, -1));
             item.find('.qty-plus').on('click', () => this.changeQty(index, 1));
             item.find('.remove-ingredient').on('click', () => this.removeIngredient(index));
-            
+
             list.append(item);
         });
     }
-    
+
     updateResultDisplay() {
         const display = $('#resultDisplay');
         display.empty();
-        
+
         if (this.result) {
             display.html(`
                 <div class="result-item">
@@ -307,39 +307,39 @@ class RecipeCreator extends Application {
                     </button>
                 </div>
             `);
-            
+
             // Добавляем обработчик для кнопки удаления результата
             display.find('.remove-result').on('click', () => this.removeResult());
         }
     }
-    
+
     removeResult() {
         this.result = null;
         this.updateResultDisplay();
-        
+
         // Показываем drop-зону результата обратно
         this.showDropZone('result');
     }
-    
+
     changeQty(index, delta) {
         this.ingredients[index].qty = Math.max(1, this.ingredients[index].qty + delta);
         this.updateIngredientsList();
     }
-    
+
     removeIngredient(index) {
         this.ingredients.splice(index, 1);
         this.updateIngredientsList();
-        
+
         // Показываем drop-зону если удалили все ингредиенты
         if (this.ingredients.length === 0) {
             this.showDropZone('ingredients');
         }
     }
-    
+
     handleCategoryChange(event) {
         const select = $(event.currentTarget);
         const newCategoryInput = $('#newCategoryName');
-        
+
         if (select.val() === 'new') {
             newCategoryInput.show();
         } else {
@@ -347,37 +347,37 @@ class RecipeCreator extends Application {
             this.category = select.val();
         }
     }
-    
+
     async createRecipe() {
         if (this.ingredients.length === 0) {
             ui.notifications.error('Добавьте хотя бы один компонент');
             return;
         }
-        
+
         if (!this.result) {
             ui.notifications.error('Укажите результат крафта');
             return;
         }
-        
+
         if (!this.category) {
             ui.notifications.error('Выберите категорию');
             return;
         }
-        
+
         if (!this.subcategory) {
             ui.notifications.error('Выберите подкатегорию');
             return;
         }
-        
+
         const rarity = $('#raritySelect').val();
-        
+
         console.log('Создание свитка с редкостью:', rarity);
         console.log('Значение селекта:', $('#raritySelect').val());
-        
+
         // Получаем названия для отображения
         const categoryName = this.categories[this.category]?.name || this.category;
         const subcategoryName = this.categories[this.category]?.subcategories?.[this.subcategory]?.name || this.subcategory;
-        
+
         // Рандомная иконка для свитка из папки icons/sundries/documents
         const scrollIcons = [
             "icons/sundries/documents/blueprint-magical.webp",
@@ -418,7 +418,7 @@ class RecipeCreator extends Application {
             "icons/sundries/documents/parchment-plain-tan.webp"
         ];
         const randomScrollIcon = scrollIcons[Math.floor(Math.random() * scrollIcons.length)];
-        
+
         // Создание данных рецепта
         const recipeData = {
             name: `Рецепт: ${this.result.name}`,
@@ -472,7 +472,7 @@ class RecipeCreator extends Application {
                 }
             }
         };
-        
+
         // Создание свитка в world items
         try {
             const recipeItem = await Item.create(recipeData);
@@ -483,7 +483,7 @@ class RecipeCreator extends Application {
             ui.notifications.error('Не удалось создать рецепт: ' + error.message);
         }
     }
-    
+
     clearAll() {
         this.ingredients = [];
         this.result = null;
@@ -491,17 +491,17 @@ class RecipeCreator extends Application {
         this.subcategory = null;
         this.updateIngredientsList();
         this.updateResultDisplay();
-        
+
         // Сбрасываем селекты
         $('#categorySelect').val('');
         $('#subcategorySelect').val('');
         $('#subcategorySelect').empty();
         $('#subcategorySelect').append('<option value="">Выберите подкатегорию</option>');
-        
+
         // Показываем все drop-зоны
         this.showDropZone('ingredients');
         this.showDropZone('result');
-        
+
         $('#raritySelect').val('common');
     }
 }

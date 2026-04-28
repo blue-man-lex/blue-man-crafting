@@ -8,31 +8,33 @@
                     <button class="dropdown-toggle" id="playerDropdown" type="button" data-toggle="dropdown">
                         <span id="selectedPlayerName">
                             {{#if (eq selectedPlayerId "all")}}
-                                Все игроки
+                            Все игроки
                             {{else}}
-                                {{#each players}}
-                                    {{#if (eq ../selectedPlayerId this.id)}}
-                                        {{this.name}}
-                                    {{/if}}
-                                {{/each}}
-                                {{#unless players}}
-                                    Все игроки
-                                {{/unless}}
+                            {{#each players}}
+                            {{#if (eq ../selectedPlayerId this.id)}}
+                            {{this.name}}
+                            {{/if}}
+                            {{/each}}
+                            {{#unless players}}
+                            Все игроки
+                            {{/unless}}
                             {{/if}}
                         </span>
                         <i class="fas fa-chevron-down"></i>
                     </button>
                     <div class="dropdown-menu" id="playerDropdownMenu">
-                        <a class="dropdown-item {{#if (eq selectedPlayerId "all")}}active{{/if}}" data-player-id="all" href="#">Все игроки</a>
+                        <a class="dropdown-item {{#if (eq selectedPlayerId "all")}}active{{/if}}" data-player-id="all"
+                            href="#">Все игроки</a>
                         {{#each players}}
-                        <a class="dropdown-item {{#if (eq ../selectedPlayerId this.id)}}active{{/if}}" data-player-id="{{this.id}}" href="#">{{this.name}}</a>
+                        <a class="dropdown-item {{#if (eq ../selectedPlayerId this.id)}}active{{/if}}"
+                            data-player-id="{{this.id}}" href="#">{{this.name}}</a>
                         {{/each}}
                     </div>
                 </div>
             </div>
             {{/if}}
         </div>
-        
+
         <!-- Окно изучения рецептов -->
         <div class="recipe-discovery">
             <div class="discovery-slot scrolls-trigger" data-tooltip="Открыть свитки для изучения рецептов">
@@ -48,7 +50,7 @@
             </div>
             {{/if}}
         </div>
-        
+
         <div class="recipe-list">
             <!-- Глобальные категории -->
             {{#each globalCategories}}
@@ -67,27 +69,27 @@
                                 <span class="subcategory-icon"></span>
                                 <span>{{this.name}}</span>
                                 <span class="subcategory-recipe-count">{{this.recipes.length}}</span>
-                                <span class="subcategory-chevron">{{#if (lookup ../../expandedSubcategories this.id)}}▼{{else}}▶{{/if}}</span>
+                                <span class="subcategory-chevron">{{#if (lookup ../../expandedSubcategories
+                                    this.id)}}▼{{else}}▶{{/if}}</span>
                             </div>
                             {{#if (lookup ../../expandedSubcategories this.id)}}
                             <div class="subcategory-content">
                                 {{#each this.recipes}}
-                                <div class="category-btn recipe-item {{this.craftStatus}} {{#if (eq ../../../selectedRecipe.name this.name)}}active{{/if}}" 
-                                     data-index="{{this.originalIndex}}">
+                                <div class="category-btn recipe-item {{this.craftStatus}} {{#if (eq ../../../selectedRecipe.name this.name)}}active{{/if}}"
+                                    data-index="{{this.originalIndex}}">
                                     <span style="flex: 1;">{{this.name}}</span>
                                     {{#if this.isGM}}
-                                        {{#if this.canToggle}}
-                                            <i class="fas fa-eye knowledge-toggle {{#if this.isKnown}}known{{else}}unknown{{/if}}" 
-                                               data-id="{{this.id}}" 
-                                               title="{{#if this.isKnown}}Игрок знает рецепт{{else}}Игрок НЕ знает рецепт{{/if}}">
-                                            </i>
-                                        {{/if}}
-                                        {{#if this.isCustom}}
-                                            <i class="fas fa-times delete-recipe-btn" 
-                                               data-index="{{this.originalIndex}}"
-                                               title="Удалить этот рецепт">
-                                            </i>
-                                        {{/if}}
+                                    {{#if this.canToggle}}
+                                    <i class="fas fa-eye knowledge-toggle {{#if this.isKnown}}known{{else}}unknown{{/if}}"
+                                        data-id="{{this.id}}"
+                                        title="{{#if this.isKnown}}Игрок знает рецепт{{else}}Игрок НЕ знает рецепт{{/if}}">
+                                    </i>
+                                    {{/if}}
+                                    {{#if this.isCustom}}
+                                    <i class="fas fa-times delete-recipe-btn" data-index="{{this.originalIndex}}"
+                                        title="Удалить этот рецепт">
+                                    </i>
+                                    {{/if}}
                                     {{/if}}
                                 </div>
                                 {{/each}}
@@ -110,54 +112,60 @@
 
         <!-- Индикатор наличия наборов -->
         {{#if craftingKits.hasAnyKit}}
-            {{#each craftingKits.kits}}
-                {{#if this.hasKit}}
-                    <div class="kit-status valid">
-                        <i class="fas fa-check-circle"></i>
-                        <span>Есть набор *{{this.name}}*</span>
-                    </div>
-                {{/if}}
-            {{/each}}
+        {{#each craftingKits.kits}}
+        {{#if this.hasKit}}
+        <div class="kit-status valid">
+            <i class="fas fa-check-circle"></i>
+            <span>Есть набор *{{this.name}}*</span>
+        </div>
+        {{/if}}
+        {{/each}}
         {{else}}
-            <div class="kit-status invalid">
-                <i class="fas fa-times-circle"></i>
-                <span>Нет ни одного набора!</span>
-            </div>
+        <div class="kit-status invalid">
+            <i class="fas fa-times-circle"></i>
+            <span>Нет ни одного набора!</span>
+        </div>
         {{/if}}
 
         <div class="craft-stage">
             <div class="components-area">
                 <div class="slot-container">
-                    <div class="item-slot {{#if slots.slot1.isValid}}valid{{else if slots.slot1}}invalid{{/if}}" data-uuid="{{slots.slot1.uuid}}" data-category-id="{{slots.slot1.categoryId}}" data-name="{{slots.slot1.name}}">
+                    <div class="item-slot {{#if slots.slot1.isValid}}valid{{else if slots.slot1}}invalid{{/if}}"
+                        data-uuid="{{slots.slot1.uuid}}" data-category-id="{{slots.slot1.categoryId}}"
+                        data-name="{{slots.slot1.name}}">
                         {{#if slots.slot1}}
-                            <img src="{{slots.slot1.img}}" class="slot-image">
-                            <span class="slot-qty-text {{#if slots.slot1.isValid}}ok{{else}}bad{{/if}}">
-                                {{slots.slot1.currentQty}}/{{slots.slot1.requiredQty}}
-                            </span>
+                        <img src="{{slots.slot1.img}}" class="slot-image">
+                        <span class="slot-qty-text {{#if slots.slot1.isValid}}ok{{else}}bad{{/if}}">
+                            {{slots.slot1.currentQty}}/{{slots.slot1.requiredQty}}
+                        </span>
                         {{/if}}
                     </div>
                     <span class="slot-label">Основа</span>
                 </div>
-                
+
                 <div class="slot-container" style="opacity: {{#if slots.slot2}}1{{else}}0.3{{/if}};">
-                    <div class="item-slot {{#if slots.slot2.isValid}}valid{{else if slots.slot2}}invalid{{/if}}" data-uuid="{{slots.slot2.uuid}}" data-category-id="{{slots.slot2.categoryId}}" data-name="{{slots.slot2.name}}">
-                         {{#if slots.slot2}}
-                            <img src="{{slots.slot2.img}}" class="slot-image">
-                            <span class="slot-qty-text {{#if slots.slot2.isValid}}ok{{else}}bad{{/if}}">
-                                {{slots.slot2.currentQty}}/{{slots.slot2.requiredQty}}
-                            </span>
+                    <div class="item-slot {{#if slots.slot2.isValid}}valid{{else if slots.slot2}}invalid{{/if}}"
+                        data-uuid="{{slots.slot2.uuid}}" data-category-id="{{slots.slot2.categoryId}}"
+                        data-name="{{slots.slot2.name}}">
+                        {{#if slots.slot2}}
+                        <img src="{{slots.slot2.img}}" class="slot-image">
+                        <span class="slot-qty-text {{#if slots.slot2.isValid}}ok{{else}}bad{{/if}}">
+                            {{slots.slot2.currentQty}}/{{slots.slot2.requiredQty}}
+                        </span>
                         {{/if}}
                     </div>
                     <span class="slot-label">Доп. компонент</span>
                 </div>
 
                 <div class="slot-container">
-                    <div class="item-slot {{#if slots.slot3.isValid}}valid{{else if slots.slot3}}invalid{{/if}}" data-uuid="{{slots.slot3.uuid}}" data-category-id="{{slots.slot3.categoryId}}" data-name="{{slots.slot3.name}}">
+                    <div class="item-slot {{#if slots.slot3.isValid}}valid{{else if slots.slot3}}invalid{{/if}}"
+                        data-uuid="{{slots.slot3.uuid}}" data-category-id="{{slots.slot3.categoryId}}"
+                        data-name="{{slots.slot3.name}}">
                         {{#if slots.slot3}}
-                            <img src="{{slots.slot3.img}}" class="slot-image">
-                            <span class="slot-qty-text {{#if slots.slot3.isValid}}ok{{else}}bad{{/if}}">
-                                {{slots.slot3.currentQty}}/{{slots.slot3.requiredQty}}
-                            </span>
+                        <img src="{{slots.slot3.img}}" class="slot-image">
+                        <span class="slot-qty-text {{#if slots.slot3.isValid}}ok{{else}}bad{{/if}}">
+                            {{slots.slot3.currentQty}}/{{slots.slot3.requiredQty}}
+                        </span>
                         {{/if}}
                     </div>
                     <span class="slot-label">Катализатор</span>
@@ -166,22 +174,23 @@
 
             <div class="result-area">
                 {{#if resultItem}}
-                    <!-- Добавляем класс редкости динамически -->
-                    <div class="result-slot rarity-{{resultItem.rarity}}" data-uuid="{{resultItem.uuid}}" data-category-id="{{resultItem.categoryId}}" data-name="{{resultItem.name}}">
-                        <img src="{{resultItem.img}}" class="slot-image">
-                    </div>
+                <!-- Добавляем класс редкости динамически -->
+                <div class="result-slot rarity-{{resultItem.rarity}}" data-uuid="{{resultItem.uuid}}"
+                    data-category-id="{{resultItem.categoryId}}" data-name="{{resultItem.name}}">
+                    <img src="{{resultItem.img}}" class="slot-image">
+                </div>
                 {{else}}
-                    <div class="result-slot" style="opacity: 0.3;">
-                        <i class="fas fa-question"></i>
-                    </div>
+                <div class="result-slot" style="opacity: 0.3;">
+                    <i class="fas fa-question"></i>
+                </div>
                 {{/if}}
             </div>
         </div>
 
         <div class="controls-area">
-                <button class="bg3-btn main-action {{#if canCraft}}craft-enabled{{else}}craft-disabled{{/if}}">
-                    СОЗДАТЬ
-                </button>
-            </div>
+            <button class="bg3-btn main-action {{#if canCraft}}craft-enabled{{else}}craft-disabled{{/if}}">
+                СОЗДАТЬ
+            </button>
+        </div>
     </main>
 </div>

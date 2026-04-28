@@ -6,8 +6,8 @@ export class ScrollsDialog extends Application {
             id: "bmc-scrolls-dialog",
             title: "Свитки для изучения",
             template: "modules/blue-man-crafting/templates/scrolls-dialog.hbs",
-            width: 600,
-            height: 500,
+            width: 650,
+            height: 550,
             resizable: true,
             classes: ["bmc-scrolls-dialog"]
         });
@@ -40,13 +40,32 @@ export class ScrollsDialog extends Application {
                 }
             }
 
+            // Собираем данные об ингредиентах для тултипа
+            let ingredientsList = [];
+            if (recipeData && recipeData.ingredients) {
+                for (const ing of recipeData.ingredients) {
+                    try {
+                        // ПЕРЕДАЕМ ОБЪЕКТ, а не строку!
+                        const ingInfo = await RecipeManager.getItemDisplayInfo({ 
+                            uuid: ing.uuid, 
+                            name: ing.name 
+                        });
+                        
+                        ingredientsList.push(`${ingInfo.name} x${ing.qty}`);
+                    } catch (e) {
+                        ingredientsList.push(`${ing.name || "Неизвестный предмет"} x${ing.qty}`);
+                    }
+                }
+            }
+
             return {
                 id: scroll.id,
                 name: scroll.name,
                 img: scroll.img,
-                description: scroll.system.description?.value || "",
+                rarity: rarity,
                 recipe: recipeData,
-                rarity: rarity
+                ingredientsText: ingredientsList.join(", "),
+                description: recipeData.description || ""
             };
         }));
 

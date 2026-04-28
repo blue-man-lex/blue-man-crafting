@@ -32,7 +32,8 @@
 
     display: grid;
 
-    grid-template-columns: 300px 1fr; /* Чуть шире список */
+    grid-template-columns: 300px 1fr;
+    /* Чуть шире список */
 
     height: 100%;
 
@@ -60,9 +61,15 @@
 
 @keyframes bmcFadeIn {
 
-    from { opacity: 0; transform: translateY(6px); }
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
 
-    to { opacity: 1; transform: translateY(0); }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 
 }
 
@@ -70,9 +77,14 @@
 
 @keyframes bmcPulseGlowGold {
 
-    0%, 100% { box-shadow: 0 0 0 1px rgba(220, 177, 116, 0.12), 0 0 16px rgba(220, 177, 116, 0.16); }
+    0%,
+    100% {
+        box-shadow: 0 0 0 1px rgba(220, 177, 116, 0.12), 0 0 16px rgba(220, 177, 116, 0.16);
+    }
 
-    50% { box-shadow: 0 0 0 1px rgba(240, 216, 167, 0.22), 0 0 22px rgba(220, 177, 116, 0.28); }
+    50% {
+        box-shadow: 0 0 0 1px rgba(240, 216, 167, 0.22), 0 0 22px rgba(220, 177, 116, 0.28);
+    }
 
 }
 
@@ -80,13 +92,23 @@
 
 @keyframes bmcShine {
 
-    0% { transform: translateX(-120%) skewX(-18deg); opacity: 0; }
+    0% {
+        transform: translateX(-120%) skewX(-18deg);
+        opacity: 0;
+    }
 
-    25% { opacity: 0.55; }
+    25% {
+        opacity: 0.55;
+    }
 
-    55% { opacity: 0.12; }
+    55% {
+        opacity: 0.12;
+    }
 
-    100% { transform: translateX(140%) skewX(-18deg); opacity: 0; }
+    100% {
+        transform: translateX(140%) skewX(-18deg);
+        opacity: 0;
+    }
 
 }
 
@@ -120,7 +142,7 @@
 
 
 
-.craft-sidebar > h3 {
+.craft-sidebar>h3 {
 
     margin: 4px 6px 6px;
 
@@ -182,7 +204,7 @@
 
     border-radius: 6px;
 
-    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.5);
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.5);
 
     will-change: transform;
 
@@ -212,9 +234,9 @@
 
     background:
 
-        linear-gradient(90deg, rgba(220, 177, 116, 0.28), rgba(0,0,0,0.12)),
+        linear-gradient(90deg, rgba(220, 177, 116, 0.28), rgba(0, 0, 0, 0.12)),
 
-        rgba(0,0,0,0.25);
+        rgba(0, 0, 0, 0.25);
 
     border-left: 4px solid #f0d8a7;
 
@@ -224,11 +246,11 @@
 
     box-shadow:
 
-        inset 0 0 0 1px rgba(0,0,0,0.55),
+        inset 0 0 0 1px rgba(0, 0, 0, 0.55),
 
         0 0 0 1px rgba(220, 177, 116, 0.12),
 
-        0 10px 24px rgba(0,0,0,0.35);
+        0 10px 24px rgba(0, 0, 0, 0.35);
 
 }
 
@@ -306,11 +328,11 @@
 
     box-shadow:
 
-        inset 0 0 0 1px rgba(0,0,0,0.65),
+        inset 0 0 0 1px rgba(0, 0, 0, 0.65),
 
-        inset 0 0 30px rgba(0,0,0,0.65),
+        inset 0 0 30px rgba(0, 0, 0, 0.65),
 
-        0 18px 42px rgba(0,0,0,0.45);
+        0 18px 42px rgba(0, 0, 0, 0.45);
 
 }
 
@@ -338,7 +360,7 @@
 
     border: 1px solid rgba(220, 177, 116, 0.16);
 
-    box-shadow: 0 0 0 1px rgba(0,0,0,0.45);
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.45);
 
     opacity: 0.9;
 
@@ -418,9 +440,9 @@
 
     box-shadow:
 
-        inset 0 0 0 1px rgba(0,0,0,0.55),
+        inset 0 0 0 1px rgba(0, 0, 0, 0.55),
 
-        inset 0 0 18px rgba(0,0,0,0.85);
+        inset 0 0 18px rgba(0, 0, 0, 0.85);
 
     display: flex;
 
@@ -442,9 +464,9 @@
 
     box-shadow:
 
-        inset 0 0 0 1px rgba(0,0,0,0.55),
+        inset 0 0 0 1px rgba(0, 0, 0, 0.55),
 
-        inset 0 0 18px rgba(0,0,0,0.85),
+        inset 0 0 18px rgba(0, 0, 0, 0.85),
 
         0 0 18px rgba(220, 177, 116, 0.18);
 
@@ -460,9 +482,9 @@
 
     box-shadow:
 
-        inset 0 0 0 1px rgba(0,0,0,0.55),
+        inset 0 0 0 1px rgba(0, 0, 0, 0.55),
 
-        inset 0 0 18px rgba(0,0,0,0.85),
+        inset 0 0 18px rgba(0, 0, 0, 0.85),
 
         0 0 16px rgba(76, 209, 55, 0.18);
 
@@ -484,9 +506,9 @@
 
     box-shadow:
 
-        inset 0 0 0 1px rgba(0,0,0,0.55),
+        inset 0 0 0 1px rgba(0, 0, 0, 0.55),
 
-        inset 0 0 18px rgba(0,0,0,0.85),
+        inset 0 0 18px rgba(0, 0, 0, 0.85),
 
         0 0 16px rgba(232, 65, 24, 0.2);
 
@@ -558,9 +580,9 @@
 
     box-shadow:
 
-        inset 0 0 0 1px rgba(0,0,0,0.6),
+        inset 0 0 0 1px rgba(0, 0, 0, 0.6),
 
-        inset 0 0 26px rgba(0,0,0,0.85),
+        inset 0 0 26px rgba(0, 0, 0, 0.85),
 
         0 0 28px rgba(220, 177, 116, 0.12);
 
@@ -618,11 +640,11 @@
 
     border-radius: 8px;
 
-    background: rgba(0,0,0,0.25);
+    background: rgba(0, 0, 0, 0.25);
 
     color: #e6c990;
 
-    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.5);
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.5);
 
     user-select: none;
 
@@ -652,7 +674,7 @@
 
 .bg3-btn {
 
-    background: rgba(0,0,0,0.35);
+    background: rgba(0, 0, 0, 0.35);
 
     border: 1px solid rgba(220, 177, 116, 0.35);
 
@@ -668,9 +690,9 @@
 
     box-shadow:
 
-        inset 0 0 0 1px rgba(0,0,0,0.55),
+        inset 0 0 0 1px rgba(0, 0, 0, 0.55),
 
-        0 10px 24px rgba(0,0,0,0.35);
+        0 10px 24px rgba(0, 0, 0, 0.35);
 
     transition: all 0.2s;
 
@@ -680,7 +702,7 @@
 
 .bg3-btn:hover {
 
-    background: rgba(0,0,0,0.5);
+    background: rgba(0, 0, 0, 0.5);
 
     border-color: rgba(240, 216, 167, 0.75);
 
@@ -688,9 +710,9 @@
 
     box-shadow:
 
-        inset 0 0 0 1px rgba(0,0,0,0.55),
+        inset 0 0 0 1px rgba(0, 0, 0, 0.55),
 
-        0 10px 26px rgba(0,0,0,0.45),
+        0 10px 26px rgba(0, 0, 0, 0.45),
 
         0 0 18px rgba(220, 177, 116, 0.18);
 
@@ -724,7 +746,7 @@
 
     cursor: pointer;
 
-    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 
     transition: all 0.2s;
 
@@ -778,7 +800,7 @@
 
         0 0 0 1px rgba(220, 177, 116, 0.12),
 
-        0 14px 30px rgba(0,0,0,0.55),
+        0 14px 30px rgba(0, 0, 0, 0.55),
 
         0 0 22px rgba(220, 177, 116, 0.25);
 
@@ -818,7 +840,7 @@
 
     color: #90ee90;
 
-    box-shadow: 
+    box-shadow:
 
         0 0 10px rgba(76, 175, 80, 0.3),
 
@@ -836,7 +858,7 @@
 
     color: #b8ffb8;
 
-    box-shadow: 
+    box-shadow:
 
         0 0 15px rgba(76, 175, 80, 0.4),
 
@@ -854,7 +876,7 @@
 
     color: #ff6b6b;
 
-    box-shadow: 
+    box-shadow:
 
         0 0 10px rgba(220, 53, 69, 0.3),
 
@@ -876,7 +898,7 @@
 
     color: #ff8a8a;
 
-    box-shadow: 
+    box-shadow:
 
         0 0 15px rgba(220, 53, 69, 0.4),
 
@@ -896,7 +918,7 @@
 
     object-fit: contain;
 
-    filter: drop-shadow(0 0 5px rgba(0,0,0,0.8));
+    filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.8));
 
 }
 
@@ -942,9 +964,13 @@
 
 
 
-.slot-qty-text.ok { color: #4cd137; }
+.slot-qty-text.ok {
+    color: #4cd137;
+}
 
-.slot-qty-text.bad { color: #ff0000; }
+.slot-qty-text.bad {
+    color: #ff0000;
+}
 
 
 
@@ -1000,9 +1026,10 @@
 
 /* Очень редкий (Very Rare) - Фиолетовый/Розовый */
 
-.result-slot.rarity-veryRare, 
+.result-slot.rarity-veryRare,
 
-.result-slot.rarity-veryrare { /* на всякий случай оба регистра */
+.result-slot.rarity-veryrare {
+    /* на всякий случай оба регистра */
 
     border-color: #d02090;
 
@@ -1020,7 +1047,8 @@
 
     box-shadow: inset 0 0 25px rgba(255, 191, 0, 0.3), 0 0 25px rgba(255, 191, 0, 0.5);
 
-    animation: bmcPulseGlowGold 3s infinite; /* Твоя анимация золота */
+    animation: bmcPulseGlowGold 3s infinite;
+    /* Твоя анимация золота */
 
 }
 
@@ -1040,25 +1068,50 @@
 
 /* Название предмета тоже подкрасим */
 
-.crafting-info.rarity-common { color: #a0a0a0; }
+.crafting-info.rarity-common {
+    color: #a0a0a0;
+}
 
-.crafting-info.rarity-uncommon { color: #45e64a; text-shadow: 0 0 5px rgba(69, 230, 74, 0.4); }
+.crafting-info.rarity-uncommon {
+    color: #45e64a;
+    text-shadow: 0 0 5px rgba(69, 230, 74, 0.4);
+}
 
-.crafting-info.rarity-rare { color: #00b0f0; text-shadow: 0 0 5px rgba(0, 176, 240, 0.4); }
+.crafting-info.rarity-rare {
+    color: #00b0f0;
+    text-shadow: 0 0 5px rgba(0, 176, 240, 0.4);
+}
 
-.crafting-info.rarity-veryRare, .crafting-info.rarity-veryrare { color: #d02090; text-shadow: 0 0 5px rgba(208, 32, 144, 0.4); }
+.crafting-info.rarity-veryRare,
+.crafting-info.rarity-veryrare {
+    color: #d02090;
+    text-shadow: 0 0 5px rgba(208, 32, 144, 0.4);
+}
 
-.crafting-info.rarity-legendary { color: #ffbf00; text-shadow: 0 0 8px rgba(255, 191, 0, 0.6); }
+.crafting-info.rarity-legendary {
+    color: #ffbf00;
+    text-shadow: 0 0 8px rgba(255, 191, 0, 0.6);
+}
 
-.crafting-info.rarity-artifact { color: #ff4500; text-shadow: 0 0 10px rgba(255, 69, 0, 0.6); }
+.crafting-info.rarity-artifact {
+    color: #ff4500;
+    text-shadow: 0 0 10px rgba(255, 69, 0, 0.6);
+}
 
 
 
 /* Скроллбар */
 
-.recipe-list::-webkit-scrollbar { width: 8px; background: rgba(0,0,0,0.2); }
+.recipe-list::-webkit-scrollbar {
+    width: 8px;
+    background: rgba(0, 0, 0, 0.2);
+}
 
-.recipe-list::-webkit-scrollbar-thumb { background: rgba(220, 177, 116, 0.28); border-radius: 10px; border: 1px solid rgba(0,0,0,0.35); }
+.recipe-list::-webkit-scrollbar-thumb {
+    background: rgba(220, 177, 116, 0.28);
+    border-radius: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.35);
+}
 
 
 
@@ -1286,7 +1339,7 @@
 
 
 
-.global-header > i.fas:last-child {
+.global-header>i.fas:last-child {
 
     margin-left: auto;
 
@@ -1298,7 +1351,7 @@
 
 
 
-.global-header:hover > i.fas:last-child {
+.global-header:hover>i.fas:last-child {
 
     transform: translateX(1px);
 
@@ -1372,7 +1425,7 @@
 
 
 
-.subcategory-header:hover > i.fas:last-child {
+.subcategory-header:hover>i.fas:last-child {
 
     transform: translateX(1px);
 
@@ -1452,7 +1505,8 @@
     font-weight: 900 !important;
     font-style: normal !important;
     line-height: 1;
-    color: #b58d5c; /* Медно-золотой цвет */
+    color: #b58d5c;
+    /* Медно-золотой цвет */
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
     font-size: 14px;
     display: inline-block;
@@ -1502,7 +1556,7 @@
 
 }
 
-.subcategory-header > i.fas:last-child {
+.subcategory-header>i.fas:last-child {
 
     margin-left: auto;
 
@@ -1512,7 +1566,7 @@
 
 }
 
-.subcategory-header:hover > i.fas:last-child {
+.subcategory-header:hover>i.fas:last-child {
 
     transform: translateX(1px);
 
@@ -1562,48 +1616,176 @@
 
     text-align: center;
 
-    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.3);
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.3);
 }
 
 /* === ГЛОБАЛЬНЫЕ КАТЕГОРИИ === */
-.bg3-crafting-app [data-category="alchemy"] .category-icon::before { content: "\f0c3"; } /* fa-flask */
-.bg3-crafting-app [data-category="ingredients"] .category-icon::before { content: "\f4d8"; } /* fa-leaf */
-.bg3-crafting-app [data-category="smithing"] .category-icon::before { content: "\f6de"; } /* fa-hammer */
-.bg3-crafting-app [data-category="jewelry"] .category-icon::before { content: "\f3a5"; } /* fa-gem */
-.bg3-crafting-app [data-category="leatherworking"] .category-icon::before { content: "\f553"; } /* fa-tshirt */
-.bg3-crafting-app [data-category="cooking"] .category-icon::before { content: "\f2e7"; } /* fa-utensils */
-.bg3-crafting-app [data-category="tailoring"] .category-icon::before { content: "\f553"; } /* fa-tshirt */
-.bg3-crafting-app [data-category="scribing"] .category-icon::before { content: "\f304"; } /* fa-pen-fancy */
-.bg3-crafting-app [data-category="custom"] .category-icon::before { content: "\f07b"; } /* fa-folder */
+.bg3-crafting-app [data-category="alchemy"] .category-icon::before {
+    content: "\f0c3";
+}
+
+/* fa-flask */
+.bg3-crafting-app [data-category="ingredients"] .category-icon::before {
+    content: "\f4d8";
+}
+
+/* fa-leaf */
+.bg3-crafting-app [data-category="smithing"] .category-icon::before {
+    content: "\f6de";
+}
+
+/* fa-hammer */
+.bg3-crafting-app [data-category="jewelry"] .category-icon::before {
+    content: "\f3a5";
+}
+
+/* fa-gem */
+.bg3-crafting-app [data-category="leatherworking"] .category-icon::before {
+    content: "\f553";
+}
+
+/* fa-tshirt */
+.bg3-crafting-app [data-category="cooking"] .category-icon::before {
+    content: "\f2e7";
+}
+
+/* fa-utensils */
+.bg3-crafting-app [data-category="tailoring"] .category-icon::before {
+    content: "\f553";
+}
+
+/* fa-tshirt */
+.bg3-crafting-app [data-category="scribing"] .category-icon::before {
+    content: "\f304";
+}
+
+/* fa-pen-fancy */
+.bg3-crafting-app [data-category="custom"] .category-icon::before {
+    content: "\f07b";
+}
+
+/* fa-folder */
 
 /* === ПОДКАТЕГОРИИ АЛХИМИИ === */
-.bg3-crafting-app [data-subcategory="potions"] .subcategory-header::before { content: "\f0c3"; } /* fa-flask */
-.bg3-crafting-app [data-subcategory="elixirs"] .subcategory-header::before { content: "\f0d0"; } /* fa-magic */
-.bg3-crafting-app [data-subcategory="grenades"] .subcategory-header::before { content: "\f1e2"; } /* fa-bomb */
-.bg3-crafting-app [data-subcategory="coatings"] .subcategory-header::before { content: "\f043"; } /* fa-tint */
+.bg3-crafting-app [data-subcategory="potions"] .subcategory-header::before {
+    content: "\f0c3";
+}
+
+/* fa-flask */
+.bg3-crafting-app [data-subcategory="elixirs"] .subcategory-header::before {
+    content: "\f0d0";
+}
+
+/* fa-magic */
+.bg3-crafting-app [data-subcategory="grenades"] .subcategory-header::before {
+    content: "\f1e2";
+}
+
+/* fa-bomb */
+.bg3-crafting-app [data-subcategory="coatings"] .subcategory-header::before {
+    content: "\f043";
+}
+
+/* fa-tint */
 
 /* === ПОДКАТЕГОРИИ ИНГРЕДИЕНТОВ === */
-.bg3-crafting-app [data-subcategory="suspension"] .subcategory-header::before { content: "\f043"; } /* fa-tint */
-.bg3-crafting-app [data-subcategory="essence"] .subcategory-header::before { content: "\f0d0"; } /* fa-magic */
-.bg3-crafting-app [data-subcategory="salt"] .subcategory-header::before { content: "\f5cb"; } /* fa-mortar-pestle */
-.bg3-crafting-app [data-subcategory="ash"] .subcategory-header::before { content: "\f06d"; } /* fa-fire */
-.bg3-crafting-app [data-subcategory="vitriol"] .subcategory-header::before { content: "\f714"; } /* fa-skull */
-.bg3-crafting-app [data-subcategory="sublimate"] .subcategory-header::before { content: "\f0c2"; } /* fa-cloud */
+.bg3-crafting-app [data-subcategory="suspension"] .subcategory-header::before {
+    content: "\f043";
+}
+
+/* fa-tint */
+.bg3-crafting-app [data-subcategory="essence"] .subcategory-header::before {
+    content: "\f0d0";
+}
+
+/* fa-magic */
+.bg3-crafting-app [data-subcategory="salt"] .subcategory-header::before {
+    content: "\f5cb";
+}
+
+/* fa-mortar-pestle */
+.bg3-crafting-app [data-subcategory="ash"] .subcategory-header::before {
+    content: "\f06d";
+}
+
+/* fa-fire */
+.bg3-crafting-app [data-subcategory="vitriol"] .subcategory-header::before {
+    content: "\f714";
+}
+
+/* fa-skull */
+.bg3-crafting-app [data-subcategory="sublimate"] .subcategory-header::before {
+    content: "\f0c2";
+}
+
+/* fa-cloud */
 
 /* === ОСТАЛЬНЫЕ ПОДКАТЕГОРИИ === */
-.bg3-crafting-app [data-subcategory="weapons"] .subcategory-header::before { content: "\f132"; } /* fa-shield-alt */
-.bg3-crafting-app [data-subcategory="armor"] .subcategory-header::before { content: "\f132"; } /* fa-shield-alt */
-.bg3-crafting-app [data-subcategory="tools"] .subcategory-header::before { content: "\f0ad"; } /* fa-wrench */
-.bg3-crafting-app [data-subcategory="gem-cutting"] .subcategory-header::before { content: "\f3a5"; } /* fa-gem */
-.bg3-crafting-app [data-subcategory="enchantment-dust"] .subcategory-header::before { content: "\f0d0"; } /* fa-magic */
-.bg3-crafting-app [data-subcategory="leather-armor"] .subcategory-header::before { content: "\f132"; } /* fa-shield-alt */
-.bg3-crafting-app [data-subcategory="tanning"] .subcategory-header::before { content: "\f0c4"; } /* fa-cut/scissors */
-.bg3-crafting-app [data-subcategory="rations"] .subcategory-header::before { content: "\f2e7"; } /* fa-utensils */
-.bg3-crafting-app [data-subcategory="feasts"] .subcategory-header::before { content: "\f0fc"; } /* fa-beer */
-.bg3-crafting-app [data-subcategory="cloth-armor"] .subcategory-header::before { content: "\f553"; } /* fa-tshirt */
-.bg3-crafting-app [data-subcategory="embroidery"] .subcategory-header::before { content: "\f1fc"; } /* fa-paint-brush */
-.bg3-crafting-app [data-subcategory="scrolls"] .subcategory-header::before { content: "\f56c"; } /* fa-scroll */
-.bg3-crafting-app [data-subcategory="inks"] .subcategory-header::before { content: "\f043"; } /* fa-tint */
+.bg3-crafting-app [data-subcategory="weapons"] .subcategory-header::before {
+    content: "\f132";
+}
+
+/* fa-shield-alt */
+.bg3-crafting-app [data-subcategory="armor"] .subcategory-header::before {
+    content: "\f132";
+}
+
+/* fa-shield-alt */
+.bg3-crafting-app [data-subcategory="tools"] .subcategory-header::before {
+    content: "\f0ad";
+}
+
+/* fa-wrench */
+.bg3-crafting-app [data-subcategory="gem-cutting"] .subcategory-header::before {
+    content: "\f3a5";
+}
+
+/* fa-gem */
+.bg3-crafting-app [data-subcategory="enchantment-dust"] .subcategory-header::before {
+    content: "\f0d0";
+}
+
+/* fa-magic */
+.bg3-crafting-app [data-subcategory="leather-armor"] .subcategory-header::before {
+    content: "\f132";
+}
+
+/* fa-shield-alt */
+.bg3-crafting-app [data-subcategory="tanning"] .subcategory-header::before {
+    content: "\f0c4";
+}
+
+/* fa-cut/scissors */
+.bg3-crafting-app [data-subcategory="rations"] .subcategory-header::before {
+    content: "\f2e7";
+}
+
+/* fa-utensils */
+.bg3-crafting-app [data-subcategory="feasts"] .subcategory-header::before {
+    content: "\f0fc";
+}
+
+/* fa-beer */
+.bg3-crafting-app [data-subcategory="cloth-armor"] .subcategory-header::before {
+    content: "\f553";
+}
+
+/* fa-tshirt */
+.bg3-crafting-app [data-subcategory="embroidery"] .subcategory-header::before {
+    content: "\f1fc";
+}
+
+/* fa-paint-brush */
+.bg3-crafting-app [data-subcategory="scrolls"] .subcategory-header::before {
+    content: "\f56c";
+}
+
+/* fa-scroll */
+.bg3-crafting-app [data-subcategory="inks"] .subcategory-header::before {
+    content: "\f043";
+}
+
+/* fa-tint */
 
 /* Группы рецептов (Аккордеон) */
 
@@ -1645,7 +1827,7 @@
 
     padding-left: 10px;
 
-    background: rgba(0,0,0,0.2);
+    background: rgba(0, 0, 0, 0.2);
 
 }
 
@@ -1657,7 +1839,7 @@
 
     padding: 25px;
 
-    background: 
+    background:
 
         radial-gradient(ellipse at center, rgba(26, 26, 26, 0.95) 0%, rgba(15, 15, 15, 0.98) 100%),
 
@@ -1665,7 +1847,7 @@
 
     border: 2px solid rgba(220, 177, 116, 0.4);
 
-    box-shadow: 
+    box-shadow:
 
         inset 0 0 0 1px rgba(0, 0, 0, 0.8),
 
@@ -1729,7 +1911,7 @@
 
     height: 50px;
 
-    background: 
+    background:
 
         linear-gradient(180deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.6)),
 
@@ -1743,7 +1925,7 @@
 
     overflow: hidden;
 
-    box-shadow: 
+    box-shadow:
 
         inset 0 0 0 1px rgba(0, 0, 0, 0.9),
 
@@ -1763,7 +1945,7 @@
 
     height: 100%;
 
-    background: 
+    background:
 
         linear-gradient(180deg, rgba(76, 209, 55, 0.4), rgba(76, 209, 55, 0.7)),
 
@@ -1773,7 +1955,7 @@
 
     border-radius: 23px;
 
-    box-shadow: 
+    box-shadow:
 
         inset 0 0 10px rgba(76, 209, 55, 0.4),
 
@@ -1795,7 +1977,7 @@
 
     height: 44px;
 
-    background: 
+    background:
 
         linear-gradient(180deg, #ff6b47, #e84118, #c41e0a),
 
@@ -1805,7 +1987,7 @@
 
     border-radius: 8px;
 
-    box-shadow: 
+    box-shadow:
 
         0 0 15px rgba(255, 107, 71, 0.9),
 
@@ -1861,7 +2043,7 @@
 
     padding: 15px 40px;
 
-    background: 
+    background:
 
         linear-gradient(180deg, rgba(232, 65, 24, 0.8), rgba(196, 30, 10, 0.9)),
 
@@ -1885,7 +2067,7 @@
 
     letter-spacing: 2px;
 
-    box-shadow: 
+    box-shadow:
 
         inset 0 0 0 1px rgba(0, 0, 0, 0.5),
 
@@ -1925,7 +2107,7 @@
 
 .bmc-minigame-stop:hover {
 
-    background: 
+    background:
 
         linear-gradient(180deg, rgba(255, 107, 71, 0.9), rgba(232, 65, 24, 0.95)),
 
@@ -1935,7 +2117,7 @@
 
     color: #ffffff;
 
-    box-shadow: 
+    box-shadow:
 
         inset 0 0 0 1px rgba(0, 0, 0, 0.5),
 
@@ -1951,7 +2133,7 @@
 
 .bmc-minigame-stop:hover::before {
 
-left: 100%;
+    left: 100%;
 
 }
 
@@ -1959,15 +2141,15 @@ left: 100%;
 
 .bmc-minigame-stop:active {
 
-transform: translateY(0);
+    transform: translateY(0);
 
-box-shadow: 
+    box-shadow:
 
-inset 0 0 0 1px rgba(0, 0, 0, 0.5),
+        inset 0 0 0 1px rgba(0, 0, 0, 0.5),
 
-0 5px 15px rgba(0, 0, 0, 0.4),
+        0 5px 15px rgba(0, 0, 0, 0.4),
 
-0 0 20px rgba(255, 107, 71, 0.4);
+        0 0 20px rgba(255, 107, 71, 0.4);
 
 }
 
@@ -1977,31 +2159,31 @@ inset 0 0 0 1px rgba(0, 0, 0, 0.5),
 
 .kit-status {
 
-width: 100%;
+    width: 100%;
 
-padding: 8px;
+    padding: 8px;
 
-margin-bottom: 15px;
+    margin-bottom: 15px;
 
-border-radius: 6px;
+    border-radius: 6px;
 
-display: flex;
+    display: flex;
 
-align-items: center;
+    align-items: center;
 
-justify-content: center;
+    justify-content: center;
 
-gap: 10px;
+    gap: 10px;
 
-font-size: 1.1em;
+    font-size: 1.1em;
 
-font-weight: bold;
+    font-weight: bold;
 
-text-transform: uppercase;
+    text-transform: uppercase;
 
-letter-spacing: 1px;
+    letter-spacing: 1px;
 
-border: 1px solid transparent;
+    border: 1px solid transparent;
 
 }
 
@@ -2035,11 +2217,17 @@ border: 1px solid transparent;
 
 @keyframes bmcPulseRed {
 
-    0% { box-shadow: 0 0 0 0 rgba(232, 65, 24, 0.4); }
+    0% {
+        box-shadow: 0 0 0 0 rgba(232, 65, 24, 0.4);
+    }
 
-    70% { box-shadow: 0 0 0 10px rgba(232, 65, 24, 0); }
+    70% {
+        box-shadow: 0 0 0 10px rgba(232, 65, 24, 0);
+    }
 
-    100% { box-shadow: 0 0 0 0 rgba(232, 65, 24, 0); }
+    100% {
+        box-shadow: 0 0 0 0 rgba(232, 65, 24, 0);
+    }
 
 }
 
@@ -2094,11 +2282,11 @@ border: 1px solid transparent;
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 10px;
     transition: all 0.2s ease;
     min-width: 140px;
-    justify-content: space-between;
-    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.5);
+    justify-content: center;
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.5);
 }
 
 .player-selector .dropdown-toggle:hover {
@@ -2125,8 +2313,8 @@ border: 1px solid transparent;
         radial-gradient(520px 220px at 50% 0%, rgba(240, 216, 167, 0.08), transparent 65%);
     border: 1px solid rgba(220, 177, 116, 0.22);
     border-radius: 6px;
-    box-shadow: 
-        inset 0 0 0 1px rgba(0,0,0,0.55),
+    box-shadow:
+        inset 0 0 0 1px rgba(0, 0, 0, 0.55),
         0 4px 12px rgba(0, 0, 0, 0.45);
     z-index: 1000;
     min-width: 160px;
@@ -2148,6 +2336,7 @@ border: 1px solid transparent;
     font-size: 12px;
     transition: background-color 0.2s ease;
     border-bottom: 1px solid rgba(220, 177, 116, 0.16);
+    text-align: center;
 }
 
 .player-selector .dropdown-item:last-child {
@@ -2163,8 +2352,8 @@ border: 1px solid transparent;
 
 .player-selector .dropdown-item.active {
     background:
-        linear-gradient(90deg, rgba(220, 177, 116, 0.28), rgba(0,0,0,0.12)),
-        rgba(0,0,0,0.25);
+        linear-gradient(90deg, rgba(220, 177, 116, 0.28), rgba(0, 0, 0, 0.12)),
+        rgba(0, 0, 0, 0.25);
     color: #f0d8a7;
     font-weight: 600;
     border-left: 3px solid #f0d8a7;
@@ -2203,7 +2392,8 @@ border: 1px solid transparent;
 
 .knowledge-toggle.known {
 
-    color: #4cd137; /* Зеленый - изучено */
+    color: #4cd137;
+    /* Зеленый - изучено */
 
     opacity: 1;
 
@@ -2213,7 +2403,8 @@ border: 1px solid transparent;
 
 .knowledge-toggle.unknown {
 
-    color: #7f8c8d; /* Серый - не изучено */
+    color: #7f8c8d;
+    /* Серый - не изучено */
 
     opacity: 0.5;
 
@@ -2241,10 +2432,12 @@ border: 1px solid transparent;
     transform: translateY(-5px);
     transition: opacity 0.1s ease-out;
 }
+
 .bmc-craft-tooltip.active {
     opacity: 1;
     transform: translateY(0);
 }
+
 .bmc-craft-tooltip .tooltip-header {
     display: flex;
     align-items: flex-start;
@@ -2253,6 +2446,7 @@ border: 1px solid transparent;
     padding-bottom: 6px;
     border-bottom: 1px solid rgba(220, 177, 116, 0.2);
 }
+
 .bmc-craft-tooltip .tooltip-image {
     width: 48px;
     height: 48px;
@@ -2262,47 +2456,272 @@ border: 1px solid transparent;
     flex-shrink: 0;
     background: #000;
 }
+
 .bmc-craft-tooltip .item-name {
     font-weight: bold;
     font-size: 14px;
     color: #f0d8a7;
     margin: 0 0 2px 0;
 }
+
 .bmc-craft-tooltip .item-type {
     font-size: 11px;
     color: #b8a88a;
     font-style: italic;
 }
+
 .bmc-craft-tooltip .item-description {
     color: #d4c8a8;
     font-size: 12px;
     line-height: 1.4;
 }
-.bmc-craft-tooltip .foundry-enriched p { margin: 0 0 6px 0; }
-.bmc-craft-tooltip .foundry-enriched strong { color: #f0d8a7; font-weight: 600; }
-.bmc-craft-tooltip.rarity-common { border-color: #a0a0a0; }
-.bmc-craft-tooltip.rarity-uncommon { border-color: #45e64a; }
-.bmc-craft-tooltip.rarity-rare { border-color: #00b0f0; }
-.bmc-craft-tooltip.rarity-veryrare { border-color: #d02090; }
-.bmc-craft-tooltip.rarity-legendary { border-color: #ffbf00; }
-.bmc-craft-tooltip.rarity-artifact { border-color: #ff4500; }
 
-/* ПОДСВЕТКА НАЛИЧИЯ ИНГРЕДИЕНТОВ В СПИСКЕ */
+.bmc-craft-tooltip .foundry-enriched p {
+    margin: 0 0 6px 0;
+}
+
+.bmc-craft-tooltip .foundry-enriched strong {
+    color: #f0d8a7;
+    font-weight: 600;
+}
+
+.bmc-craft-tooltip.rarity-common {
+    border-color: #a0a0a0;
+}
+
+.bmc-craft-tooltip.rarity-uncommon {
+    border-color: #45e64a;
+}
+
+.bmc-craft-tooltip.rarity-rare {
+    border-color: #00b0f0;
+}
+
+.bmc-craft-tooltip.rarity-veryrare {
+    border-color: #d02090;
+}
+
+.bmc-craft-tooltip.rarity-legendary {
+    border-color: #ffbf00;
+}
+
+.bmc-craft-tooltip.rarity-artifact {
+    border-color: #ff4500;
+}
+
+/* ==========================================
+   СЕТКА ИЗУЧЕНИЯ РЕЦЕПТОВ (Scrolls Grid)
+   ========================================= */
+
+/* Убираем стандартную белую рамку Foundry */
+.window-app.bmc-scrolls-dialog {
+    border: none !important;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.8) !important;
+}
+
+/* Принудительно скрываем ручку изменения размера */
+.window-app.bmc-scrolls-dialog .window-resizable-handle {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+.window-app.bmc-scrolls-dialog .window-content {
+    border: 1px solid rgba(220, 177, 116, 0.3) !important;
+    border-radius: 0 0 8px 8px;
+    background: #121212 !important;
+}
+
+.window-app.bmc-scrolls-dialog .window-header {
+    border: 1px solid rgba(220, 177, 116, 0.3) !important;
+    border-bottom: none !important;
+    background: rgba(26, 26, 26, 0.95) !important;
+    color: #f0d8a7 !important;
+}
+
+.bmc-scrolls-container {
+    padding: 15px;
+    background:
+        radial-gradient(1000px 500px at 50% 0%, rgba(220, 177, 116, 0.08), transparent 60%),
+        linear-gradient(180deg, #121212 0%, #1a1a1a 100%);
+    color: #dcb174;
+    font-family: "Modesto Condensed", "Palatino Linotype", serif;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.bmc-scrolls-header {
+    text-align: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(240, 216, 167, 0.2);
+}
+
+.bmc-scrolls-header h3 {
+    color: #f0d8a7;
+    font-size: 20px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin: 0;
+}
+
+.bmc-scrolls-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 15px;
+    padding: 5px;
+}
+
+.scroll-card {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(220, 177, 116, 0.2);
+    border-radius: 8px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    text-align: center;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    position: relative;
+    min-height: 160px;
+}
+
+.scroll-card:hover {
+    box-shadow:
+        inset 0 0 10px rgba(0, 0, 0, 0.3),
+        0 5px 15px rgba(0, 0, 0, 0.5);
+}
+
+.scroll-card .card-icon {
+    width: 70px;
+    height: 70px;
+    border: 2px solid rgba(220, 177, 116, 0.3);
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.6);
+    overflow: hidden;
+    position: relative;
+}
+
+.scroll-card .card-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.scroll-card .card-name {
+    font-size: 13px;
+    font-weight: bold;
+    text-align: center;
+    color: #e6c990;
+    line-height: 1.2;
+    max-height: 2.4em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+/* Редкость в сетке */
+.scroll-card.rarity-common .card-icon {
+    border-color: #a0a0a0;
+}
+
+.scroll-card.rarity-uncommon .card-icon {
+    border-color: #45e64a;
+    box-shadow: 0 0 10px rgba(69, 230, 74, 0.3);
+}
+
+.scroll-card.rarity-rare .card-icon {
+    border-color: #00b0f0;
+    box-shadow: 0 0 10px rgba(0, 176, 240, 0.3);
+}
+
+.scroll-card.rarity-veryRare .card-icon,
+.scroll-card.rarity-veryrare .card-icon {
+    border-color: #d02090;
+    box-shadow: 0 0 10px rgba(208, 32, 144, 0.3);
+}
+
+.scroll-card.rarity-legendary .card-icon {
+    border-color: #ffbf00;
+    box-shadow: 0 0 12px rgba(255, 191, 0, 0.4);
+}
+
+.scroll-card.rarity-artifact .card-icon {
+    border-color: #ff4500;
+    box-shadow: 0 0 15px rgba(255, 69, 0, 0.5);
+}
+
+.scroll-card .card-action {
+    margin-top: auto;
+    width: 100%;
+}
+
+.bmc-learn-mini-btn {
+    width: 100%;
+    background: linear-gradient(180deg, rgba(220, 177, 116, 0.2), rgba(0, 0, 0, 0.3));
+    border: 1px solid rgba(220, 177, 116, 0.4);
+    color: #f0d8a7;
+    font-size: 10px;
+    padding: 4px 0;
+    border-radius: 4px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: bold;
+}
+
+.scroll-card:hover .bmc-learn-mini-btn {
+    background: rgba(220, 177, 116, 0.25);
+    border-color: #f0d8a7;
+    color: #fff1c6;
+}
+
+.no-scrolls {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 50px;
+    opacity: 0.6;
+}
+
+.no-scrolls i {
+    font-size: 50px;
+    display: block;
+    margin-bottom: 15px;
+}
+
+/* ПОДСВЕТКА НАЛИЧИЯ ИНГРЕДИЕНТОВ В СПИСКЕ РЕЦЕПТОВ */
 
 /* Желтый: есть хотя бы один ингредиент */
 .recipe-item.status-partial {
-    border-left: 3px solid rgba(243, 156, 18, 0.8);
-    background: linear-gradient(90deg, rgba(243, 156, 18, 0.12), transparent 80%);
+    border-left: 3px solid rgba(243, 156, 18, 0.8) !important;
+    background: linear-gradient(90deg, rgba(243, 156, 18, 0.12), transparent 80%) !important;
 }
+
 .recipe-item.status-partial:hover {
-    background: linear-gradient(90deg, rgba(243, 156, 18, 0.2), transparent 80%);
+    background: linear-gradient(90deg, rgba(243, 156, 18, 0.2), transparent 80%) !important;
 }
 
 /* Зеленый: есть ВСЕ необходимые ингредиенты (можно крафтить) */
 .recipe-item.status-ready {
-    border-left: 3px solid rgba(76, 209, 55, 0.8);
-    background: linear-gradient(90deg, rgba(76, 209, 55, 0.15), transparent 80%);
+    border-left: 3px solid rgba(76, 209, 55, 0.8) !important;
+    background: linear-gradient(90deg, rgba(76, 209, 55, 0.15), transparent 80%) !important;
 }
+
 .recipe-item.status-ready:hover {
-    background: linear-gradient(90deg, rgba(76, 209, 55, 0.25), transparent 80%);
+    background: linear-gradient(90deg, rgba(76, 209, 55, 0.25), transparent 80%) !important;
+}
+
+/* Приоритет для активного элемента, но сохраняем цвет статуса в виде полоски */
+.recipe-item.active.status-ready {
+    border-left: 4px solid rgba(76, 209, 55, 1) !important;
+}
+
+.recipe-item.active.status-partial {
+    border-left: 4px solid rgba(243, 156, 18, 1) !important;
 }

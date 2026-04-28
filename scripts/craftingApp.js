@@ -411,7 +411,7 @@ export class BG3CraftingApp extends Application {
 
         const current = this.state.expandedGroups[categoryId];
         this.state.expandedGroups[categoryId] = current === undefined ? false : !current;
-        this.render();
+        this._renderSidebarOnly();
     }
 
     _onSubcategoryHeaderClick(event) {
@@ -426,7 +426,7 @@ export class BG3CraftingApp extends Application {
 
         const current = this.state.expandedSubcategories[subcategoryId];
         this.state.expandedSubcategories[subcategoryId] = current === undefined ? false : !current;
-        this.render();
+        this._renderSidebarOnly();
     }
 
     _onRecipeClick(event) {
@@ -534,10 +534,7 @@ export class BG3CraftingApp extends Application {
         const rawRecipes = db.recipes || [];
         const isGM = game.user.isGM;
 
-        // ПРИНУДИТЕЛЬНОЕ ОБНОВЛЕНИЕ: исправляем название "Пыль для зачарования" -> "Чародейская пыль"
-        if (db.categories?.jewelry?.subcategories?.['enchantment-dust']) {
-            db.categories.jewelry.subcategories['enchantment-dust'].name = "Чародейская пыль";
-        }
+
 
         // Получаем список изученных рецептов из флагов актера (массив ID)
         let knownRecipes;
@@ -1565,5 +1562,50 @@ export class BG3CraftingApp extends Application {
             await this._prepareRecipeView(this.state.selectedRecipe);
             this.render(true);
         } catch (err) { ui.notifications.error(err.message); }
+    }
+
+    /**
+     * Выполняет частичное обновление только боковой панели (списка рецептов)
+     * Это предотвращает "моргание" всего окна при раскрытии категорий.
+     */
+    async _renderSidebarOnly() {
+        // Сохраняем скролл перед обновлением
+        this._captureRecipeListScroll();
+
+        // Получаем актуальные данные
+        const data = await this.getData();
+        const template = "modules/blue-man-crafting/templates/crafting-window.hbs";
+        
+        // Рендерим шаблон
+        const html = await renderTemplate(template, data);
+        const $newContent = $(html);
+        
+        // Находим только список рецептов и заменяем его в DOM
+        const $newList = $newContent.find('.recipe-list');
+        const $currentList = this.element.find('.recipe-list');
+        
+        if ($newList.length && $currentList.length) {
+            $currentList.replaceWith($newList);
+            
+            // Re-bind listeners ONLY for the new elements to avoid memory leaks
+            this._rebindSidebarListeners($newList);
+            
+            // Восстанавливаем скролл
+            $newList.scrollTop(this._scrollPos);
+            
+            // Запускаем асинхронную подгрузку статусов для новых элементов
+            this._applyRecipeStatusesAsync(this.element);
+        }
+    }
+
+    /**
+     * Перепривязывает обработчики событий только для боковой панели
+     */
+    _rebindSidebarListeners(html) {
+        html.find('.global-header').click(this._onCategoryHeaderClick.bind(this));
+        html.find('.subcategory-header').click(this._onSubcategoryHeaderClick.bind(this));
+        html.find('.recipe-item').click(this._onRecipeClick.bind(this));
+        html.find('.knowledge-toggle').click(this._onKnowledgeToggle.bind(this));
+        html.find('.delete-recipe-btn').click(this._onDeleteRecipeClick.bind(this));
     }
 }

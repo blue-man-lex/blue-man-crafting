@@ -37,7 +37,7 @@ export class RecipeManager {
     static getData() {
         // Получаем пользовательские рецепты
         const customData = game.settings.get(RecipeManager.ID, "customRecipes");
-        
+
         // Адаптируем базовые рецепты
         const adaptedBaseRecipes = RECIPES.map(recipe => {
             if (recipe.ingredients && Array.isArray(recipe.ingredients)) return recipe;
@@ -69,9 +69,9 @@ export class RecipeManager {
 
         // Пользовательские рецепты имеют приоритет
         const allRecipes = [...adaptedBaseRecipes, ...adaptedCustomRecipes];
-        
-        return { 
-            categories: allCategories, 
+
+        return {
+            categories: allCategories,
             recipes: allRecipes,
             customRecipes: adaptedCustomRecipes,
             baseRecipes: adaptedBaseRecipes
@@ -114,23 +114,23 @@ export class RecipeManager {
         let itemIdToFind = null;
         let displayName = "Неизвестно";
         let defaultImg = "icons/svg/item-bag.svg";
-        
+
         // Значение по умолчанию
-        let rarity = "common"; 
+        let rarity = "common";
 
         if (req.type === "category" || (req.type && !req.id && !req.uuid)) {
             const catId = req.categoryId || req.type;
             const data = this.getData();
             const cat = this.findCategory(data.categories, catId);
             if (cat) {
-                displayName = cat.name; 
+                displayName = cat.name;
                 if (cat.items && cat.items.length > 0) itemIdToFind = cat.items[0];
             } else {
                 displayName = catId;
             }
         } else {
-            itemIdToFind = req.uuid || req.id; 
-            displayName = "Предмет"; 
+            itemIdToFind = req.uuid || req.id;
+            displayName = "Предмет";
         }
 
         console.log(`BMC: getItemDisplayInfo - ищем itemId: ${itemIdToFind}, displayName: ${displayName}`);
@@ -142,7 +142,7 @@ export class RecipeManager {
                     name: displayName === "Предмет" ? itemData.name : displayName,
                     img: itemData.img || defaultImg,
                     // Достаем редкость из системы dnd5e, если нет - считаем обычным
-                    rarity: itemData.system?.rarity || "common" 
+                    rarity: itemData.system?.rarity || "common"
                 };
             }
         }
@@ -175,7 +175,7 @@ export class RecipeManager {
         console.log(`BMC: ищем в компендиумах...`);
         for (const pack of game.packs) {
             if (pack.documentName !== "Item") continue;
-            const index = await pack.getIndex(); 
+            const index = await pack.getIndex();
             const entry = index.find(e => e._id === cleanId);
             if (entry) {
                 console.log(`BMC: найден в пакете ${pack.metadata.id}:`, entry.name);
@@ -191,7 +191,7 @@ export class RecipeManager {
         const data = this.getData();
         const category = this.findCategory(data.categories, categoryId);
         if (!category) return false;
-        
+
         // 1. По ID (Жесткое совпадение)
         const idMatch = category.items.some(catItemId => this._compareUuids(catItemId, itemData));
         if (idMatch) return true;
@@ -203,17 +203,17 @@ export class RecipeManager {
         if (itemData.name && category.name) {
             const catName = category.name.replace(/\(.*\)/, "").trim().toLowerCase(); // "Соль"
             const itemName = itemData.name.toLowerCase(); // "Соли полыни"
-            
+
             // Получаем корень категории, убирая типичные окончания
             let catRoot = catName;
             if (catRoot.endsWith('и')) catRoot = catRoot.slice(0, -1); // Соли -> Соль
             if (catRoot.endsWith('ы')) catRoot = catRoot.slice(0, -1); // Золы -> Зола  
             if (catRoot.endsWith('а')) catRoot = catRoot.slice(0, -1); // Суспензия -> Суспензи
             if (catRoot.endsWith('я')) catRoot = catRoot.slice(0, -1); // Эссенция -> Эссенци
-            
+
             // Проверяем вхождение корня категории в имя предмета
             if (itemName.includes(catRoot)) return true;
-            
+
             // И наоборот - проверяем вхождение корня предмета в категорию
             // Для случаев когда предмет короче категории
             let itemRoot = itemName.split(' ')[0]; // Берем первое слово
@@ -221,7 +221,7 @@ export class RecipeManager {
             if (itemRoot.endsWith('ы')) itemRoot = itemRoot.slice(0, -1);
             if (itemRoot.endsWith('а')) itemRoot = itemRoot.slice(0, -1);
             if (itemRoot.endsWith('я')) itemRoot = itemRoot.slice(0, -1);
-            
+
             if (catName.includes(itemRoot)) return true;
         }
         return false;
@@ -232,14 +232,14 @@ export class RecipeManager {
         if (categories[categoryId]) {
             return categories[categoryId];
         }
-        
+
         // Если не найдено, ищем в подкатегориях глобальных категорий
         for (const [globalCatId, globalCategory] of Object.entries(categories)) {
             if (globalCategory.subcategories && globalCategory.subcategories[categoryId]) {
                 return globalCategory.subcategories[categoryId];
             }
         }
-        
+
         return null;
     }
 
@@ -265,11 +265,11 @@ export class RecipeManagerApp extends FormApplication {
             tabs: [{ navSelector: ".tabs", contentSelector: ".content", initial: "custom" }]
         });
     }
-    
+
     getData() {
         const data = RecipeManager.getData();
         const customData = game.settings.get(RecipeManager.ID, "customRecipes");
-        
+
         // Получаем только пользовательские категории
         const customCategories = [];
         for (const [catId, catData] of Object.entries(customData.categories || {})) {
@@ -279,9 +279,9 @@ export class RecipeManagerApp extends FormApplication {
                 subcategories: catData.subcategories
             });
         }
-        
-        return { 
-            data: data, 
+
+        return {
+            data: data,
             readOnly: false,
             customRecipes: data.customRecipes || [],
             customCategories: customCategories,
@@ -295,33 +295,33 @@ export class RecipeManagerApp extends FormApplication {
             }, null, 2)
         };
     }
-    
+
     activateListeners(html) {
         super.activateListeners(html);
-        
+
         // Табы
         html.find('.bmc-tab').click(this._onTabClick.bind(this));
-        
+
         // Рецепты
         html.find('.bmc-add-recipe').click(this._onAddRecipe.bind(this));
         html.find('.bmc-edit-recipe').click(this._onEditRecipe.bind(this));
         html.find('.bmc-delete-recipe').click(this._onDeleteRecipe.bind(this));
-        
+
         // Категории
         html.find('.bmc-add-category').click(this._onAddCategory.bind(this));
         html.find('.bmc-edit-category').click(this._onEditCategory.bind(this));
         html.find('.bmc-delete-category').click(this._onDeleteCategory.bind(this));
-        
+
         // JSON
         html.find('.bmc-copy-btn').click(this._onCopyJson.bind(this));
         html.find('.bmc-import-btn').click(this._onImportJson.bind(this));
-        
+
         // Общие
         html.find('.bmc-reset-btn').click(this._onResetAll.bind(this));
         html.find('.bmc-reset-all').click(this._onResetAll.bind(this));
         html.find('.bmc-backup-all').click(this._onBackupAll.bind(this));
     }
-    
+
     _onAddRecipe() {
         const newRecipe = {
             name: "Новый рецепт",
@@ -331,19 +331,19 @@ export class RecipeManagerApp extends FormApplication {
             ],
             result: { uuid: "", qty: 1 }
         };
-        
+
         const data = RecipeManager.getData();
         data.customRecipes.push(newRecipe);
         RecipeManager.saveData({ recipes: data.customRecipes });
         this.render(true);
     }
-    
+
     _onEditRecipe(event) {
         const index = event.currentTarget.dataset.index;
         // TODO: Открыть диалог редактирования
         ui.notifications.info("Редактирование в разработке");
     }
-    
+
     _onDeleteRecipe(event) {
         const index = event.currentTarget.dataset.index;
         if (confirm("Удалить этот рецепт?")) {
@@ -353,7 +353,7 @@ export class RecipeManagerApp extends FormApplication {
             this.render(true);
         }
     }
-    
+
     _onImportRecipes() {
         const input = document.createElement('input');
         input.type = 'file';
@@ -374,14 +374,14 @@ export class RecipeManagerApp extends FormApplication {
         };
         input.click();
     }
-    
+
     _onExportRecipes() {
         const data = RecipeManager.getData();
         const exportData = {
             categories: data.customRecipes.length > 0 ? {} : data.categories,
             recipes: data.customRecipes
         };
-        
+
         const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -390,36 +390,36 @@ export class RecipeManagerApp extends FormApplication {
         a.click();
         URL.revokeObjectURL(url);
     }
-    
+
     _onResetAll() {
         const success = RecipeManager.resetCustomData();
         if (success) {
             this.render(true);
         }
     }
-    
+
     _onBackupAll() {
         RecipeManager.exportCustomData();
     }
-    
+
     async _updateObject(event, formData) {
         // Обработка формы редактирования
         await RecipeManager.saveData(formData);
     }
-    
+
     _onTabClick(event) {
         const tabName = event.currentTarget.dataset.tab;
-        
+
         // Переключаем табы
         $(event.currentTarget).siblings().removeClass('active');
         $(event.currentTarget).addClass('active');
-        
+
         // Переключаем контент
         $(event.currentTarget).closest('.bmc-tabs').siblings('.bmc-tab-content')
             .find('.bmc-tab-pane').removeClass('active');
         $(`#${tabName}-tab`).addClass('active');
     }
-    
+
     _onAddCategory() {
         const dialog = new Dialog({
             title: "Добавить категорию",
@@ -447,12 +447,12 @@ export class RecipeManagerApp extends FormApplication {
                         const categoryId = html.find('#categoryId').val().trim();
                         const categoryName = html.find('#categoryName').val().trim();
                         const subcategoriesText = html.find('#subcategories').val().trim();
-                        
+
                         if (!categoryId || !categoryName) {
                             ui.notifications.error("ID и название обязательны!");
                             return;
                         }
-                        
+
                         const subcategories = {};
                         if (subcategoriesText) {
                             subcategoriesText.split(',').forEach(sub => {
@@ -460,14 +460,14 @@ export class RecipeManagerApp extends FormApplication {
                                 subcategories[subId] = sub.trim();
                             });
                         }
-                        
+
                         const customData = game.settings.get(RecipeManager.ID, "customRecipes");
                         customData.categories = customData.categories || {};
                         customData.categories[categoryId] = {
                             name: categoryName,
                             subcategories: subcategories
                         };
-                        
+
                         game.settings.set(RecipeManager.ID, "customRecipes", customData);
                         this.render(true);
                         ui.notifications.info(`Категория "${categoryName}" добавлена`);
@@ -482,21 +482,21 @@ export class RecipeManagerApp extends FormApplication {
         });
         dialog.render(true);
     }
-    
+
     _onEditCategory(event) {
         const categoryId = event.currentTarget.dataset.id;
         const customData = game.settings.get(RecipeManager.ID, "customRecipes");
         const category = customData.categories?.[categoryId];
-        
+
         if (!category) {
             ui.notifications.error("Категория не найдена!");
             return;
         }
-        
+
         const subcategoriesText = Object.entries(category.subcategories || {})
             .map(([id, name]) => name)
             .join(', ');
-        
+
         const dialog = new Dialog({
             title: `Редактировать категорию: ${category.name}`,
             content: `
@@ -522,12 +522,12 @@ export class RecipeManagerApp extends FormApplication {
                     callback: (html) => {
                         const categoryName = html.find('#categoryName').val().trim();
                         const subcategoriesText = html.find('#subcategories').val().trim();
-                        
+
                         if (!categoryName) {
                             ui.notifications.error("Название обязательно!");
                             return;
                         }
-                        
+
                         const subcategories = {};
                         if (subcategoriesText) {
                             subcategoriesText.split(',').forEach(sub => {
@@ -535,12 +535,12 @@ export class RecipeManagerApp extends FormApplication {
                                 subcategories[subId] = sub.trim();
                             });
                         }
-                        
+
                         customData.categories[categoryId] = {
                             name: categoryName,
                             subcategories: subcategories
                         };
-                        
+
                         game.settings.set(RecipeManager.ID, "customRecipes", customData);
                         this.render(true);
                         ui.notifications.info(`Категория "${categoryName}" обновлена`);
@@ -555,17 +555,17 @@ export class RecipeManagerApp extends FormApplication {
         });
         dialog.render(true);
     }
-    
+
     _onDeleteCategory(event) {
         const categoryId = event.currentTarget.dataset.id;
         const customData = game.settings.get(RecipeManager.ID, "customRecipes");
         const category = customData.categories?.[categoryId];
-        
+
         if (!category) {
             ui.notifications.error("Категория не найдена!");
             return;
         }
-        
+
         const dialog = new Dialog({
             title: "Удалить категорию?",
             content: `
@@ -594,7 +594,7 @@ export class RecipeManagerApp extends FormApplication {
         });
         dialog.render(true);
     }
-    
+
     _onCopyJson() {
         const jsonString = $('#bmc-json-input').val();
         navigator.clipboard.writeText(jsonString).then(() => {
@@ -603,7 +603,7 @@ export class RecipeManagerApp extends FormApplication {
             ui.notifications.error("Ошибка копирования");
         });
     }
-    
+
     _onImportJson() {
         try {
             const jsonString = $('#bmc-json-input').val();
