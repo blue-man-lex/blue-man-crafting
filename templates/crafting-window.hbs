@@ -43,9 +43,13 @@
             </div>
             {{#if user.isGM}}
             <div class="gm-controls">
+                <button class="gm-add-recipe-btn" data-tooltip="Открыть конструктор рецептов (только для ГМ)">
+                    <i class="fas fa-plus"></i>
+                    <span>Добавить</span>
+                </button>
                 <button class="gm-reset-btn" data-tooltip="Очистить все пользовательские рецепты (только для ГМ)">
                     <i class="fas fa-trash"></i>
-                    <span>Очистить рецепты</span>
+                    <span>Очистить</span>
                 </button>
             </div>
             {{/if}}
@@ -130,14 +134,22 @@
         <div class="craft-stage">
             <div class="components-area">
                 <div class="slot-container">
-                    <div class="item-slot {{#if slots.slot1.isValid}}valid{{else if slots.slot1}}invalid{{/if}}"
-                        data-uuid="{{slots.slot1.uuid}}" data-category-id="{{slots.slot1.categoryId}}"
-                        data-name="{{slots.slot1.name}}">
-                        {{#if slots.slot1}}
-                        <img src="{{slots.slot1.img}}" class="slot-image">
-                        <span class="slot-qty-text {{#if slots.slot1.isValid}}ok{{else}}bad{{/if}}">
-                            {{slots.slot1.currentQty}}/{{slots.slot1.requiredQty}}
-                        </span>
+                    <div style="position:relative; display:flex; align-items:center; justify-content:center;">
+                        {{#if isBlueprint}}
+                        <button class="material-btn prev" data-action="prev-material" style="position:absolute; left:-30px; width:20px; height:20px; border-radius:50%; background:#2c2c2c; border:1px solid #7c6a5d; color:#c7b5a1; cursor:pointer; font-size:10px; display:flex; align-items:center; justify-content:center; z-index:10;"><i class="fas fa-chevron-left"></i></button>
+                        {{/if}}
+                        <div class="item-slot {{#if slots.slot1.isValid}}valid{{else if slots.slot1}}invalid{{/if}}"
+                            data-uuid="{{slots.slot1.uuid}}" data-category-id="{{slots.slot1.categoryId}}"
+                            data-name="{{slots.slot1.name}}">
+                            {{#if slots.slot1}}
+                            <img src="{{slots.slot1.img}}" class="slot-image">
+                            <span class="slot-qty-text {{#if slots.slot1.isValid}}ok{{else}}bad{{/if}}">
+                                {{slots.slot1.currentQty}}/{{slots.slot1.requiredQty}}
+                            </span>
+                            {{/if}}
+                        </div>
+                        {{#if isBlueprint}}
+                        <button class="material-btn next" data-action="next-material" style="position:absolute; right:-30px; width:20px; height:20px; border-radius:50%; background:#2c2c2c; border:1px solid #7c6a5d; color:#c7b5a1; cursor:pointer; font-size:10px; display:flex; align-items:center; justify-content:center; z-index:10;"><i class="fas fa-chevron-right"></i></button>
                         {{/if}}
                     </div>
                     <span class="slot-label">Основа</span>
@@ -172,13 +184,22 @@
                 </div>
             </div>
 
-            <div class="result-area">
+            <div class="result-area" style="position:relative; display:flex; flex-direction:column; align-items:center;">
                 {{#if resultItem}}
-                <!-- Добавляем класс редкости динамически -->
-                <div class="result-slot rarity-{{resultItem.rarity}}" data-uuid="{{resultItem.uuid}}"
-                    data-category-id="{{resultItem.categoryId}}" data-name="{{resultItem.name}}">
-                    <img src="{{resultItem.img}}" class="slot-image">
+                <div style="position:relative; display:flex; align-items:center; justify-content:center;">
+                    {{#if isBlueprint}}
+                    <button class="variant-btn prev" data-action="prev-variant" style="position:absolute; left:-35px; width:25px; height:25px; border-radius:50%; background:#2c2c2c; border:1px solid #7c6a5d; color:#c7b5a1; cursor:pointer; font-size:12px; display:flex; align-items:center; justify-content:center; z-index:10;"><i class="fas fa-chevron-left"></i></button>
+                    {{/if}}
+                    <div class="result-slot rarity-{{resultItem.rarity}}" data-uuid="{{resultItem.uuid}}"
+                        data-category-id="{{resultItem.categoryId}}" data-name="{{resultItem.name}}">
+                        <img src="{{resultItem.img}}" class="slot-image">
+                    </div>
+                    {{#if isBlueprint}}
+                    <button class="variant-btn next" data-action="next-variant" style="position:absolute; right:-35px; width:25px; height:25px; border-radius:50%; background:#2c2c2c; border:1px solid #7c6a5d; color:#c7b5a1; cursor:pointer; font-size:12px; display:flex; align-items:center; justify-content:center; z-index:10;"><i class="fas fa-chevron-right"></i></button>
+                    {{/if}}
                 </div>
+                <div class="result-name" style="margin-top: 10px;">{{resultItem.name}}</div>
+
                 {{else}}
                 <div class="result-slot" style="opacity: 0.3;">
                     <i class="fas fa-question"></i>

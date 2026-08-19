@@ -1,0 +1,130 @@
+<form autocomplete="off" class="bmc-recipe-constructor">
+    <div class="constructor-layout">
+        <!-- Левая колонка: Настройки категорий -->
+        <div class="left-panel">
+            <h3 class="panel-title">Категория</h3>
+            <div class="form-group">
+                <label>Глобальная Категория</label>
+                <div class="form-fields">
+                    <select name="category" id="categorySelect">
+                        <option value="">Выберите категорию...</option>
+                        {{#each categories as |cat id|}}
+                        <option value="{{id}}" {{#if (eq ../currentCategory id)}}selected{{/if}}>{{cat.name}}</option>
+                        {{/each}}
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Подкатегория</label>
+                <div class="form-fields">
+                    <select name="subcategory" id="subcategorySelect">
+                        <option value="">Выберите подкатегорию...</option>
+                        {{#each currentSubcategories as |sub id|}}
+                        <option value="{{id}}" {{#if (eq ../currentSubcategory id)}}selected{{/if}}>{{sub}}</option>
+                        {{/each}}
+                        <option value="new">+ Новая подкатегория</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group" id="newCategoryGroup" style="{{#unless isNewSubcategory}}display: none;{{/unless}}">
+                <label>Название новой подкатегории</label>
+                <div class="form-fields">
+                    <input type="text" id="newCategoryName" placeholder="Например: Древнее оружие" />
+                </div>
+            </div>
+            
+            <h3 class="panel-title">Свойства</h3>
+            <div class="form-group">
+                <label>Тип создания</label>
+                <div class="form-fields" style="display: flex; gap: 8px; align-items: flex-start;">
+                    <input type="checkbox" id="createAsScroll" checked style="width: auto; margin: 2px 0 0 0; flex-shrink: 0; cursor: pointer;">
+                    <span style="font-size: 11px; color: rgba(220,177,116,0.7); font-weight: normal; line-height: 1.3; cursor: default; flex: 1;">
+                        Если снято, рецепт сразу добавится в общий список рецептов модуля. Если нажато, то рецепт создается в предметах.
+                    </span>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-top: 10px;">
+                <label>Редкость рецепта</label>
+                <div class="form-fields">
+                    <select name="rarity" id="raritySelect">
+                        <option value="common" selected>Обычный (Common)</option>
+                        <option value="uncommon">Необычный (Uncommon)</option>
+                        <option value="rare">Редкий (Rare)</option>
+                        <option value="veryRare">Очень редкий (Very Rare)</option>
+                        <option value="legendary">Легендарный (Legendary)</option>
+                        <option value="artifact">Артефакт (Artifact)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Правая колонка: Ингредиенты и Результат -->
+        <div class="right-panel">
+            <h3 class="panel-title">Компоненты</h3>
+            <div class="drop-zones-container">
+                <!-- Ингредиенты -->
+                <div class="ingredients-section">
+                    <div id="ingredientsList">
+                        {{#each ingredients as |ing index|}}
+                        <div class="ingredient-item">
+                            <img src="{{ing.img}}" alt="{{ing.name}}">
+                            <div class="ingredient-info">
+                                <span class="ingredient-name">{{ing.name}}</span>
+                                <span class="ingredient-slot">Слот {{ing.slot}}</span>
+                            </div>
+                            <div class="qty-controls">
+                                <button type="button" class="qty-minus" data-index="{{index}}">-</button>
+                                <span class="qty">{{ing.qty}}</span>
+                                <button type="button" class="qty-plus" data-index="{{index}}">+</button>
+                            </div>
+                            <button type="button" class="remove-ingredient" data-index="{{index}}" title="Удалить">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        {{/each}}
+                    </div>
+                    
+                    {{#if showIngredientDrop}}
+                    <div class="drop-zone" id="ingredientsZone">
+                        <i class="fas fa-box-open"></i>
+                        <span>Перетащите ингредиент сюда</span>
+                    </div>
+                    {{/if}}
+                </div>
+
+                <!-- Результат -->
+                <h3 class="panel-title">Результат</h3>
+                <div class="result-section">
+                    <div id="resultDisplay">
+                        {{#if result}}
+                        <div class="result-item">
+                            <img src="{{result.img}}" alt="{{result.name}}">
+                            <span class="result-name">{{result.name}}</span>
+                            <button type="button" class="remove-result" title="Удалить">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        {{else}}
+                        <div class="drop-zone result-drop-zone" id="resultZone">
+                            <i class="fas fa-magic"></i>
+                            <span>Перетащите результат крафта</span>
+                        </div>
+                        {{/if}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer class="sheet-footer">
+        <button type="button" id="clearBtn" class="bg3-btn secondary">
+            <i class="fas fa-trash"></i> Очистить
+        </button>
+        <button type="button" id="createRecipeBtn" class="bg3-btn main-action">
+            <i class="fas fa-hammer"></i> Создать Рецепт
+        </button>
+    </footer>
+</form>

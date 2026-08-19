@@ -1223,34 +1223,42 @@
 
 
 
-.gm-reset-btn {
-
-    width: 100%;
-
+.gm-controls {
     display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
     gap: 8px;
+    width: 100%;
+}
 
+.gm-add-recipe-btn,
+.gm-reset-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
     padding: 8px 12px;
-
-    background: rgba(232, 65, 24, 0.2);
-
-    border: 1px solid #e84118;
-
-    color: #e84118;
-
     border-radius: 4px;
-
     cursor: pointer;
-
     font-size: 12px;
-
     transition: all 0.3s ease;
+}
 
+.gm-add-recipe-btn {
+    background: rgba(46, 204, 113, 0.2);
+    border: 1px solid #2ecc71;
+    color: #2ecc71;
+}
+
+.gm-add-recipe-btn:hover {
+    background: rgba(46, 204, 113, 0.4);
+    border-color: #2ecc71;
+    color: #ffffff;
+}
+
+.gm-reset-btn {
+    background: rgba(232, 65, 24, 0.2);
+    border: 1px solid #e84118;
+    color: #e84118;
 }
 
 
@@ -1515,13 +1523,7 @@
 }
 
 .bg3-crafting-app .subcategory-header::before {
-
-    margin-right: 6px;
-
-    font-size: 13px;
-
-    opacity: 0.85;
-
+    display: none !important;
 }
 
 
@@ -1631,7 +1633,7 @@
 
 /* fa-leaf */
 .bg3-crafting-app [data-category="smithing"] .category-icon::before {
-    content: "\f6de";
+    content: "\f6e3";
 }
 
 /* fa-hammer */
@@ -2725,3 +2727,28 @@
 .recipe-item.active.status-partial {
     border-left: 4px solid rgba(243, 156, 18, 1) !important;
 }
+
+/* --- Recipe Constructor --- */
+.bmc-recipe-constructor { height: 100%; display: flex; flex-direction: column; }
+.constructor-layout { display: flex; gap: 20px; flex: 1; padding: 15px; }
+.left-panel { flex: 1; display: flex; flex-direction: column; gap: 15px; border-right: 1px solid rgba(220,177,116,0.3); padding-right: 15px; }
+.right-panel { flex: 1; display: flex; flex-direction: column; gap: 15px; }
+.panel-title { color: #f0d8a7; border-bottom: 1px solid rgba(220,177,116,0.5); padding-bottom: 5px; margin-top: 0; }
+.bmc-recipe-constructor .form-group label { display: block; color: #dcb174; margin-bottom: 5px; font-weight: bold; }
+.bmc-recipe-constructor .form-group select, .bmc-recipe-constructor .form-group input { width: 100%; background: rgba(0,0,0,0.5); color: #f0d8a7; border: 1px solid rgba(220,177,116,0.4); padding: 5px; border-radius: 4px; }
+.drop-zone { border: 2px dashed rgba(220,177,116,0.4); border-radius: 8px; padding: 20px; text-align: center; color: rgba(220,177,116,0.7); background: rgba(0,0,0,0.2); transition: all 0.2s; display: flex; flex-direction: column; gap: 10px; cursor: pointer; }
+.drop-zone:hover { background: rgba(220,177,116,0.1); border-color: #dcb174; color: #f0d8a7; }
+.drop-zone i { font-size: 24px; }
+.ingredient-item, .result-item { display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.4); border: 1px solid rgba(220,177,116,0.3); padding: 5px; border-radius: 4px; margin-bottom: 5px; }
+.ingredient-item img, .result-item img { width: 40px; height: 40px; border-radius: 4px; }
+.ingredient-info { flex: 1; display: flex; flex-direction: column; }
+.ingredient-name, .result-name { color: #f0d8a7; font-weight: bold; }
+.ingredient-slot { font-size: 11px; color: rgba(220,177,116,0.7); }
+.qty-controls { display: flex; align-items: center; gap: 5px; }
+.qty-controls button { width: 20px; height: 20px; padding: 0; display: flex; align-items: center; justify-content: center; background: rgba(220,177,116,0.2); border: 1px solid rgba(220,177,116,0.5); color: #f0d8a7; border-radius: 4px; cursor: pointer; }
+.qty-controls button:hover { background: rgba(220,177,116,0.4); }
+.qty-controls .qty { color: #fff; width: 20px; text-align: center; }
+.remove-ingredient, .remove-result { background: none; border: none; color: #e84118; cursor: pointer; padding: 5px; }
+.remove-ingredient:hover, .remove-result:hover { color: #ff6b47; text-shadow: 0 0 5px rgba(232,65,24,0.5); }
+.sheet-footer { padding: 15px; display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid rgba(220,177,116,0.3); }
+.bmc-recipe-constructor .form-group select option { background: #1c1c1c; color: #f0d8a7; }

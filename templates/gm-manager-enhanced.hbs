@@ -6,15 +6,16 @@
         Здесь вы можете управлять рецептами и категориями.
         <br>Текущее количество рецептов: <b>{{counts.recipes}}</b>
         <br>Текущее количество категорий: <b>{{counts.categories}}</b>
+        <br>Установленные модули (DLC): <b>{{counts.dlcs}}</b>
     </p>
 
     <!-- Табы для переключения между режимами -->
     <div class="bmc-tabs" style="display: flex; gap: 5px; border-bottom: 2px solid #555; margin-bottom: 10px;">
-        <button class="bmc-tab active" data-tab="recipes">
-            <i class="fas fa-scroll"></i> Рецепты
-        </button>
-        <button class="bmc-tab" data-tab="categories">
+        <button class="bmc-tab active" data-tab="categories">
             <i class="fas fa-folder"></i> Категории
+        </button>
+        <button class="bmc-tab" data-tab="dlc">
+            <i class="fas fa-puzzle-piece"></i> DLC
         </button>
         <button class="bmc-tab" data-tab="json">
             <i class="fas fa-code"></i> JSON
@@ -24,52 +25,16 @@
     <!-- Контент табов -->
     <div class="bmc-tab-content" style="flex: 1; overflow-y: auto;">
 
-        <!-- Таб Рецепты -->
-        <div class="bmc-tab-pane active" id="recipes-tab">
-            <div class="bmc-section">
-                <div class="bmc-section-header">
-                    <h4>Пользовательские рецепты</h4>
-                    <button class="bmc-add-recipe" style="background: #5c4e38; color: #fff; padding: 5px 10px;">
-                        <i class="fas fa-plus"></i> Добавить рецепт
-                    </button>
-                </div>
-                <div class="bmc-recipes-list" style="max-height: 300px; overflow-y: auto;">
-                    {{#each customRecipes}}
-                    <div class="bmc-recipe-item"
-                        style="display: flex; justify-content: space-between; align-items: center; padding: 8px; background: #333; margin-bottom: 5px; border-radius: 4px;">
-                        <div>
-                            <strong>{{name}}</strong>
-                            <span style="color: #999; font-size: 0.9em;">({{type}})</span>
-                        </div>
-                        <div class="bmc-recipe-actions" style="display: flex; gap: 5px;">
-                            <button class="bmc-edit-recipe" data-index="{{@index}}"
-                                style="background: #4a5f4a; color: #fff; padding: 3px 8px; font-size: 0.8em;">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="bmc-delete-recipe" data-index="{{@index}}"
-                                style="background: #8b4513; color: #fff; padding: 3px 8px; font-size: 0.8em;">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                    {{/each}}
-                    {{#unless customRecipes.length}}
-                    <p style="color: #999; text-align: center; padding: 20px;">Нет пользовательских рецептов</p>
-                    {{/unless}}
-                </div>
-            </div>
-        </div>
-
         <!-- Таб Категории -->
-        <div class="bmc-tab-pane" id="categories-tab">
-            <div class="bmc-section">
+        <div class="bmc-tab-pane active" id="categories-tab">
+            <div class="bmc-section" style="display: flex; flex-direction: column; height: 100%;">
                 <div class="bmc-section-header">
-                    <h4>Пользовательские категории</h4>
+                    <h4>Глобальные категории</h4>
                     <button class="bmc-add-category" style="background: #5c4e38; color: #fff; padding: 5px 10px;">
                         <i class="fas fa-plus"></i> Добавить категорию
                     </button>
                 </div>
-                <div class="bmc-categories-list" style="max-height: 300px; overflow-y: auto;">
+                <div class="bmc-categories-list" style="flex: 1; overflow-y: auto;">
                     {{#each customCategories}}
                     <div class="bmc-category-item"
                         style="display: flex; justify-content: space-between; align-items: center; padding: 8px; background: #333; margin-bottom: 5px; border-radius: 4px;">
@@ -78,7 +43,7 @@
                             <span style="color: #999; font-size: 0.9em;">({{id}})</span>
                             {{#if subcategories}}
                             <div style="color: #666; font-size: 0.8em; margin-top: 2px;">
-                                Подкатегории: {{#each subcategories}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}
+                                Подкатегории: {{#each subcategories}}{{this.name}}{{#unless @last}}, {{/unless}}{{/each}}
                             </div>
                             {{/if}}
                         </div>
@@ -101,28 +66,64 @@
             </div>
         </div>
 
-        <!-- Таб JSON -->
-        <div class="bmc-tab-pane" id="json-tab">
-            <div class="json-area" style="height: 100%;">
-                <label for="bmc-json-input">JSON Данные:</label>
-                <textarea id="bmc-json-input"
-                    style="width: 100%; height: 400px; font-family: monospace; background: #111; color: #7f7; border: 1px solid #555;">{{jsonString}}</textarea>
+        <!-- Таб DLC -->
+        <div class="bmc-tab-pane" id="dlc-tab">
+            <div class="bmc-section" style="display: flex; flex-direction: column; height: 100%;">
+                <div class="bmc-section-header">
+                    <h4>Установленные дополнения (DLC)</h4>
+                </div>
+                <div class="bmc-dlc-list" style="flex: 1; overflow-y: auto;">
+                    {{#each registeredDLCs}}
+                    <div class="bmc-dlc-item"
+                        style="padding: 10px; background: #333; margin-bottom: 8px; border-radius: 4px; border-left: 4px solid {{#if active}}#5c4e38{{else}}#555{{/if}}; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-size: 1.1em; color: {{#if active}}#f0d890{{else}}#999{{/if}}; margin-bottom: 4px;">
+                                <i class="fas {{#if isInternal}}fa-puzzle-piece{{else}}fa-plug{{/if}}"></i> <strong>{{name}}</strong> <span style="font-size: 0.8em; color: #777;">v{{version}}</span>
+                            </div>
+                            <div style="color: #ccc; font-size: 0.9em;">
+                                {{description}}
+                            </div>
+                        </div>
+                        <div>
+                            {{#if isInternal}}
+                                <button class="bmc-toggle-dlc" data-id="{{id}}" style="background: {{#if active}}#4a5f4a{{else}}#444{{/if}}; color: #fff; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">
+                                    {{#if active}}<i class="fas fa-check"></i> Включено{{else}}<i class="fas fa-times"></i> Отключено{{/if}}
+                                </button>
+                            {{else}}
+                                <span style="color: #5c4e38; font-size: 0.8em;"><i class="fas fa-link"></i> Внешний API</span>
+                            {{/if}}
+                        </div>
+                    </div>
+                    {{/each}}
+                    {{#unless registeredDLCs.length}}
+                    <p style="color: #999; text-align: center; padding: 20px;">Нет установленных дополнений</p>
+                    {{/unless}}
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Общие действия -->
-    <div class="bmc-actions"
-        style="display: flex; gap: 10px; justify-content: flex-end; padding-top: 10px; border-top: 1px solid #555;">
-        <button type="button" id="bmc-copy-btn">
-            <i class="fas fa-copy"></i> Копировать JSON
-        </button>
-        <button type="button" id="bmc-import-btn" style="background: #5c4e38; color: #fff;">
-            <i class="fas fa-file-import"></i> Импортировать / Сохранить
-        </button>
-        <button type="button" id="bmc-reset-btn" style="background: #8b4513; color: #fff;">
-            <i class="fas fa-trash-alt"></i> Очистить всё
-        </button>
+        <!-- Таб JSON -->
+        <div class="bmc-tab-pane" id="json-tab">
+            <div class="json-area" style="display: flex; flex-direction: column; height: 100%;">
+                <label for="bmc-json-input" style="margin-bottom: 5px;">JSON Данные:</label>
+                <textarea id="bmc-json-input"
+                    style="flex: 1; width: 100%; font-family: monospace; background: #111; color: #7f7; border: 1px solid #555; resize: none; box-sizing: border-box; margin-bottom: 10px;">{{jsonString}}</textarea>
+                
+                <!-- Общие действия -->
+                <div class="bmc-actions"
+                    style="display: flex; gap: 10px; justify-content: flex-end; padding-top: 10px; border-top: 1px solid #555;">
+                    <button type="button" id="bmc-copy-btn">
+                        <i class="fas fa-copy"></i> Копировать JSON
+                    </button>
+                    <button type="button" id="bmc-import-btn" style="background: #5c4e38; color: #fff;">
+                        <i class="fas fa-file-import"></i> Импортировать / Сохранить
+                    </button>
+                    <button type="button" id="bmc-reset-btn" style="background: #8b4513; color: #fff;">
+                        <i class="fas fa-trash-alt"></i> Очистить всё
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
