@@ -85,7 +85,7 @@ export class ScrollsDialog extends Application {
     }
 
     async _onClick(event) {
-        const target = event.target.closest('.scroll-item');
+        const target = event.target.closest('.scroll-card');
         if (!target) return;
 
         const scrollId = target.dataset.scrollId;

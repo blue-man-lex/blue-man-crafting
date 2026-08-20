@@ -1,6 +1,9 @@
+import { BLACKSMITH_MATERIALS } from "./dlc/blacksmith.js";
+import { LEATHERWORKER_MATERIALS } from "./dlc/leatherworker.js";
 import { RecipeManager } from "./recipeManager.js";
 import { ScrollsDialog } from "./scrollsDialog.js";
 import { CraftingTooltips } from "./craftingTooltips.js";
+import { RecipeConstructorApp } from "./recipeConstructor.js";
 
 // Импортируем socket из main.js
 let socket;
@@ -14,9 +17,11 @@ export class BG3CraftingApp extends Application {
         "potions": "alchemy", "elixirs": "alchemy", "grenades": "alchemy", "coatings": "alchemy",
         "suspension": "ingredients", "essence": "ingredients", "salt": "ingredients", "ash": "ingredients", "vitriol": "ingredients", "sublimate": "ingredients",
         "weapons": "smithing", "armor": "smithing", "tools": "smithing",
-        "gem-cutting": "jewelry", "enchantment-dust": "jewelry",
+        "melee-weapons": "smithing", "ranged-weapons": "smithing", "firearms": "smithing", "arrows-bolts": "smithing", "bullets": "smithing", "mechanisms": "smithing", "ingots": "smithing", "forging": "smithing",
+        "gem_cutting": "jewelry", "rings": "jewelry", "amulets": "jewelry", "wands": "jewelry",
         "leather-armor": "leatherworking", "tanning": "leatherworking",
-        "rations": "cooking", "feasts": "cooking",
+        "raw_meat": "ingredients", "raw_veg": "ingredients", "raw_fruit": "ingredients", "bread": "ingredients", "snacks": "ingredients", "drinks": "ingredients", "meals": "ingredients",
+        "tier1": "cooking", "tier2": "cooking", "tier3": "cooking", "tier4": "cooking",
         "cloth-armor": "tailoring", "embroidery": "tailoring",
         "scrolls": "scribing", "inks": "scribing"
     };
@@ -75,12 +80,24 @@ export class BG3CraftingApp extends Application {
                 "weapons": false,
                 "armor": false,
                 "tools": false,
-                "gem-cutting": false,
+                "gem_cutting": false,
                 "enchantment-dust": false,
+                "rings": false,
+                "amulets": false,
+                "wands": false,
                 "leather-armor": false,
                 "tanning": false,
-                "rations": false,
-                "feasts": false,
+                "raw_meat": false,
+                "raw_veg": false,
+                "raw_fruit": false,
+                "bread": false,
+                "snacks": false,
+                "drinks": false,
+                "meals": false,
+                "tier1": false,
+                "tier2": false,
+                "tier3": false,
+                "tier4": false,
                 "cloth-armor": false,
                 "embroidery": false
             },
@@ -205,9 +222,9 @@ export class BG3CraftingApp extends Application {
         if (path.includes("масл") || path.includes("яд") || path.includes("токсин")) return "coatings";
 
         // Кузнечное дело
-        if (path.includes("кузнеч") || path.includes("оруж") || path.includes("доспех")) {
-            if (path.includes("доспех")) return "armor";
-            if (path.includes("инструмент")) return "tools";
+        if (path.includes("кузнеч") || path.includes("оруж") || path.includes("доспех") || path.includes("амуници") || path.includes("щит")) {
+            if (path.includes("доспех") || path.includes("щит")) return "armor";
+            if (path.includes("амуници") || path.includes("стрел") || path.includes("болт") || path.includes("пул")) return "ammunition";
             return "weapons"; // fallback
         }
 
@@ -335,13 +352,25 @@ export class BG3CraftingApp extends Application {
             el.addEventListener('click', this._onDeleteRecipeClick.bind(this));
         });
 
+        // Arrow Buttons
+        html[0].querySelectorAll('.variant-btn').forEach(btn => {
+            btn.addEventListener('click', this._onVariantArrowClick.bind(this));
+        });
+        html[0].querySelectorAll('.material-btn').forEach(btn => {
+            btn.addEventListener('click', this._onMaterialArrowClick.bind(this));
+        });
+
         // Обработчики для кнопки крафта
         html[0].querySelectorAll('.main-action').forEach(el => {
             el.addEventListener('click', this._onCraftClick.bind(this));
         });
 
-        // Обработчик для кнопки сброса ГМ
+        // Управление пользовательскими рецептами (для ГМ)
         html[0].querySelector('.gm-reset-btn')?.addEventListener('click', this._onGMReset.bind(this));
+        html[0].querySelector('.gm-add-recipe-btn')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            new RecipeConstructorApp().render(true);
+        });
 
         // Обработчики для выпадающего меню игроков
         const dropdownToggle = html[0].querySelector('.dropdown-toggle');
@@ -517,6 +546,41 @@ export class BG3CraftingApp extends Application {
         this.render(true);
     }
 
+    async _onVariantArrowClick(event) {
+        event.preventDefault();
+        const action = event.currentTarget.dataset.action;
+        const recipe = this.state.selectedRecipe;
+        if (!recipe || !recipe.isBlueprint || !recipe.variants) return;
+
+        let index = this.state.activeVariantIndex || 0;
+        if (action === 'next-variant') {
+            index = (index + 1) % recipe.variants.length;
+        } else {
+            index = (index - 1 + recipe.variants.length) % recipe.variants.length;
+        }
+        
+        this.state.activeVariantIndex = index;
+        await this._prepareRecipeView(this.state.selectedRecipe);
+        this.render(true);
+    }
+
+    async _onMaterialArrowClick(event) {
+        event.preventDefault();
+        if (!this.state.selectedRecipe || !this.state.availableMaterials || this.state.availableMaterials.length === 0) return;
+        
+        const action = event.currentTarget.dataset.action;
+        let index = this.state.activeMaterialIndex || 0;
+        if (action === 'next-material') {
+            index = (index + 1) % this.state.availableMaterials.length;
+        } else {
+            index = (index - 1 + this.state.availableMaterials.length) % this.state.availableMaterials.length;
+        }
+        
+        this.state.activeMaterialIndex = index;
+        await this._prepareRecipeView(this.state.selectedRecipe);
+        this.render(true);
+    }
+
     _onCraftClick(event) {
         event.preventDefault();
         if (this.state.canCraft) {
@@ -578,7 +642,13 @@ export class BG3CraftingApp extends Application {
 
         const globalCategories = Object.entries(categories)
             .filter(([, c]) => c?.global)
-            .map(([id, c]) => ({ id, name: c.name, subcategories: Object.entries(c.subcategories || {}).map(([sid, sc]) => ({ id: sid, name: sc.name })) }));
+            .map(([id, c]) => ({ 
+                id, 
+                name: c.name, 
+                subcategories: Object.entries(c.subcategories || {})
+                    .filter(([, sc]) => !sc.hidden)
+                    .map(([sid, sc]) => ({ id: sid, name: sc.name })) 
+            }));
 
         const subIndex = new Map();
         for (const g of globalCategories) {
@@ -650,6 +720,8 @@ export class BG3CraftingApp extends Application {
             selectedRecipe: this.state.selectedRecipe,
             canCraft: this.state.canCraft && hasKit,
             resultItem: this.state.resultItem,
+            inputs: this.state.inputs,
+            isBlueprint: this.state.selectedRecipe?.isBlueprint,
             hasKit: hasKit,
             craftingKits: craftingKits,
             isGM: isGM, // Передаем флаг ГМа в шаблон
@@ -806,21 +878,73 @@ export class BG3CraftingApp extends Application {
     }
 
     async _prepareRecipeView(recipe) {
-        console.log('Подготовка вида рецепта:', recipe.name);
+        if (recipe.isBlueprint) {
+            if (this.state.activeVariantIndex === undefined || this.state.lastRecipeId !== recipe.name) {
+                this.state.activeVariantIndex = 0;
+                this.state.lastRecipeId = recipe.name;
+                this.state.droppedMaterials = [null, null, null];
+                this.state.activeMaterialIndex = 0;
+            }
+            const variant = recipe.variants[this.state.activeVariantIndex];
+            recipe = { ...recipe, ingredients: variant.ingredients, result: variant.result, variantName: variant.name };
+        } else {
+            this.state.activeVariantIndex = undefined;
+            if (this.state.lastRecipeId !== recipe.name) {
+                this.state.lastRecipeId = recipe.name;
+                this.state.droppedMaterials = [null, null, null];
+                this.state.activeMaterialIndex = 0;
+            }
+        }
+
+        console.log('Preparing:', recipe.name);
         this.state.inputs = [null, null, null];
         this.state.resultItem = null;
         this.state.canCraft = false;
+
+        if (!this.state.droppedMaterials) this.state.droppedMaterials = [null, null, null];
+
+        // Find available materials if needed (ONLY for blueprints with material arrows)
+        if (recipe.isBlueprint && recipe.ingredients && recipe.ingredients.length > 0) {
+            const req = recipe.ingredients[0];
+            if (req.type === "category") {
+                const categoryId = req.categoryId || req.type;
+                const availableUuids = new Set();
+                for (const item of this.actor.items) {
+                    const itemData = { uuid: item.uuid, sourceId: item._stats?.compendiumSource || item.flags?.core?.sourceId, name: item.name, type: item.type };
+                    if (RecipeManager.isItemInCategory(itemData, categoryId)) {
+                        if (itemData.sourceId) availableUuids.add(itemData.sourceId);
+                    }
+                }
+                this.state.availableMaterials = Array.from(availableUuids);
+            } else {
+                this.state.availableMaterials = [];
+            }
+        } else {
+            this.state.availableMaterials = [];
+        }
 
         if (recipe.ingredients) {
             let allValid = true;
             const mapping = [0, 2, 1];
 
-            console.log('Ингредиенты рецепта:', recipe.ingredients);
-
             for (let i = 0; i < recipe.ingredients.length; i++) {
                 if (i >= 3) break;
-                const req = recipe.ingredients[i];
                 const slotIndex = mapping[i];
+                let req = recipe.ingredients[i];
+                
+                // Override with specific material selected via arrows
+                if (i === 0 && this.state.availableMaterials && this.state.availableMaterials.length > 0) {
+                    const selectedMaterialUuid = this.state.availableMaterials[this.state.activeMaterialIndex || 0];
+                    if (selectedMaterialUuid) {
+                        req = { type: "item", uuid: selectedMaterialUuid, qty: req.qty, originalCategoryId: req.categoryId || req.type };
+                    }
+                }
+
+                // Or fallback to drag and drop (if they use it)
+                if (req.type === "category" && this.state.droppedMaterials[slotIndex]) {
+                    req = { type: "item", uuid: this.state.droppedMaterials[slotIndex], qty: req.qty, originalCategoryId: req.categoryId };
+                }
+
                 const displayInfo = await RecipeManager.getItemDisplayInfo(req);
                 const ownedQty = this._countOwnedItems(req, displayInfo.name);
                 const reqQty = req.qty || 1;
@@ -859,7 +983,7 @@ export class BG3CraftingApp extends Application {
             const resultInfo = await RecipeManager.getItemDisplayInfo(resultReq);
 
             this.state.resultItem = {
-                name: resultInfo.name,
+                name: recipe.variantName || resultInfo.name,
                 img: resultInfo.img,
                 rarity: resultInfo.rarity || "common",
                 qty: recipe.result.qty || 1,
@@ -903,14 +1027,13 @@ export class BG3CraftingApp extends Application {
         return count;
     }
 
-    // АСИНХРОННАЯ ФУНКЦИЯ: Точная проверка наличия ингредиентов для списка (как в правой панели)
-    async _checkRecipeAvailability(recipe) {
-        if (!recipe.ingredients || recipe.ingredients.length === 0) return "";
-
+    async _checkIngredientArray(ingredients) {
+        if (!ingredients || ingredients.length === 0) return "";
+        
         let hasAny = false;
         let hasAll = true;
 
-        for (const req of recipe.ingredients) {
+        for (const req of ingredients) {
             const reqQty = req.qty || 1;
             
             // Асинхронно получаем имя предмета для фоллбэк-проверки
@@ -932,6 +1055,34 @@ export class BG3CraftingApp extends Application {
         if (hasAll) return "status-ready";
         if (hasAny) return "status-partial";
         return "";
+    }
+
+    // АСИНХРОННАЯ ФУНКЦИЯ: Точная проверка наличия ингредиентов для списка (как в правой панели)
+    async _checkRecipeAvailability(recipe) {
+        // Если это сложный чертеж (содержит варианты)
+        if (recipe.isBlueprint && recipe.variants && recipe.variants.length > 0) {
+            let blueprintHasAny = false;
+            let blueprintHasReady = false;
+
+            for (const variant of recipe.variants) {
+                const status = await this._checkIngredientArray(variant.ingredients);
+                if (status === "status-ready") {
+                    blueprintHasReady = true;
+                } else if (status === "status-partial") {
+                    blueprintHasAny = true;
+                }
+            }
+
+            // Если хотя бы один вариант можно полностью собрать - весь чертеж готов (зеленый)
+            if (blueprintHasReady) return "status-ready";
+            // Если ни один вариант не готов полностью, но есть частичные ресурсы - желтый
+            if (blueprintHasAny) return "status-partial";
+            
+            return "";
+        } else {
+            // Обычный рецепт
+            return await this._checkIngredientArray(recipe.ingredients);
+        }
     }
 
     // ФОНОВАЯ ЗАГРУЗКА: Проверяет наличие предметов и подкрашивает DOM не подвешивая игру
@@ -1186,6 +1337,37 @@ export class BG3CraftingApp extends Application {
 
 
     async _onDrop(event) {
+
+        const itemSlot = event.target.closest('.item-slot');
+        if (itemSlot && this.state.selectedRecipe) {
+            let data;
+            try { data = JSON.parse(event.dataTransfer.getData('text/plain')); } catch (e) { return; }
+            if (data.type === "Item" && data.uuid) {
+                const item = await fromUuid(data.uuid);
+                if (item) {
+                    const slotElements = Array.from(this.element[0].querySelectorAll('.item-slot'));
+                    const slotIndex = slotElements.indexOf(itemSlot);
+                    if (slotIndex !== -1 && this.state.inputs[slotIndex]) {
+                        const originalReq = this.state.inputs[slotIndex].originalReq;
+                        // For blueprints, check if the original category matches
+                        const catToCheck = originalReq.originalCategoryId || originalReq.categoryId || originalReq.type;
+                        if (originalReq.type === "category" || originalReq.originalCategoryId) {
+                            const itemData = { uuid: item.uuid, sourceId: item._stats?.compendiumSource || item.flags?.core?.sourceId, name: item.name, type: item.type };
+                            if (RecipeManager.isItemInCategory(itemData, catToCheck)) {
+                                if (!this.state.droppedMaterials) this.state.droppedMaterials = [null, null, null];
+                                this.state.droppedMaterials[slotIndex] = itemData.sourceId || itemData.uuid;
+                                await this._prepareRecipeView(this.state.selectedRecipe);
+                                this.render(true);
+                                return;
+                            } else {
+                                ui.notifications.warn("Этот предмет не подходит для данного слота!");
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+        }
         event.preventDefault();
 
         // Проверяем, был ли drop в discovery-slot
@@ -1264,105 +1446,124 @@ export class BG3CraftingApp extends Application {
     // Обработка изучения рецепта (выполняется на стороне ГМа)
     async _processRecipeDiscovery(recipeData, scrollData = null) {
         try {
-            // Создаем динамические категории для ингредиентов
-            const customData = game.settings.get(RecipeManager.ID, "customRecipes");
-            const newCategories = { ...customData.categories };
+            const allCurrentRecipes = RecipeManager.getData().recipes || [];
+            // Пытаемся найти уже существующий рецепт по имени и результату
+            const existingGlobalIndex = allCurrentRecipes.findIndex(r => 
+                r.name === recipeData.name && 
+                (r.result?.uuid === recipeData.result?.uuid || r.resultId === recipeData.result?.uuid)
+            );
 
-            for (const ingredient of recipeData.ingredients) {
-                if (ingredient.type === "category" && ingredient.categoryId) {
-                    // Если категории нет, создаем ее
-                    if (!newCategories[ingredient.categoryId]) {
-                        newCategories[ingredient.categoryId] = {
-                            name: this._generateCategoryName(ingredient.categoryId),
-                            global: true,
-                            subcategories: {
-                                "uncategorized": {
-                                    name: "Без категории",
-                                    items: []
-                                }
-                            }
-                        };
-                        ui.notifications.info(`Создана категория: ${newCategories[ingredient.categoryId].name}`);
-                    }
-                }
-            }
+            let recipeId;
 
-            // Сохраняем обновленные категории
-            await RecipeManager.saveData({
-                categories: newCategories,
-                recipes: customData.recipes || []
-            });
+            if (existingGlobalIndex !== -1) {
+                // Рецепт уже существует в базе
+                recipeId = `recipe_${existingGlobalIndex}`;
+            } else {
+                // Рецепта нет, создаем новый
+                // Создаем динамические категории для ингредиентов
+                const customData = game.settings.get(RecipeManager.ID, "customRecipes");
+                const newCategories = { ...customData.categories };
 
-            // Добавляем рецепт, сохраняя ВСЕ поля из макроса
-            const newRecipe = {
-                name: recipeData.name,
-                type: recipeData.type || "misc",
-                categoryId: recipeData.categoryId || null,
-                subcategoryId: recipeData.subcategoryId || null,
-                ingredients: recipeData.ingredients,
-                result: recipeData.result,
-                isCustom: true
-            };
-
-            // Если макрос передал кастомную категорию, которой еще нет в настройках мира, создаем её
-            if (newRecipe.categoryId && newRecipe.categoryId.startsWith('custom.')) {
-                if (!newCategories[newRecipe.categoryId]) {
-                    // Генерируем красивое имя из ID (custom.nekromantiya -> Nekromantiya)
-                    const rawName = newRecipe.categoryId.split('.')[1] || "Custom";
-                    const formattedName = rawName.charAt(0).toUpperCase() + rawName.slice(1).replace(/_/g, ' ');
-                    
-                    newCategories[newRecipe.categoryId] = {
-                        name: formattedName,
-                        global: true,
-                        subcategories: {}
-                    };
-                }
-                if (newRecipe.subcategoryId && !newCategories[newRecipe.categoryId].subcategories[newRecipe.subcategoryId]) {
-                    newCategories[newRecipe.categoryId].subcategories[newRecipe.subcategoryId] = {
-                        name: "Основные",
-                        items: []
-                    };
-                }
-            }
-
-            // Если type не указан и нет кастомной категории, пытаемся определить цель по папке World Item результата
-            if (newRecipe.type === "misc" && !newRecipe.categoryId && newRecipe.result?.uuid) {
-                const inferred = await this._inferRecipeTargetFromResultUuid(newRecipe.result.uuid);
-                if (inferred?.subcategoryId) {
-                    newRecipe.subcategoryId = inferred.subcategoryId;
-                    newRecipe.categoryId = inferred.categoryId;
-                    // Для старых фиксированных подкатегорий оставляем совместимость через type
-                    if (newRecipe.subcategoryId && !newRecipe.subcategoryId.startsWith("custom.")) newRecipe.type = newRecipe.subcategoryId;
-
-                    // Если это кастомная категория - создаем ее в custom categories
-                    if (newRecipe.subcategoryId.startsWith("custom.") && inferred.categoryName && inferred.subcategoryName) {
-                        const catId = inferred.categoryId;
-                        const subId = inferred.subcategoryId;
-                        if (!newCategories[catId]) {
-                            newCategories[catId] = {
-                                name: inferred.categoryName,
+                for (const ingredient of recipeData.ingredients) {
+                    if (ingredient.type === "category" && ingredient.categoryId) {
+                        // Если категории нет, создаем ее
+                        if (!newCategories[ingredient.categoryId]) {
+                            newCategories[ingredient.categoryId] = {
+                                name: this._generateCategoryName(ingredient.categoryId),
                                 global: true,
-                                subcategories: {}
+                                subcategories: {
+                                    "uncategorized": {
+                                        name: "Без категории",
+                                        items: []
+                                    }
+                                }
                             };
-                        }
-                        if (!newCategories[catId].subcategories) newCategories[catId].subcategories = {};
-                        if (!newCategories[catId].subcategories[subId]) {
-                            newCategories[catId].subcategories[subId] = {
-                                name: inferred.subcategoryName,
-                                items: []
-                            };
+                            ui.notifications.info(`Создана категория: ${newCategories[ingredient.categoryId].name}`);
                         }
                     }
                 }
-            }
 
-            const updatedRecipes = [...(customData.recipes || []), newRecipe];
-            await RecipeManager.saveData({
-                categories: newCategories,
-                recipes: updatedRecipes
-            });
+                // Добавляем рецепт, сохраняя ВСЕ поля из макроса
+                const newRecipe = {
+                    name: recipeData.name,
+                    type: recipeData.type || "misc",
+                    categoryId: recipeData.categoryId || null,
+                    subcategoryId: recipeData.subcategoryId || null,
+                    ingredients: recipeData.ingredients,
+                    result: recipeData.result,
+                    isCustom: true
+                };
+
+                // Если макрос передал кастомную категорию, которой еще нет в настройках мира, создаем её
+                if (newRecipe.categoryId && newRecipe.categoryId.startsWith('custom.')) {
+                    if (!newCategories[newRecipe.categoryId]) {
+                        // Генерируем красивое имя из ID (custom.nekromantiya -> Nekromantiya)
+                        const rawName = newRecipe.categoryId.split('.')[1] || "Custom";
+                        const formattedName = rawName.charAt(0).toUpperCase() + rawName.slice(1).replace(/_/g, ' ');
+                        
+                        newCategories[newRecipe.categoryId] = {
+                            name: formattedName,
+                            global: true,
+                            subcategories: {}
+                        };
+                    }
+                    if (newRecipe.subcategoryId && !newCategories[newRecipe.categoryId].subcategories[newRecipe.subcategoryId]) {
+                        newCategories[newRecipe.categoryId].subcategories[newRecipe.subcategoryId] = {
+                            name: "Основные",
+                            items: []
+                        };
+                    }
+                }
+
+                // Если type не указан и нет кастомной категории, пытаемся определить цель по папке World Item результата
+                if (newRecipe.type === "misc" && !newRecipe.categoryId && newRecipe.result?.uuid) {
+                    const inferred = await this._inferRecipeTargetFromResultUuid(newRecipe.result.uuid);
+                    if (inferred?.subcategoryId) {
+                        newRecipe.subcategoryId = inferred.subcategoryId;
+                        newRecipe.categoryId = inferred.categoryId;
+                        // Для старых фиксированных подкатегорий оставляем совместимость через type
+                        if (newRecipe.subcategoryId && !newRecipe.subcategoryId.startsWith("custom.")) newRecipe.type = newRecipe.subcategoryId;
+
+                        // Если это кастомная категория - создаем ее в custom categories
+                        if (newRecipe.subcategoryId.startsWith("custom.") && inferred.categoryName && inferred.subcategoryName) {
+                            const catId = inferred.categoryId;
+                            const subId = inferred.subcategoryId;
+                            if (!newCategories[catId]) {
+                                newCategories[catId] = {
+                                    name: inferred.categoryName,
+                                    global: true,
+                                    subcategories: {}
+                                };
+                            }
+                            if (!newCategories[catId].subcategories) newCategories[catId].subcategories = {};
+                            if (!newCategories[catId].subcategories[subId]) {
+                                newCategories[catId].subcategories[subId] = {
+                                    name: inferred.subcategoryName,
+                                    items: []
+                                };
+                            }
+                        }
+                    }
+                }
+
+                const updatedRecipes = [...(customData.recipes || []), newRecipe];
+                await RecipeManager.saveData({
+                    categories: newCategories,
+                    recipes: updatedRecipes
+                });
+                
+                // Индекс нового рецепта - это старая длина массива
+                recipeId = `recipe_${allCurrentRecipes.length}`;
+            }
 
             ui.notifications.info(`Изучен рецепт: ${recipeData.name}`);
+
+            // === ДОБАВЛЯЕМ РЕЦЕПТ В ИЗУЧЕННЫЕ ИГРОКУ ===
+            if (this.actor && recipeId) {
+                const knownRecipes = new Set(this.actor.getFlag(RecipeManager.ID, "knownRecipes") || []);
+                knownRecipes.add(recipeId);
+                await this.actor.setFlag(RecipeManager.ID, "knownRecipes", Array.from(knownRecipes));
+            }
 
             // Одноразовый предмет-рецепт: если рецепт был дропнут из инвентаря текущего актера,
             // тратим 1 штуку (или удаляем, если это последняя).
@@ -1387,7 +1588,14 @@ export class BG3CraftingApp extends Application {
 
             // Обновляем интерфейс
             this._recipeStatusCache = null;
-            this.render(true);
+            if (this.rendered) {
+                this.render(true);
+            } else if (game.bmc?.craftingApp?.rendered) {
+                // Если приложение не отрендерено (мы в tempApp у ГМа), 
+                // но у ГМа есть открытое основное окно, обновим его
+                game.bmc.craftingApp._recipeStatusCache = null;
+                game.bmc.craftingApp.render(true);
+            }
 
         } catch (err) {
             ui.notifications.error("Ошибка изучения рецепта: " + err.message);
@@ -1532,17 +1740,72 @@ export class BG3CraftingApp extends Application {
             }
 
             let resultId = recipe.resultId || (recipe.result ? recipe.result.uuid : null);
+            // FIX: If it's a blueprint, the base recipe object lacks the active variant's result.
+            // We must use the result UUID saved in state during _prepareRecipeView.
+            if (recipe.isBlueprint && this.state.resultItem) {
+                resultId = this.state.resultItem.uuid;
+            }
+
             let itemData = await RecipeManager.findItemDataInCompendiums(resultId);
             if (!itemData) {
                 itemData = { name: recipe.name, type: "consumable", img: this.state.resultItem?.img };
             }
             itemData = foundry.utils.deepClone(itemData);
-            const qtyToAdd = recipe.result?.qty || 1; // Берем количество из рецепта
+
+            // APPLY DYNAMIC MATERIAL PROPERTIES IF THIS IS A BLUEPRINT
+            if (this.state.selectedRecipe?.isBlueprint && this.state.inputs[0]) {
+                const materialUuid = this.state.inputs[0].uuid; // Slot 1 contains the ingot or tanned leather
+                const matData = BLACKSMITH_MATERIALS[materialUuid] || LEATHERWORKER_MATERIALS[materialUuid];
+                
+                if (materialUuid && matData) {
+                    // Change Name
+                    const baseName = itemData.name.replace(" (Болванка)", "");
+                    itemData.name = `${matData.prefix} ${baseName.toLowerCase()}`;
+                    // Change Rarity
+                    if (!itemData.system) itemData.system = {};
+                    itemData.system.rarity = matData.rarity;
+                    
+                    // Add attack/damage bonuses
+                    if (matData.bonus > 0) {
+                        // DnD5e v3+ compatibility: magicalBonus
+                        itemData.system.magicalBonus = matData.bonus;
+                        
+                        // Ensure the item has the 'mgc' (Magical) property
+                        if (!itemData.system.properties) itemData.system.properties = [];
+                        if (!itemData.system.properties.includes("mgc")) {
+                            itemData.system.properties.push("mgc");
+                        }
+                        
+                        // Add specific material properties if applicable
+                        if (materialUuid === "Compendium.blue-man-crafting.BG3.Item.ey9yJkT5hF7OMmOr") { // ingot_adamantine
+                            if (!itemData.system.properties.includes("ada")) itemData.system.properties.push("ada");
+                        }
+                        if (materialUuid === "Compendium.blue-man-crafting.BG3.Item.cVoNp6D0WD5yFwS3") { // ingot_mithral
+                            if (!itemData.system.properties.includes("mit")) itemData.system.properties.push("mit");
+                        }
+                        if (materialUuid === "Compendium.blue-man-crafting.BG3.Item.Jbw6ChokgHL25eKF") { // ingot_silver
+                            if (!itemData.system.properties.includes("sil")) itemData.system.properties.push("sil");
+                        }
+                        
+                        // For armors and shields in v3+, if they craft armor:
+                        if (itemData.system.armor) {
+                            itemData.system.armor.magicalBonus = matData.bonus;
+                        }
+                        
+                        // DnD5e v2 legacy support
+                        itemData.system.attackBonus = String(matData.bonus);
+                        if (itemData.system.damage && itemData.system.damage.parts && itemData.system.damage.parts.length > 0) {
+                            itemData.system.damage.parts[0][0] += ` + ${matData.bonus}`;
+                        }
+                    }
+                }
+            }
+            const qtyToAdd = (recipe.isBlueprint && this.state.resultItem) ? this.state.resultItem.qty : (recipe.result?.qty || 1); // Берем количество из рецепта или стейта
 
             // 1. Пытаемся найти существующий предмет в инвентаре
             // Ищем по имени ИЛИ по исходному ID (sourceId), если он есть
             const existingItem = this.actor.items.find(i =>
-                i.name === itemData.name &&
+                i.name.toLowerCase().trim() === itemData.name.toLowerCase().trim() &&
                 i.type === itemData.type
             );
 
@@ -1556,7 +1819,7 @@ export class BG3CraftingApp extends Application {
                 itemData.system = itemData.system || {};
                 itemData.system.quantity = qtyToAdd;
                 await this.actor.createEmbeddedDocuments("Item", [itemData]);
-                ui.notifications.info(`Создано: ${recipe.name}`);
+                ui.notifications.info(`Создано: ${itemData.name}`);
             }
 
             await this._prepareRecipeView(this.state.selectedRecipe);

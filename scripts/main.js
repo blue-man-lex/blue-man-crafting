@@ -86,6 +86,17 @@ Hooks.once("init", () => {
     
     // Инициализация настроек менеджера
     RecipeManager.initialize();
+
+    // Экспорт API для DLC
+    const bmcModule = game.modules.get("blue-man-crafting");
+    if (bmcModule) {
+        bmcModule.api = {
+            registerDLC: (dlcData) => {
+                RecipeManager.registerDLC(dlcData);
+            }
+        };
+        console.log("BG3 Crafting | API Exported");
+    }
 });
 
 function appendCraftingHeaderControls(app, controls) {

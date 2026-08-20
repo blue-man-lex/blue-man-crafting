@@ -1,8 +1,41 @@
 import { RECIPES, RECIPE_CATEGORIES } from "./gamedata.js";
+import { ALCHEMY_DLC } from "./dlc/alchemy.js";
+import { BLACKSMITH_DLC } from "./dlc/blacksmith.js";
+import { LEATHERWORKER_DLC } from "./dlc/leatherworker.js";
+import { SCRIBING_DLC } from "./dlc/scribing.js";
+import { COOKING_DLC } from "./dlc/cooking.js";
+import { JEWELRY_DLC } from "./dlc/jewelry.js";
+
+const INTERNAL_DLCS = [ALCHEMY_DLC, BLACKSMITH_DLC, LEATHERWORKER_DLC, SCRIBING_DLC, COOKING_DLC, JEWELRY_DLC];
 
 export class RecipeManager {
     static ID = "blue-man-crafting";
     static SETTING = "recipes";
+    
+    // Хранилище для внешних DLC (через API)
+    static dlcCategories = {};
+    static dlcRecipes = [];
+    static registeredDLCs = [];
+
+    static registerDLC(dlcData) {
+        if (!dlcData) return;
+        
+        if (dlcData.categories) {
+            this.dlcCategories = foundry.utils.mergeObject(this.dlcCategories, dlcData.categories);
+        }
+        
+        if (dlcData.recipes && Array.isArray(dlcData.recipes)) {
+            this.dlcRecipes = this.dlcRecipes.concat(dlcData.recipes);
+        }
+        
+        this.registeredDLCs.push({
+            name: dlcData.name || "Unknown DLC",
+            version: dlcData.version || "1.0.0",
+            description: dlcData.description || ""
+        });
+        
+        console.log(`BMC: [DLC] Успешно зарегистрировано DLC: ${dlcData.name || "Unknown"} (Рецептов: ${dlcData.recipes?.length || 0})`);
+    }
 
     static async initialize() {
         game.settings.register(this.ID, "craftingMinigame", {
@@ -23,6 +56,14 @@ export class RecipeManager {
             default: { categories: {}, recipes: [] }
         });
 
+        game.settings.register(this.ID, "activeDLCs", {
+            name: "Активные встроенные DLC",
+            scope: "world",
+            config: false,
+            type: Array,
+            default: ["alchemy"] // По умолчанию включена алхимия
+        });
+
         game.settings.registerMenu(this.ID, "recipeManagerMenu", {
             name: "Настройка рецептов",
             label: "Редактор рецептов",
@@ -31,16 +72,45 @@ export class RecipeManager {
             type: RecipeManagerApp,
             restricted: true
         });
-        console.log(`BMC: [INIT] Загружено ${RECIPES.length} базовых рецептов.`);
+        console.log(`BMC: [INIT] Менеджер рецептов инициализирован.`);
     }
 
     static getData() {
-        // Получаем пользовательские рецепты
         const customData = game.settings.get(RecipeManager.ID, "customRecipes");
+        const activeDLCs = game.settings.get(RecipeManager.ID, "activeDLCs");
 
-        // Адаптируем базовые рецепты
-        const adaptedBaseRecipes = RECIPES.map(recipe => {
-            if (recipe.ingredients && Array.isArray(recipe.ingredients)) return recipe;
+        // 1. Собираем встроенные DLC, которые активированы
+        let internalCategories = {};
+        let internalRecipes = [];
+        const dlcList = INTERNAL_DLCS.map(dlc => {
+            const isActive = activeDLCs.includes(dlc.id);
+            if (isActive) {
+                internalCategories = foundry.utils.mergeObject(internalCategories, dlc.categories);
+                internalRecipes = internalRecipes.concat(dlc.recipes);
+            }
+            return {
+                id: dlc.id,
+                name: dlc.name,
+                version: dlc.version,
+                description: dlc.description,
+                active: isActive,
+                isInternal: true
+            };
+        });
+
+        // 2. Добавляем внешние DLC (зарегистрированные через API)
+        this.registeredDLCs.forEach(dlc => {
+            dlcList.push({
+                ...dlc,
+                active: true, // Внешние всегда активны, если загрузились
+                isInternal: false
+            });
+        });
+
+        // Адаптируем базовые рецепты (встроенные DLC + внешние DLC + остатки gamedata)
+        const combinedBaseRecipes = [...RECIPES, ...internalRecipes, ...this.dlcRecipes];
+        const adaptedBaseRecipes = combinedBaseRecipes.map(recipe => {
+            if (recipe.ingredients && Array.isArray(recipe.ingredients)) return { ...recipe, isCustom: false };
             if (recipe.input) {
                 const ingredients = [];
                 if (recipe.input.slot1 && recipe.input.slot1.type !== 'empty') ingredients.push(recipe.input.slot1);
@@ -53,7 +123,7 @@ export class RecipeManager {
 
         // Адаптируем пользовательские рецепты
         const adaptedCustomRecipes = (customData.recipes || []).map(recipe => {
-            if (recipe.ingredients && Array.isArray(recipe.ingredients)) return recipe;
+            if (recipe.ingredients && Array.isArray(recipe.ingredients)) return { ...recipe, isCustom: true };
             if (recipe.input) {
                 const ingredients = [];
                 if (recipe.input.slot1 && recipe.input.slot1.type !== 'empty') ingredients.push(recipe.input.slot1);
@@ -64,17 +134,20 @@ export class RecipeManager {
             return { ...recipe, isCustom: true };
         });
 
-        // Объединяем категории
-        const allCategories = { ...RECIPE_CATEGORIES, ...(customData.categories || {}) };
+        // Объединяем категории (Глубокое слияние: База -> Внутренние DLC -> Внешние DLC -> Кастомные)
+        let allCategories = foundry.utils.duplicate(RECIPE_CATEGORIES || {});
+        allCategories = foundry.utils.mergeObject(allCategories, internalCategories);
+        allCategories = foundry.utils.mergeObject(allCategories, this.dlcCategories);
+        allCategories = foundry.utils.mergeObject(allCategories, customData.categories || {});
 
-        // Пользовательские рецепты имеют приоритет
         const allRecipes = [...adaptedBaseRecipes, ...adaptedCustomRecipes];
 
         return {
             categories: allCategories,
             recipes: allRecipes,
             customRecipes: adaptedCustomRecipes,
-            baseRecipes: adaptedBaseRecipes
+            baseRecipes: adaptedBaseRecipes,
+            registeredDLCs: dlcList
         };
     }
 
@@ -192,38 +265,38 @@ export class RecipeManager {
         const category = this.findCategory(data.categories, categoryId);
         if (!category) return false;
 
-        // 1. По ID (Жесткое совпадение)
-        const idMatch = category.items.some(catItemId => this._compareUuids(catItemId, itemData));
-        if (idMatch) return true;
+        // 1. По ID (Жесткое совпадение в массиве items)
+        if (category.items && Array.isArray(category.items)) {
+            const idMatch = category.items.some(catItemId => this._compareUuids(catItemId, itemData));
+            if (idMatch) return true;
+        }
 
-        // 2. По ИМЕНИ (Надежное совпадение)
-        // Имя предмета должно СОДЕРЖАТЬ название категории.
-        // Пример: Категория "Соль" -> Предмет "Соли чего-то там" -> ОК.
-        // Для русского языка убираем окончания (и, ы, а, я)
+        // 2. Системные проверки D&D (важно для DLC с оружием/броней)
+        if (category.itemType && itemData.type === category.itemType) return true;
+        if (category.baseItem && itemData.system?.type?.value === category.baseItem) return true;
+        if (itemData.type === categoryId) return true;
+        
+        // Дополнительная проверка на совпадение ID категории и типа экипировки
+        if (itemData.system?.armor?.type === categoryId || itemData.system?.weaponType === categoryId) return true;
+
+        // 3. По ИМЕНИ (Надежное совпадение для алхимии, где тип заложен в названии, н-р: "Суспензия...")
         if (itemData.name && category.name) {
-            const catName = category.name.replace(/\(.*\)/, "").trim().toLowerCase(); // "Соль"
-            const itemName = itemData.name.toLowerCase(); // "Соли полыни"
+            const catName = category.name.replace(/\(.*\)/, "").trim().toLowerCase();
+            const itemName = itemData.name.toLowerCase();
 
-            // Получаем корень категории, убирая типичные окончания
+            // Получаем корень категории, убирая типичные окончания русского языка
             let catRoot = catName;
-            if (catRoot.endsWith('и')) catRoot = catRoot.slice(0, -1); // Соли -> Соль
-            if (catRoot.endsWith('ы')) catRoot = catRoot.slice(0, -1); // Золы -> Зола  
-            if (catRoot.endsWith('а')) catRoot = catRoot.slice(0, -1); // Суспензия -> Суспензи
-            if (catRoot.endsWith('я')) catRoot = catRoot.slice(0, -1); // Эссенция -> Эссенци
-
-            // Проверяем вхождение корня категории в имя предмета
-            if (itemName.includes(catRoot)) return true;
+            if (/[аяыийе]$/.test(catRoot)) catRoot = catRoot.slice(0, -1);
+            
+            if (catRoot.length > 2 && itemName.includes(catRoot)) return true;
 
             // И наоборот - проверяем вхождение корня предмета в категорию
-            // Для случаев когда предмет короче категории
-            let itemRoot = itemName.split(' ')[0]; // Берем первое слово
-            if (itemRoot.endsWith('и')) itemRoot = itemRoot.slice(0, -1);
-            if (itemRoot.endsWith('ы')) itemRoot = itemRoot.slice(0, -1);
-            if (itemRoot.endsWith('а')) itemRoot = itemRoot.slice(0, -1);
-            if (itemRoot.endsWith('я')) itemRoot = itemRoot.slice(0, -1);
-
-            if (catName.includes(itemRoot)) return true;
+            let itemRoot = itemName.split(' ')[0];
+            if (/[аяыийе]$/.test(itemRoot)) itemRoot = itemRoot.slice(0, -1);
+            
+            if (itemRoot.length > 2 && catName.includes(itemRoot)) return true;
         }
+        
         return false;
     }
 
@@ -285,9 +358,11 @@ export class RecipeManagerApp extends FormApplication {
             readOnly: false,
             customRecipes: data.customRecipes || [],
             customCategories: customCategories,
+            registeredDLCs: data.registeredDLCs || [],
             counts: {
                 recipes: data.customRecipes?.length || 0,
-                categories: Object.keys(customData.categories || {}).length
+                categories: Object.keys(customData.categories || {}).length,
+                dlcs: data.registeredDLCs?.length || 0
             },
             jsonString: JSON.stringify({
                 categories: customData.categories || {},
@@ -302,15 +377,14 @@ export class RecipeManagerApp extends FormApplication {
         // Табы
         html.find('.bmc-tab').click(this._onTabClick.bind(this));
 
-        // Рецепты
-        html.find('.bmc-add-recipe').click(this._onAddRecipe.bind(this));
-        html.find('.bmc-edit-recipe').click(this._onEditRecipe.bind(this));
-        html.find('.bmc-delete-recipe').click(this._onDeleteRecipe.bind(this));
 
         // Категории
         html.find('.bmc-add-category').click(this._onAddCategory.bind(this));
         html.find('.bmc-edit-category').click(this._onEditCategory.bind(this));
         html.find('.bmc-delete-category').click(this._onDeleteCategory.bind(this));
+
+        // DLC
+        html.find('.bmc-toggle-dlc').click(this._onToggleDLC.bind(this));
 
         // JSON
         html.find('.bmc-copy-btn').click(this._onCopyJson.bind(this));
@@ -322,74 +396,6 @@ export class RecipeManagerApp extends FormApplication {
         html.find('.bmc-backup-all').click(this._onBackupAll.bind(this));
     }
 
-    _onAddRecipe() {
-        const newRecipe = {
-            name: "Новый рецепт",
-            type: "potions",
-            ingredients: [
-                { type: "category", categoryId: "suspension", qty: 1 }
-            ],
-            result: { uuid: "", qty: 1 }
-        };
-
-        const data = RecipeManager.getData();
-        data.customRecipes.push(newRecipe);
-        RecipeManager.saveData({ recipes: data.customRecipes });
-        this.render(true);
-    }
-
-    _onEditRecipe(event) {
-        const index = event.currentTarget.dataset.index;
-        // TODO: Открыть диалог редактирования
-        ui.notifications.info("Редактирование в разработке");
-    }
-
-    _onDeleteRecipe(event) {
-        const index = event.currentTarget.dataset.index;
-        if (confirm("Удалить этот рецепт?")) {
-            const data = RecipeManager.getData();
-            data.customRecipes.splice(index, 1);
-            RecipeManager.saveData({ recipes: data.customRecipes });
-            this.render(true);
-        }
-    }
-
-    _onImportRecipes() {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = '.json';
-        input.onchange = async (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                try {
-                    const text = await file.text();
-                    const imported = JSON.parse(text);
-                    RecipeManager.saveData(imported);
-                    this.render(true);
-                    ui.notifications.info("Рецепты импортированы");
-                } catch (err) {
-                    ui.notifications.error("Ошибка импорта: " + err.message);
-                }
-            }
-        };
-        input.click();
-    }
-
-    _onExportRecipes() {
-        const data = RecipeManager.getData();
-        const exportData = {
-            categories: data.customRecipes.length > 0 ? {} : data.categories,
-            recipes: data.customRecipes
-        };
-
-        const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'custom-recipes.json';
-        a.click();
-        URL.revokeObjectURL(url);
-    }
 
     _onResetAll() {
         const success = RecipeManager.resetCustomData();
@@ -418,6 +424,21 @@ export class RecipeManagerApp extends FormApplication {
         $(event.currentTarget).closest('.bmc-tabs').siblings('.bmc-tab-content')
             .find('.bmc-tab-pane').removeClass('active');
         $(`#${tabName}-tab`).addClass('active');
+    }
+
+    async _onToggleDLC(event) {
+        const dlcId = event.currentTarget.dataset.id;
+        let activeDLCs = game.settings.get(RecipeManager.ID, "activeDLCs");
+        
+        if (activeDLCs.includes(dlcId)) {
+            activeDLCs = activeDLCs.filter(id => id !== dlcId);
+        } else {
+            activeDLCs.push(dlcId);
+        }
+        
+        await game.settings.set(RecipeManager.ID, "activeDLCs", activeDLCs);
+        ui.notifications.info("Настройки DLC обновлены.");
+        this.render(true);
     }
 
     _onAddCategory() {
@@ -457,7 +478,7 @@ export class RecipeManagerApp extends FormApplication {
                         if (subcategoriesText) {
                             subcategoriesText.split(',').forEach(sub => {
                                 const subId = sub.trim().toLowerCase().replace(/\s+/g, '-');
-                                subcategories[subId] = sub.trim();
+                                subcategories[subId] = { name: sub.trim(), items: [] };
                             });
                         }
 
@@ -465,6 +486,7 @@ export class RecipeManagerApp extends FormApplication {
                         customData.categories = customData.categories || {};
                         customData.categories[categoryId] = {
                             name: categoryName,
+                            global: true,
                             subcategories: subcategories
                         };
 
@@ -532,12 +554,13 @@ export class RecipeManagerApp extends FormApplication {
                         if (subcategoriesText) {
                             subcategoriesText.split(',').forEach(sub => {
                                 const subId = sub.trim().toLowerCase().replace(/\s+/g, '-');
-                                subcategories[subId] = sub.trim();
+                                subcategories[subId] = { name: sub.trim(), items: [] };
                             });
                         }
 
                         customData.categories[categoryId] = {
                             name: categoryName,
+                            global: true,
                             subcategories: subcategories
                         };
 
@@ -571,16 +594,19 @@ export class RecipeManagerApp extends FormApplication {
             content: `
                 <div style="padding: 10px;">
                     <p>Вы действительно хотите удалить категорию "<strong>${category.name}</strong>"?</p>
-                    <p style="color: #ff6b6b;">Это действие нельзя отменить!</p>
+                    <p style="color: #ff6b6b;">Это действие нельзя отменить! Все рецепты в этой категории также будут удалены!</p>
                 </div>
             `,
             buttons: {
                 delete: {
                     icon: '<i class="fas fa-trash"></i>',
                     label: "Удалить",
-                    callback: () => {
+                    callback: async () => {
                         delete customData.categories[categoryId];
-                        game.settings.set(RecipeManager.ID, "customRecipes", customData);
+                        if (customData.recipes) {
+                            customData.recipes = customData.recipes.filter(r => r.categoryId !== categoryId);
+                        }
+                        await game.settings.set(RecipeManager.ID, "customRecipes", customData);
                         this.render(true);
                         ui.notifications.info(`Категория "${category.name}" удалена`);
                     }
